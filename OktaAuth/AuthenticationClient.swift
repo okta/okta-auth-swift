@@ -7,15 +7,15 @@
 
 import Foundation
 
-protocol OktaAuthDelegate: class {
+protocol AuthenticationClientDelegate: class {
 
     func loggedIn()
 
     func handleError(_ error: OktaError)
 
-    func handleChangePassword(callback: (_ oldPassword: String, _ newPassword: String) -> Void)
+    func handleChangePassword(callback: @escaping (_ oldPassword: String, _ newPassword: String) -> Void)
 
-    func handleMultifactorAuthenication(callback: (_ code: String) -> Void)
+    func handleMultifactorAuthenication(callback: @escaping (_ code: String) -> Void)
 
 }
 
@@ -23,23 +23,23 @@ protocol OktaAuthDelegate: class {
 /// but developer able to implement custom handler by implementing
 /// `OktaStateMachineHandler` protocol
 
-protocol OktaStateMachineHandler: class {
+protocol AuthenticationClientStateHandler: class {
 
-    func handleState()
+    func handleState() // to be extended
 
 }
 
-/// OktaAuth class is main entry point for developer
+/// AuthenticationClient class is main entry point for developer
 
-class OktaAuth {
+class AuthenticationClient {
 
-    init(issuer: URL, delegate: OktaAuthDelegate) {
+    init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
         self.delegate = delegate
-        self.api = OktaAPI(issuer: issuer)
+        self.api = OktaAPI(oktaDomain: oktaDomain)
     }
 
-    weak var delegate: OktaAuthDelegate?
-    weak var stateMachineHandler: OktaStateMachineHandler? = nil
+    weak var delegate: AuthenticationClientDelegate?
+    weak var stateHandler: AuthenticationClientStateHandler? = nil
 
     func logIn(username: String, password: String) {
         guard case .unauthenticated = state else { return }
@@ -73,19 +73,20 @@ class OktaAuth {
     /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
     private(set) var sessionToken: String?
 
-    enum State: String {
-        case unauthenticated = "UNAUTHENICATED"
-        case passwordWarning = "PASSWORD_WARN"
-        case passwordExpired = "PASSWORD_EXPIRED"
-        case recovery = "RECOVERY"
-        case recoveryChallenge = "RECOVERY_CHALLENGE"
-        case passwordReset = "PASSWORD_RESET"
-        case lockedOut = "LOCAKED_OUT"
-        case MFAEnroll = "MFA_ENROLL"
-        case MFAEnrollActivate = "MFA_ENROLL_ACTIVATE"
-        case MFARequired = "MFA_REQUIRED"
-        case MFAChallenge = "MFA_CHALLENGE"
-        case success = "SUCCESS"
+    enum State {
+        case unauthenticated
+        case passwordWarning
+        case passwordExpired
+        case recovery
+        case recoveryChallenge
+        case passwordReset
+        case lockedOut
+        case MFAEnroll
+        case MFAEnrollActivate
+        case MFARequired
+        case MFAChallenge
+        case success
+        case unknown(String)
     }
 
     // MARK: - Private
@@ -101,5 +102,4 @@ class OktaAuth {
     private func handleStateChange() {
 
     }
-
 }

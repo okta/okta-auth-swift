@@ -11,15 +11,15 @@ import Foundation
 
 class OktaAPI {
 
-    init(issuer: URL) {
-        self.issuer = issuer
+    init(oktaDomain: URL) {
+        self.oktaDomain = oktaDomain
         urlSession = URLSession(configuration: .default)
     }
 
     var successResponseHandler: ((OktaAPISuccess) -> Void)?
     var errorResponseHandler: ((OktaAPIError) -> Void)?
 
-    private(set) var issuer: URL
+    private(set) var oktaDomain: URL
     private(set) var urlSession: URLSession
 
     // Public application
