@@ -36,6 +36,7 @@ class AuthenticationClient {
     init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
         self.delegate = delegate
         self.api = OktaAPI(oktaDomain: oktaDomain)
+        self.api.commonCompletion = handleAPICompletion
     }
 
     weak var delegate: AuthenticationClientDelegate?
@@ -91,11 +92,15 @@ class AuthenticationClient {
 
     // MARK: - Private
 
-    private func handleAPIError(_ error: OktaAPIError) {
+    private func handleAPICompletion(req: OktaAPIRequest, result: OktaAPIRequest.Result) {
+
+    }
+
+    private func handleAPIError(req: OktaAPIRequest, error: OktaAPIError) {
         
     }
 
-    private func handleAPISuccess(_ response: OktaAPISuccess) {
+    private func handleAPISuccess(req: OktaAPIRequest, response: OktaAPISuccess) {
 
     }
 
