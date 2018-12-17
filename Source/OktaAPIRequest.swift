@@ -37,11 +37,6 @@ public class OktaAPIRequest {
             return
         }
         let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-
-            print(String(data: data ?? Data(), encoding: .utf8)!)
-            print(response)
-            print(error)
-
             guard error == nil else {
                 self.completion(self, .error(.connectionError(error!)))
                 return

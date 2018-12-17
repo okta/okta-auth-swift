@@ -35,12 +35,18 @@ class ViewController: UIViewController {
 
 extension ViewController: AuthenticationClientDelegate {
     func loggedIn() {
+        activityIndicator.stopAnimating()
+        loginButton.isEnabled = true
+
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 
     func handleError(_ error: OktaError) {
+        activityIndicator.stopAnimating()
+        loginButton.isEnabled = true
+
         let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

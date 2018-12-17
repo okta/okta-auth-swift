@@ -94,11 +94,16 @@ public class AuthenticationClient {
     // MARK: - Private
 
     private func handleAPICompletion(req: OktaAPIRequest, result: OktaAPIRequest.Result) {
-
+        switch result {
+        case .error(let error):
+            delegate?.handleError(error)
+        case .success(_):
+            delegate?.loggedIn()
+        }
     }
 
-    private func handleAPIError(req: OktaAPIRequest, error: OktaAPIErrorResponse) {
-        
+    private func handleAPIError(req: OktaAPIRequest, error: OktaError) {
+
     }
 
     private func handleAPISuccess(req: OktaAPIRequest, response: OktaAPISuccessResponse) {
