@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol AuthenticationClientDelegate: class {
+public protocol AuthenticationClientDelegate: class {
 
     func loggedIn()
 
@@ -23,7 +23,7 @@ protocol AuthenticationClientDelegate: class {
 /// but developer able to implement custom handler by implementing
 /// `OktaStateMachineHandler` protocol
 
-protocol AuthenticationClientStateHandler: class {
+public protocol AuthenticationClientStateHandler: class {
 
     func handleState() // to be extended
 
@@ -31,50 +31,51 @@ protocol AuthenticationClientStateHandler: class {
 
 /// AuthenticationClient class is main entry point for developer
 
-class AuthenticationClient {
+public class AuthenticationClient {
 
-    init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
+    public init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
         self.delegate = delegate
         self.api = OktaAPI(oktaDomain: oktaDomain)
         self.api.commonCompletion = handleAPICompletion
     }
 
-    weak var delegate: AuthenticationClientDelegate?
-    weak var stateHandler: AuthenticationClientStateHandler? = nil
+    public weak var delegate: AuthenticationClientDelegate?
+    public weak var stateHandler: AuthenticationClientStateHandler? = nil
 
-    func logIn(username: String, password: String) {
+    public func logIn(username: String, password: String) {
         guard case .unauthenticated = state else { return }
 
+        api.primaryAuthenication(username: username, password: password, audience: "test", relayState: "test")
     }
 
-    func cancel() {
+    public func cancel() {
         guard let _ = sessionToken else { return }
 
     }
 
     // MARK: - Internal
 
-    private(set) var api: OktaAPI
+    public private(set) var api: OktaAPI
 
     /// Current state of the authentication transaction.
-    private(set) var state: State = .unauthenticated
+    public private(set) var state: State = .unauthenticated
 
     /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
-    private(set) var stateToken: String?
+    public private(set) var stateToken: String?
 
     /// Link relations for the current status.
-    private(set) var links: [String: String] = [:]
+    public private(set) var links: [String: String] = [:]
 
     // Embedded resources for current status
-    private(set) var embedded: [String: String] = [:]
+    public private(set) var embedded: [String: String] = [:]
 
     /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
-    private(set) var recoveryToken: String?
+    public private(set) var recoveryToken: String?
 
     /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
-    private(set) var sessionToken: String?
+    public private(set) var sessionToken: String?
 
-    enum State {
+    public enum State {
         case unauthenticated
         case passwordWarning
         case passwordExpired
@@ -96,11 +97,11 @@ class AuthenticationClient {
 
     }
 
-    private func handleAPIError(req: OktaAPIRequest, error: OktaAPIError) {
+    private func handleAPIError(req: OktaAPIRequest, error: OktaAPIErrorResponse) {
         
     }
 
-    private func handleAPISuccess(req: OktaAPIRequest, response: OktaAPISuccess) {
+    private func handleAPISuccess(req: OktaAPIRequest, response: OktaAPISuccessResponse) {
 
     }
 

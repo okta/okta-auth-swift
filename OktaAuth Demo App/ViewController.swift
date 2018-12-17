@@ -1,39 +1,52 @@
 //
-//  ExampleViewController.swift
-//  OktaAuth iOS
+//  ViewController.swift
+//  OktaAuth Demo App
 //
-//  Created by Alex Lebedev on 12/14/18.
+//  Created by Alex on 17 Dec 18.
 //
 
 import UIKit
+import OktaAuth
 
-class ExampleViewController: UIViewController {
-    
-    private var authenicationClient: AuthenticationClient!
-    
+class ViewController: UIViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        authenicationClient = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
     }
-    
-    func logIn() {
-        authenicationClient.logIn(username: "example@username.com", password: "ExamplePass123")
+
+    private var client: AuthenticationClient!
+
+    @IBOutlet private var usernameField: UITextField!
+    @IBOutlet private var passwordField: UITextField!
+    @IBOutlet private var loginButton: UIButton!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+
+    @IBAction private func loginTapped() {
+        guard let username = usernameField.text,
+            let password = passwordField.text else { return }
+
+        activityIndicator.startAnimating()
+        loginButton.isEnabled = false
+
+        client.logIn(username: username, password: password)
     }
 }
 
-extension ExampleViewController: AuthenticationClientDelegate {
-    
+extension ViewController: AuthenticationClientDelegate {
     func loggedIn() {
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
+
     func handleError(_ error: OktaError) {
         let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
-    func handleChangePassword(callback: @escaping (_ oldPassword: String, _ newPassword: String) -> Void) {
+
+    func handleChangePassword(callback: @escaping (String, String) -> Void) {
         let alert = UIAlertController(title: "Change Password", message: "Please choose new password", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Old Password" }
         alert.addTextField { $0.placeholder = "New Password" }
@@ -43,12 +56,12 @@ extension ExampleViewController: AuthenticationClientDelegate {
             callback(old, new)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.authenicationClient.cancel()
+            self.client.cancel()
         }))
         present(alert, animated: true, completion: nil)
     }
-    
-    func handleMultifactorAuthenication(callback: @escaping (_ code: String) -> Void) {
+
+    func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
         let alert = UIAlertController(title: "MFA", message: "Please enter code from sms", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
@@ -56,7 +69,7 @@ extension ExampleViewController: AuthenticationClientDelegate {
             callback(code)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.authenicationClient.cancel()
+            self.client.cancel()
         }))
         present(alert, animated: true, completion: nil)
     }

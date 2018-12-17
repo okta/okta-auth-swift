@@ -9,7 +9,7 @@ import Foundation
 
 // OktaAPISuceess and OktaAPIError are models for REST API json responses
 
-struct OktaAPISuccess: Codable {
+public struct OktaAPISuccessResponse: Codable {
 
     var status: String?
     var stateToken: String?
@@ -19,7 +19,7 @@ struct OktaAPISuccess: Codable {
 
 }
 
-struct OktaAPIError: Codable {
+public struct OktaAPIErrorResponse: Codable {
 
     var errorCode: String?
     var errorSummary: String?

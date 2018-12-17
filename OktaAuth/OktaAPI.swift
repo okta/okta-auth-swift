@@ -9,17 +9,17 @@ import Foundation
 
 /// Represents Okta REST API
 
-class OktaAPI {
+public class OktaAPI {
 
-    init(oktaDomain: URL) {
+    public init(oktaDomain: URL) {
         self.oktaDomain = oktaDomain
         urlSession = URLSession(configuration: .default)
     }
 
-    var commonCompletion: ((OktaAPIRequest, OktaAPIRequest.Result) -> Void)?
+    public var commonCompletion: ((OktaAPIRequest, OktaAPIRequest.Result) -> Void)?
 
-    private(set) var oktaDomain: URL
-    private(set) var urlSession: URLSession
+    public private(set) var oktaDomain: URL
+    public private(set) var urlSession: URLSession
 
     // Public application
     // Trusted application
@@ -27,27 +27,33 @@ class OktaAPI {
     // Device fingerprinting
     // Password expiration warning
 
-    func primaryAuthenication(username: String, password: String, audience: String, relayState: String) {
+    public func primaryAuthenication(username: String, password: String, audience: String, relayState: String) {
         let req = buildBaseRequest()
+        req.method = .post
         req.path = "/api/v1/authn"
+        req.bodyParams = ["username": username,
+                          "password": password,
+                          "relayState": relayState,
+                          "options": ["multiOptionalFactorEnroll": false,
+                                      "warnBeforePasswordExpired": false]]
         req.run()
     }
 
-    func changePassword(stateToken: String, oldPassword: String, newPassword: String) {
+    public func changePassword(stateToken: String, oldPassword: String, newPassword: String) {
         let req = buildBaseRequest()
         req.path = "/api/v1/authn/credentials/change_password"
         req.bodyParams = ["stateToken": stateToken]
         req.run()
     }
 
-    func getTransactionState(stateToken: String) {
+    public func getTransactionState(stateToken: String) {
         let req = buildBaseRequest()
         req.path = "/api/v1/authn"
         req.bodyParams = ["stateToken": stateToken]
         req.run()
     }
 
-    func cancelTransaction(stateToken: String) {
+    public func cancelTransaction(stateToken: String) {
         let req = buildBaseRequest()
         req.path = "/api/v2/authn/cancel"
         req.bodyParams = ["stateToken": stateToken]
@@ -57,9 +63,10 @@ class OktaAPI {
     // MARK: - Private
 
     private func buildBaseRequest() -> OktaAPIRequest {
-        let req = OktaAPIRequest(urlSession: urlSession, completion: { [weak self] req, result in
+        let req = OktaAPIRequest(urlSession: urlSession,  completion: { [weak self] req, result in
             self?.commonCompletion?(req, result)
         })
+        req.baseURL = oktaDomain
         return req
     }
 

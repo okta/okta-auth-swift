@@ -7,6 +7,11 @@
 
 import Foundation
 
-enum OktaError: Error {
+public enum OktaError: Error {
     case general(String)
+    case errorBuildingURLRequest
+    case connectionError(Error)
+    case emptyServerResponse
+    case responseSerializationError(Error)
+    case serverRespondedWithError(OktaAPIErrorResponse)
 }
