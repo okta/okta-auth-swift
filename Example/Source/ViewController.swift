@@ -13,10 +13,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
+        updateStatus()
     }
 
     private var client: AuthenticationClient!
 
+    @IBOutlet private var stateLabel: UILabel!
     @IBOutlet private var usernameField: UITextField!
     @IBOutlet private var passwordField: UITextField!
     @IBOutlet private var loginButton: UIButton!
@@ -31,12 +33,17 @@ class ViewController: UIViewController {
 
         client.logIn(username: username, password: password)
     }
+
+    private func updateStatus() {
+        stateLabel.text = client.state.description
+    }
 }
 
 extension ViewController: AuthenticationClientDelegate {
     func loggedIn() {
         activityIndicator.stopAnimating()
         loginButton.isEnabled = true
+        updateStatus()
 
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -46,13 +53,16 @@ extension ViewController: AuthenticationClientDelegate {
     func handleError(_ error: OktaError) {
         activityIndicator.stopAnimating()
         loginButton.isEnabled = true
+        updateStatus()
 
-        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 
     func handleChangePassword(callback: @escaping (String, String) -> Void) {
+        updateStatus()
+
         let alert = UIAlertController(title: "Change Password", message: "Please choose new password", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Old Password" }
         alert.addTextField { $0.placeholder = "New Password" }
@@ -68,6 +78,8 @@ extension ViewController: AuthenticationClientDelegate {
     }
 
     func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
+        updateStatus()
+
         let alert = UIAlertController(title: "MFA", message: "Please enter code from sms", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in

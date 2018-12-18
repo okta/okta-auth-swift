@@ -44,21 +44,21 @@ public class AuthenticationClient {
 
     public func logIn(username: String, password: String) {
         guard case .unauthenticated = state else { return }
-
-        api.primaryAuthenication(username: username, password: password, audience: "test", relayState: "test")
+        api.primaryAuthenication(username: username, password: password)
     }
 
     public func cancel() {
-        guard let _ = sessionToken else { return }
-
+        guard let stateToken = stateToken else { return }
+        api.cancelTransaction(stateToken: stateToken)
     }
 
     // MARK: - Internal
 
+    /// Okta REST API client
     public private(set) var api: OktaAPI
 
     /// Current state of the authentication transaction.
-    public private(set) var state: State = .unauthenticated
+    public private(set) var state: AuthState = .unauthenticated
 
     /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
     public private(set) var stateToken: String?
@@ -75,34 +75,37 @@ public class AuthenticationClient {
     /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
     public private(set) var sessionToken: String?
 
-    public enum State {
-        case unauthenticated
-        case passwordWarning
-        case passwordExpired
-        case recovery
-        case recoveryChallenge
-        case passwordReset
-        case lockedOut
-        case MFAEnroll
-        case MFAEnrollActivate
-        case MFARequired
-        case MFAChallenge
-        case success
-        case unknown(String)
-    }
-
     // MARK: - Private
 
     private func handleAPICompletion(req: OktaAPIRequest, result: OktaAPIRequest.Result) {
         switch result {
         case .error(let error):
             delegate?.handleError(error)
-        case .success(_):
-            delegate?.loggedIn()
+
+        case .success(let response):
+            print("Okta API Response: \(response)")
+
+            state = AuthState(raw: response.status ?? "<EMPTY>")
+            stateToken = response.stateToken
+            handleStateChange()
         }
     }
 
     private func handleStateChange() {
+        print("Handling state change: \(state.description)")
 
+        switch state {
+        case .success:
+            delegate?.loggedIn()
+
+        case .MFARequired:
+            delegate?.handleMultifactorAuthenication(callback: { code in
+                print("Code: \(code)")
+            })
+
+        default:
+            delegate?.handleError(.authenicationStateNotSupported(state))
+            break
+        }
     }
 }

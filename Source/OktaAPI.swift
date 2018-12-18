@@ -27,15 +27,25 @@ public class OktaAPI {
     // Device fingerprinting
     // Password expiration warning
 
-    public func primaryAuthenication(username: String, password: String, audience: String, relayState: String) {
+    public func primaryAuthenication(username: String?,
+                                     password: String?,
+                                     audience: String? = nil,
+                                     relayState: String? = nil,
+                                     multiOptionalFactorEnroll: Bool = false,
+                                     warnBeforePasswordExpired: Bool = false,
+                                     deviceToken: String? = nil) {
         let req = buildBaseRequest()
         req.method = .post
         req.path = "/api/v1/authn"
-        req.bodyParams = ["username": username,
-                          "password": password,
-                          "relayState": relayState,
-                          "options": ["multiOptionalFactorEnroll": false,
-                                      "warnBeforePasswordExpired": false]]
+
+        var bodyParams: [String: Any] = [:]
+        bodyParams["username"] = username
+        bodyParams["password"] = password
+        bodyParams["audience"] = audience
+        bodyParams["relayState"] = relayState
+        bodyParams["options"] = ["multiOptionalFactorEnroll": false,
+                                 "warnBeforePasswordExpired": false]
+        req.bodyParams = bodyParams
         req.run()
     }
 

@@ -13,7 +13,7 @@ public struct OktaAPISuccessResponse: Codable {
 
     var status: String?
     var stateToken: String?
-    var expiresAt: Date?
+//    var expiresAt: Date?
 
     /// ... etc
 

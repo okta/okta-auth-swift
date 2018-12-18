@@ -19,6 +19,8 @@ public class OktaAPIRequest {
     public init(urlSession: URLSession, completion: @escaping (OktaAPIRequest, Result) -> Void) {
         self.urlSession = urlSession
         self.completion = completion
+        decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
     }
 
     public var method: Method = .post
@@ -78,6 +80,7 @@ public class OktaAPIRequest {
     // MARK: - Private
 
     private var urlSession: URLSession
+    private var decoder: JSONDecoder
     private var completion: (OktaAPIRequest, Result) -> Void
 
     private func handleResponse(data: Data?, response: HTTPURLResponse) {
@@ -88,7 +91,7 @@ public class OktaAPIRequest {
 
         guard response.statusCode == 200 else {
             do {
-                let errorResponse = try JSONDecoder().decode(OktaAPIErrorResponse.self, from: data)
+                let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
                 callCompletion(.error(.serverRespondedWithError(errorResponse)))
             } catch let e {
                 callCompletion(.error(.responseSerializationError(e)))
@@ -97,7 +100,7 @@ public class OktaAPIRequest {
         }
 
         do {
-            let successResponse = try JSONDecoder().decode(OktaAPISuccessResponse.self, from: data)
+            let successResponse = try decoder.decode(OktaAPISuccessResponse.self, from: data)
             callCompletion(.success(successResponse))
         } catch let e {
             callCompletion(.error(.responseSerializationError(e)))
