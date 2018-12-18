@@ -49,6 +49,8 @@ public class OktaAPIRequest {
         urlRequest.httpMethod = method.rawValue.uppercased()
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.addValue(buildUserAgent(), forHTTPHeaderField: "User-Agent")
+
         if let bodyParams = bodyParams {
             guard let body = try? JSONSerialization.data(withJSONObject: bodyParams, options: []) else {
                 return nil

@@ -33,6 +33,7 @@ public class OktaAPI {
                                      relayState: String? = nil,
                                      multiOptionalFactorEnroll: Bool = false,
                                      warnBeforePasswordExpired: Bool = false,
+                                     token: String? = nil,
                                      deviceToken: String? = nil) {
         let req = buildBaseRequest()
         req.method = .post
@@ -43,8 +44,12 @@ public class OktaAPI {
         bodyParams["password"] = password
         bodyParams["audience"] = audience
         bodyParams["relayState"] = relayState
-        bodyParams["options"] = ["multiOptionalFactorEnroll": false,
-                                 "warnBeforePasswordExpired": false]
+        bodyParams["options"] = ["multiOptionalFactorEnroll": multiOptionalFactorEnroll,
+                                 "warnBeforePasswordExpired": warnBeforePasswordExpired]
+        var context: [String: String] = [:]
+        context["deviceToken"] = deviceToken
+        bodyParams["context"] = context
+        bodyParams["token"] = token
         req.bodyParams = bodyParams
         req.run()
     }
