@@ -102,14 +102,6 @@ public class AuthenticationClient {
         }
     }
 
-    private func handleAPIError(req: OktaAPIRequest, error: OktaError) {
-
-    }
-
-    private func handleAPISuccess(req: OktaAPIRequest, response: OktaAPISuccessResponse) {
-
-    }
-
     private func handleStateChange() {
 
     }

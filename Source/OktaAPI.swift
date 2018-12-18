@@ -64,9 +64,7 @@ public class OktaAPI {
 
     private func buildBaseRequest() -> OktaAPIRequest {
         let req = OktaAPIRequest(urlSession: urlSession,  completion: { [weak self] req, result in
-            DispatchQueue.main.async {
-                self?.commonCompletion?(req, result)
-            }
+            self?.commonCompletion?(req, result)
         })
         req.baseURL = oktaDomain
         return req

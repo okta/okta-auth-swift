@@ -31,44 +31,6 @@ public class OktaAPIRequest {
         case get, post, puth, delete, options
     }
 
-    public func run() {
-        guard let urlRequest = buildRequest() else {
-            completion(self, .error(.errorBuildingURLRequest))
-            return
-        }
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-            guard error == nil else {
-                self.completion(self, .error(.connectionError(error!)))
-                return
-            }
-            let response = response as! HTTPURLResponse
-            guard response.statusCode == 200 else {
-                guard let data = data else {
-                    self.completion(self, .error(.emptyServerResponse))
-                    return
-                }
-                do {
-                    let errorResponse = try JSONDecoder().decode(OktaAPIErrorResponse.self, from: data)
-                    self.completion(self, .error(.serverRespondedWithError(errorResponse)))
-                } catch let e {
-                    self.completion(self, .error(.responseSerializationError(e)))
-                }
-                return
-            }
-            guard let data = data else {
-                self.completion(self, .error(.emptyServerResponse))
-                return
-            }
-            do {
-                let successResponse = try JSONDecoder().decode(OktaAPISuccessResponse.self, from: data)
-                self.completion(self, .success(successResponse))
-            } catch let e {
-                self.completion(self, .error(.responseSerializationError(e)))
-            }
-        }
-        task.resume()
-    }
-
     public func buildRequest() -> URLRequest? {
         guard let baseURL = baseURL,
             let path = path,
@@ -95,9 +57,60 @@ public class OktaAPIRequest {
         return urlRequest
     }
 
+    public func run() {
+        guard let urlRequest = buildRequest() else {
+            completion(self, .error(.errorBuildingURLRequest))
+            return
+        }
+
+        // `self` captured here to keep `OktaAPIRequest` retained until request is finished
+        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
+            guard error == nil else {
+                self.handleResponseError(error: error!)
+                return
+            }
+            let response = response as! HTTPURLResponse
+            self.handleResponse(data: data, response: response)
+        }
+        task.resume()
+    }
+
     // MARK: - Private
 
     private var urlSession: URLSession
     private var completion: (OktaAPIRequest, Result) -> Void
 
+    private func handleResponse(data: Data?, response: HTTPURLResponse) {
+        guard let data = data else {
+            callCompletion(.error(.emptyServerResponse))
+            return
+        }
+
+        guard response.statusCode == 200 else {
+            do {
+                let errorResponse = try JSONDecoder().decode(OktaAPIErrorResponse.self, from: data)
+                callCompletion(.error(.serverRespondedWithError(errorResponse)))
+            } catch let e {
+                callCompletion(.error(.responseSerializationError(e)))
+            }
+            return
+        }
+
+        do {
+            let successResponse = try JSONDecoder().decode(OktaAPISuccessResponse.self, from: data)
+            callCompletion(.success(successResponse))
+        } catch let e {
+            callCompletion(.error(.responseSerializationError(e)))
+        }
+    }
+
+    private func handleResponseError(error: Error) {
+        callCompletion(.error(.connectionError(error)))
+    }
+
+    private func callCompletion(_ result: Result) {
+        DispatchQueue.main.async {
+            self.completion(self, result)
+        }
+    }
 }
