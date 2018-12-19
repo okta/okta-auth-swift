@@ -16,6 +16,8 @@ public protocol AuthenticationClientDelegate: class {
     func handleChangePassword(callback: @escaping (_ oldPassword: String, _ newPassword: String) -> Void)
 
     func handleMultifactorAuthenication(callback: @escaping (_ code: String) -> Void)
+    
+    func transactionCancelled()
 
 }
 
@@ -36,7 +38,6 @@ public class AuthenticationClient {
     public init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
         self.delegate = delegate
         self.api = OktaAPI(oktaDomain: oktaDomain)
-        self.api.commonCompletion = handleAPICompletion
     }
 
     public weak var delegate: AuthenticationClientDelegate?
@@ -44,12 +45,38 @@ public class AuthenticationClient {
 
     public func logIn(username: String, password: String) {
         guard case .unauthenticated = state else { return }
-        api.primaryAuthenication(username: username, password: password)
+        api.primaryAuthenication(username: username, password: password) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateState(response: response)
+        }
     }
 
     public func cancel() {
         guard let stateToken = stateToken else { return }
-        api.cancelTransaction(stateToken: stateToken)
+        api.cancelTransaction(stateToken: stateToken) { [weak self] result in
+            guard let _ = self?.checkAPIResultError(result) else { return }
+            self?.resetState()
+        }
+    }
+    
+    public func updateState() {
+        guard let stateToken = stateToken else { return }
+        api.getTransactionState(stateToken: stateToken) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateState(response: response)
+        }
+    }
+    
+    public func changePassword(oldPassword: String, newPassword: String) {
+        guard let stateToken = stateToken else { return }
+        switch state {
+            case .passwordExpired, .passwordWarning: break
+            default: return
+        }
+        api.changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateState(response: response)
+        }
     }
 
     // MARK: - Internal
@@ -76,36 +103,54 @@ public class AuthenticationClient {
     public private(set) var sessionToken: String?
 
     // MARK: - Private
-
-    private func handleAPICompletion(req: OktaAPIRequest, result: OktaAPIRequest.Result) {
+    
+    private func checkAPIResultError(_ result: OktaAPIRequest.Result) -> OktaAPISuccessResponse? {
         switch result {
         case .error(let error):
             delegate?.handleError(error)
-
-        case .success(let response):
-            print("Okta API Response: \(response)")
-
-            state = AuthState(raw: response.status ?? "<EMPTY>")
-            stateToken = response.stateToken
-            handleStateChange()
+            return nil
+        case .success(let success):
+            return success
         }
+    }
+
+    private func updateState(response: OktaAPISuccessResponse) {
+        print("Updating state with: \(response)")
+        state = AuthState(raw: response.status ?? "<EMPTY>")
+        stateToken = response.stateToken
+        handleStateChange()
+    }
+    
+    private func resetState() {
+        state = .unauthenticated
+        stateToken = nil
+        handleStateChange()
     }
 
     private func handleStateChange() {
         print("Handling state change: \(state.description)")
 
         switch state {
-        case .success:
-            delegate?.loggedIn()
+        case .unauthenticated:
+            delegate?.transactionCancelled()
+            break
+            
+        case .passwordExpired:
+            delegate?.handleChangePassword(callback: { [weak self] oldPassword, newPassword in
+                self?.changePassword(oldPassword: oldPassword, newPassword: newPassword)
+            })
+            break
 
         case .MFARequired:
             delegate?.handleMultifactorAuthenication(callback: { code in
                 print("Code: \(code)")
             })
 
+        case .success:
+            delegate?.loggedIn()
+
         default:
             delegate?.handleError(.authenicationStateNotSupported(state))
-            break
         }
     }
 }

@@ -91,4 +91,10 @@ extension ViewController: AuthenticationClientDelegate {
         }))
         present(alert, animated: true, completion: nil)
     }
+    
+    func transactionCancelled() {
+        activityIndicator.stopAnimating()
+        loginButton.isEnabled = true
+        updateStatus()
+    }
 }
