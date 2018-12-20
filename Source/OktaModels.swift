@@ -15,16 +15,19 @@ public struct OktaAPISuccessResponse: Codable {
     var stateToken: String?
 //    var expiresAt: Date?
 
-    /// ... etc
+    // ... etc
+    // Serialization TBD
 
 }
 
 public struct OktaAPIErrorResponse: Codable {
+    public struct ErrorCause: Codable {
+        var errorSummary: String?
+    }
 
     var errorCode: String?
     var errorSummary: String?
     var errorLink: String?
-
-    /// ... etc
-
+    var errorId: String?
+    var errorCauses: [ErrorCause]?
 }

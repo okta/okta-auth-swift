@@ -60,26 +60,30 @@ extension ViewController: AuthenticationClientDelegate {
         present(alert, animated: true, completion: nil)
     }
 
-    func handleChangePassword(callback: @escaping (String, String) -> Void) {
+    func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
         updateStatus()
-
         let alert = UIAlertController(title: "Change Password", message: "Please choose new password", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Old Password" }
         alert.addTextField { $0.placeholder = "New Password" }
-        alert.addTextField { $0.placeholder = "Confirmation" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            guard let old = alert.textFields?[0].text, let new = alert.textFields?[1].text else { return }
-            callback(old, new)
+            guard let old = alert.textFields?[0].text,
+                let new = alert.textFields?[1].text else { return }
+            callback(old, new, false)
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.client.cancel()
-        }))
+        if canSkip {
+            alert.addAction(UIAlertAction(title: "Skip", style: .cancel, handler: { _ in
+                callback(nil, nil, true)
+            }))
+        } else {
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                self.client.cancel()
+            }))
+        }
         present(alert, animated: true, completion: nil)
     }
 
     func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
         updateStatus()
-
         let alert = UIAlertController(title: "MFA", message: "Please enter code from sms", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in

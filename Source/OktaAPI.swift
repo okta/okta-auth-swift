@@ -21,18 +21,12 @@ public class OktaAPI {
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
 
-    // Public application
-    // Trusted application
-    // Activation token
-    // Device fingerprinting
-    // Password expiration warning
-
     public func primaryAuthenication(username: String?,
                                      password: String?,
                                      audience: String? = nil,
                                      relayState: String? = nil,
-                                     multiOptionalFactorEnroll: Bool = false,
-                                     warnBeforePasswordExpired: Bool = false,
+                                     multiOptionalFactorEnroll: Bool = true,
+                                     warnBeforePasswordExpired: Bool = true,
                                      token: String? = nil,
                                      deviceToken: String? = nil,
                                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
@@ -61,7 +55,7 @@ public class OktaAPI {
                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/credentials/change_password"
-        req.bodyParams = ["stateToken": stateToken]
+        req.bodyParams = ["stateToken": stateToken, "oldPassword": oldPassword, "newPassword": newPassword]
         req.run()
     }
 

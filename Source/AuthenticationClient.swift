@@ -8,17 +8,15 @@
 import Foundation
 
 public protocol AuthenticationClientDelegate: class {
-
     func loggedIn()
 
     func handleError(_ error: OktaError)
 
-    func handleChangePassword(callback: @escaping (_ oldPassword: String, _ newPassword: String) -> Void)
+    func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void)
 
     func handleMultifactorAuthenication(callback: @escaping (_ code: String) -> Void)
     
     func transactionCancelled()
-
 }
 
 /// Our SDK provides default state machine implementation,
@@ -26,9 +24,7 @@ public protocol AuthenticationClientDelegate: class {
 /// `OktaStateMachineHandler` protocol
 
 public protocol AuthenticationClientStateHandler: class {
-
     func handleState() // to be extended
-
 }
 
 /// AuthenticationClient class is main entry point for developer
@@ -108,6 +104,7 @@ public class AuthenticationClient {
         switch result {
         case .error(let error):
             delegate?.handleError(error)
+            resetState()
             return nil
         case .success(let success):
             return success
@@ -135,11 +132,22 @@ public class AuthenticationClient {
             delegate?.transactionCancelled()
             break
             
-        case .passwordExpired:
-            delegate?.handleChangePassword(callback: { [weak self] oldPassword, newPassword in
-                self?.changePassword(oldPassword: oldPassword, newPassword: newPassword)
+        case .passwordWarning:
+            delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
+                if skip {
+                    // TBD Process `next` link
+                    print("*** SKIP ***")
+                } else {
+                    guard let old = old, let new = new else { return }
+                    self?.changePassword(oldPassword: old, newPassword: new)
+                }
             })
-            break
+            
+        case .passwordExpired:
+            delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
+                guard let old = old, let new = new else { return }
+                self?.changePassword(oldPassword: old, newPassword: new)
+            })
 
         case .MFARequired:
             delegate?.handleMultifactorAuthenication(callback: { code in

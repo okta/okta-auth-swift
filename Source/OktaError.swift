@@ -29,7 +29,15 @@ public extension OktaError {
         case .responseSerializationError(let error):
             return "Response serialization error (\(error.localizedDescription))"
         case .serverRespondedWithError(let error):
-            return "Server responded with error (\(error.errorSummary ?? "?"))"
+            let description: String
+            if let causes = error.errorCauses, causes.count > 0 {
+                description = causes.compactMap { $0.errorSummary }.joined(separator: "; ")
+            } else if let summary = error.errorSummary {
+                description = summary
+            } else {
+                description = "Unknown"
+            }
+            return "Server responded with error: \(description)"
         case .authenicationStateNotSupported(let state):
             return "Authenication state not supported (\(state.description))"
         case .unexpectedResponse:

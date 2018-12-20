@@ -90,7 +90,6 @@ public class OktaAPIRequest {
             callCompletion(.error(.emptyServerResponse))
             return
         }
-
         guard response.statusCode == 200 else {
             do {
                 let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
@@ -100,7 +99,6 @@ public class OktaAPIRequest {
             }
             return
         }
-
         do {
             let successResponse = try decoder.decode(OktaAPISuccessResponse.self, from: data)
             callCompletion(.success(successResponse))
