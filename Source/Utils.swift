@@ -7,10 +7,24 @@
 
 import Foundation
 
+#if os(iOS) || os(watchOS) || os(tvOS)
+import UIKit
+#endif
+
 internal func buildUserAgent() -> String {
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "?"
     let device = "Device/\(deviceModel())"
-    let string = "okta-auth-swift/\(version) \(device)"
+    #if os(iOS)
+    let os = "iOS/\(UIDevice.current.systemVersion)"
+    #elseif os(watchOS)
+    let os = "watchOS/\(UIDevice.current.systemVersion)"
+    #elseif os(tvOS)
+    let os = "tvOS/\(UIDevice.current.systemVersion)"
+    #elseif os(macOS)
+    let osVersion = ProcessInfo.processInfo.operatingSystemVersion
+    let os = "macOS/\(osVersion.majorVersion).\(osVersion.minorVersion).\(osVersion.patchVersion)"
+    #endif
+    let string = "okta-auth-swift/\(version) \(os) \(device)"
     return string
 }
 
