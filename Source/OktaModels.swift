@@ -56,7 +56,8 @@ public struct OktaAPIErrorResponse: Codable {
 
 public struct OktaAPIRequestLinks: Codable {
     struct Link: Codable {
-        let href: String?
+        let href: URL?
+        let hints: [String:[String]]
     }
     
     let next: Link?
@@ -71,7 +72,7 @@ public extension OktaAPISuccessResponse {
     struct EmbeddedResources : Codable {
         let user: User?
         let target: Target?
-        let policy: PasswordPolicy?
+        let policy: Policy?
         let authentication: AuthenticationObject?
     }
 }
@@ -150,25 +151,61 @@ public extension OktaAPISuccessResponse.EmbeddedResources {
         }
     }
     
-    /// A subset of policy settings for the user’s assigned password policy.
-    struct PasswordPolicy: Codable {
-
-        // Specifies the password age requirements of the assigned password policy.
-        struct PasswordExpiration: Codable {
-            let passwordExpireDays: Int?
+    public enum Policy: Codable {
+        /// A subset of policy settings of the Sign-On Policy or App Sign-On Policy.
+        public struct RememberDevice: Codable {
+            let allowRememberDevice: Bool?
+            let rememberDeviceByDefault: Bool?
+            let rememberDeviceLifetimeInMinutes: Int?
         }
         
-        /// Specifies the password complexity requirements of the assigned password policy.
-        struct PasswordComplexity: Codable {
-            let minLength: Int?
-            let minLowerCase: Int?
-            let minUpperCase: Int?
-            let minNumber: Int?
-            let minSymbol: Int?
-            let excludeUsername: Bool
-        }
+        /// A subset of policy settings for the user’s assigned password policy.
+        public struct Password: Codable {
 
-        let expiration: PasswordExpiration
-        let complexity: PasswordComplexity
+            // Specifies the password age requirements of the assigned password policy.
+            struct PasswordExpiration: Codable {
+                let passwordExpireDays: Int?
+            }
+            
+            /// Specifies the password complexity requirements of the assigned password policy.
+            struct PasswordComplexity: Codable {
+                let minLength: Int?
+                let minLowerCase: Int?
+                let minUpperCase: Int?
+                let minNumber: Int?
+                let minSymbol: Int?
+                let excludeUsername: Bool
+            }
+
+            let expiration: PasswordExpiration?
+            let complexity: PasswordComplexity?
+        }
+    
+        case rememberDevice(RememberDevice)
+        case password(Password)
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let rememberDevice = try? container.decode(RememberDevice.self) {
+                self = .rememberDevice(rememberDevice)
+            } else if let password = try? container.decode(Password.self) {
+                self = .password(password)
+            } else {
+                throw DecodingError.typeMismatch(
+                    Policy.self,
+                    DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for Policy")
+                )
+            }
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .rememberDevice(let rememberDevice):
+                try container.encode(rememberDevice)
+            case .password(let password):
+                try container.encode(password)
+            }
+        }
     }
 }
