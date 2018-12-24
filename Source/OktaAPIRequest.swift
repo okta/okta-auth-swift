@@ -20,7 +20,10 @@ public class OktaAPIRequest {
         self.urlSession = urlSession
         self.completion = completion
         decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        decoder.dateDecodingStrategy = .formatted(formatter)
     }
 
     public var method: Method = .post
