@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F5CC2AD921D3C27700649C33 /* OktaAPIRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC2AD821D3C27700649C33 /* OktaAPIRequestTests.swift */; };
+		F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC2ADA21D5056D00649C33 /* OktaAPITests.swift */; };
 		2F8D79F421D6601600CFDF12 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2F8D79F321D6601600CFDF12 /* README.md */; };
 		FA42E2E821C9270400325723 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA42E2E721C9270400325723 /* AuthState.swift */; };
 		FA42E2E921C92A6000325723 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA42E2E721C9270400325723 /* AuthState.swift */; };
@@ -16,7 +18,6 @@
 		FA4ED9A621C14A3E00A065A1 /* AuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A521C14A3E00A065A1 /* AuthenticationClient.swift */; };
 		FA4ED9A821C27F7000A065A1 /* OktaAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A721C27F7000A065A1 /* OktaAPI.swift */; };
 		FA4ED9AA21C2895B00A065A1 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
-		FA500E4821C7FCD800444B1D /* OktaAuth_iOS_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA500E4721C7FCD800444B1D /* OktaAuth_iOS_Tests.swift */; };
 		FA500E4A21C7FCD800444B1D /* OktaAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4ED99B21C1499200A065A1 /* OktaAuth.framework */; };
 		FAC5ADC821C7B91400C3DC91 /* AuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A521C14A3E00A065A1 /* AuthenticationClient.swift */; };
 		FAC5ADC921C7B91700C3DC91 /* OktaAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD6FC4E21C29784009729B6 /* OktaAPIRequest.swift */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F5CC2AD821D3C27700649C33 /* OktaAPIRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIRequestTests.swift; sourceTree = "<group>"; };
+		F5CC2ADA21D5056D00649C33 /* OktaAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPITests.swift; sourceTree = "<group>"; };
 		2F8D79F321D6601600CFDF12 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FA42E2E721C9270400325723 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
 		FA42E2EA21C94C1C00325723 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -48,7 +51,6 @@
 		FA4ED9A721C27F7000A065A1 /* OktaAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPI.swift; sourceTree = "<group>"; };
 		FA4ED9A921C2895B00A065A1 /* OktaError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaError.swift; sourceTree = "<group>"; };
 		FA500E4521C7FCD800444B1D /* OktaAuth iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "OktaAuth iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA500E4721C7FCD800444B1D /* OktaAuth_iOS_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuth_iOS_Tests.swift; sourceTree = "<group>"; };
 		FA500E4921C7FCD800444B1D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAC5ADC021C7B89600C3DC91 /* OktaAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OktaAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC5ADC221C7B89600C3DC91 /* OktaAuth_macOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OktaAuth_macOS.h; sourceTree = "<group>"; };
@@ -120,8 +122,9 @@
 		FA500E4621C7FCD800444B1D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				FA500E4721C7FCD800444B1D /* OktaAuth_iOS_Tests.swift */,
 				FA500E4921C7FCD800444B1D /* Info.plist */,
+				F5CC2AD821D3C27700649C33 /* OktaAPIRequestTests.swift */,
+				F5CC2ADA21D5056D00649C33 /* OktaAPITests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -296,7 +299,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA500E4821C7FCD800444B1D /* OktaAuth_iOS_Tests.swift in Sources */,
+				F5CC2AD921D3C27700649C33 /* OktaAPIRequestTests.swift in Sources */,
+				F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
