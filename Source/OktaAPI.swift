@@ -21,15 +21,15 @@ public class OktaAPI {
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
 
-    public func primaryAuthenication(username: String?,
-                                     password: String?,
-                                     audience: String? = nil,
-                                     relayState: String? = nil,
-                                     multiOptionalFactorEnroll: Bool = true,
-                                     warnBeforePasswordExpired: Bool = true,
-                                     token: String? = nil,
-                                     deviceToken: String? = nil,
-                                     completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+    public func primaryAuthentication(username: String?,
+                                      password: String?,
+                                      audience: String? = nil,
+                                      relayState: String? = nil,
+                                      multiOptionalFactorEnroll: Bool = true,
+                                      warnBeforePasswordExpired: Bool = true,
+                                      token: String? = nil,
+                                      deviceToken: String? = nil,
+                                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
         let req = buildBaseRequest(completion: completion)
         req.method = .post
         req.path = "/api/v1/authn"

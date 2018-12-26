@@ -13,7 +13,7 @@ public enum OktaError: Error {
     case emptyServerResponse
     case responseSerializationError(Error)
     case serverRespondedWithError(OktaAPIErrorResponse)
-    case authenicationStateNotSupported(AuthState)
+    case authenicationStatusNotSupported(AuthStatus)
     case unexpectedResponse
 }
 
@@ -38,8 +38,8 @@ public extension OktaError {
                 description = "Unknown"
             }
             return "Server responded with error: \(description)"
-        case .authenicationStateNotSupported(let state):
-            return "Authenication state not supported (\(state.description))"
+        case .authenicationStatusNotSupported(let status):
+            return "Authenication state not supported (\(status.description))"
         case .unexpectedResponse:
             return "Unexpected response"
         }

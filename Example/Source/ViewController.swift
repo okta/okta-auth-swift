@@ -35,12 +35,12 @@ class ViewController: UIViewController {
     }
 
     private func updateStatus() {
-        stateLabel.text = client.state.description
+        stateLabel.text = client.status.description
     }
 }
 
 extension ViewController: AuthenticationClientDelegate {
-    func loggedIn() {
+    func handleSuccess() {
         activityIndicator.stopAnimating()
         loginButton.isEnabled = true
         updateStatus()

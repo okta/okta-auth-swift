@@ -30,7 +30,7 @@ public class OktaAPIRequest {
     public var bodyParams: [String: Any]?
 
     public enum Method: String {
-        case get, post, puth, delete, options
+        case get, post, put, delete, options
     }
 
     public func buildRequest() -> URLRequest? {

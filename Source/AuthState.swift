@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AuthState {
+public enum AuthStatus {
     case unauthenticated
     case passwordWarning
     case passwordExpired
@@ -23,7 +23,7 @@ public enum AuthState {
     case unknown(String)
 }
 
-public extension AuthState {
+public extension AuthStatus {
     public init(raw: String) {
         switch raw {
         case "UNAUTHENTICATED":
@@ -70,7 +70,7 @@ public extension AuthState {
         case .passwordReset:
             return "Password Reset"
         case .lockedOut:
-            return "Locaked Out"
+            return "Locked Out"
         case .MFAEnroll:
             return "MFA Enroll"
         case .MFAEnrollActivate:
