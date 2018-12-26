@@ -27,15 +27,16 @@ class OktaAuth_iOS_Integration_Tests: XCTestCase {
 
     func testPrimaryAuth_Success() {
         let exp = expectation(description: "Primary auth request should complete.")
-    
-        oktaAPI.primaryAuthenication(
+        
+        oktaAPI.primaryAuthentication(
             username: username,
             password: password,
             audience: nil,
             relayState: nil,
             multiOptionalFactorEnroll: false,
             warnBeforePasswordExpired: false,
-            token: nil, deviceToken: nil)
+            token: nil,
+            deviceToken: nil)
         { result in
             switch result {
                 case .error(let error):
@@ -59,7 +60,7 @@ class OktaAuth_iOS_Integration_Tests: XCTestCase {
     func testPrimaryAuth_InvalidPassword() {
         let exp = expectation(description: "Primary auth request should complete.")
     
-        oktaAPI.primaryAuthenication(
+        oktaAPI.primaryAuthentication(
             username: username,
             // generate invalid password
             password: UUID().uuidString,
