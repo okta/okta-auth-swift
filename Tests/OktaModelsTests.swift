@@ -39,7 +39,7 @@ class OktaModelsTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual("SUCCESS", response.status)
+        XCTAssertEqual(AuthStatus.success, response.status)
         XCTAssertNil(response.stateToken)
         XCTAssertEqual("test_session_token", response.sessionToken)
         XCTAssertNotNil(response.expirationDate)
@@ -77,7 +77,7 @@ class OktaModelsTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual("MFA_REQUIRED", response.status)
+        XCTAssertEqual(AuthStatus.MFARequired, response.status)
         XCTAssertEqual("test_state_token", response.stateToken)
         XCTAssertNil(response.sessionToken)
         XCTAssertNotNil(response.expirationDate)

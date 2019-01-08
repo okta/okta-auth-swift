@@ -21,7 +21,7 @@ public struct OktaAPISuccessResponse: Codable {
         case error = "ERROR"
     }
 
-    let status: String?
+    let status: AuthStatus?
     let stateToken: String?
     let sessionToken: String?
     let expirationDate: Date?
@@ -207,5 +207,18 @@ public extension OktaAPISuccessResponse.EmbeddedResources {
                 try container.encode(password)
             }
         }
+    }
+}
+
+extension AuthStatus : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        self = AuthStatus(raw: stringValue)
     }
 }
