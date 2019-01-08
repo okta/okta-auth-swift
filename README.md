@@ -1,10 +1,4 @@
-[<img src="https://devforum.okta.com/uploads/oktadev/original/1X/bf54a16b5fda189e4ad2706fb57cbb7a1e5b8deb.png" align="right" width="256px"/>](https://devforum.okta.com/)
-[![Maven Central](https://img.shields.io/maven-central/v/com.okta.authn.sdk/okta-authn-sdk-api.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.okta.authn.sdk%22%20a%3A%22okta-authn-sdk-api%22)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Support](https://img.shields.io/badge/support-Developer%20Forum-blue.svg)][devforum]
-[![API Reference](https://img.shields.io/badge/docs-reference-lightgrey.svg)][javadocs]
-
-# Okta Java Authentication SDK
+# Authentication SDK for Swift
 
 > :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
 
@@ -76,7 +70,7 @@ An authentication flow usually starts with a call to `logIn`:
 client.logIn(username: username, password: password)
 ```
 
-The client has to implement  `AuthenticationClientDelegate` protocol.  The [`AuthenticationClientDelegate`](https://github.com/okta/okta-auth-swift/blob/dev/Source/AuthenticationClient.swift) is a mechanism that allows client to provide handler for a particular auth state. Basically, it prevents you from needing to use something like a switch statement to check state of the  `AuthenticationResponse`.
+The client must implement the [`AuthenticationClientDelegate`](https://github.com/okta/okta-auth-swift/blob/dev/Source/AuthenticationClient.swift) protocol. This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.)
  
 ## Contributing
  
