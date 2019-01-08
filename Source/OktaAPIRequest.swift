@@ -39,6 +39,7 @@ public class OktaAPIRequest {
             var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
                 return nil
         }
+        components.scheme = "https"
         components.path = path
         components.queryItems = urlParams?.map { URLQueryItem(name: $0.key, value: $0.value) }
         guard let url = components.url else {
@@ -85,12 +86,12 @@ public class OktaAPIRequest {
     private var decoder: JSONDecoder
     private var completion: (OktaAPIRequest, Result) -> Void
 
-    private func handleResponse(data: Data?, response: HTTPURLResponse) {
+    internal func handleResponse(data: Data?, response: HTTPURLResponse) {
         guard let data = data else {
             callCompletion(.error(.emptyServerResponse))
             return
         }
-        guard response.statusCode == 200 else {
+        guard 200 ..< 300 ~= response.statusCode else {
             do {
                 let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
                 callCompletion(.error(.serverRespondedWithError(errorResponse)))
@@ -107,11 +108,11 @@ public class OktaAPIRequest {
         }
     }
 
-    private func handleResponseError(error: Error) {
+    internal func handleResponseError(error: Error) {
         callCompletion(.error(.connectionError(error)))
     }
 
-    private func callCompletion(_ result: Result) {
+    internal func callCompletion(_ result: Result) {
         DispatchQueue.main.async {
             self.completion(self, result)
         }
