@@ -12,7 +12,7 @@ import Foundation
 public struct OktaAPISuccessResponse: Codable {
 
     // Provides additional context for the last factor verification attempt.
-    enum FactorResult: String, Codable {
+    public enum FactorResult: String, Codable {
         case waiting = "WAITING"
         case cancelled = "CANCELLED"
         case timeout = "TIMEOUT"
@@ -21,14 +21,14 @@ public struct OktaAPISuccessResponse: Codable {
         case error = "ERROR"
     }
 
-    let status: AuthStatus?
-    let stateToken: String?
-    let sessionToken: String?
-    let expirationDate: Date?
-    let relayState: String?
-    let factorResult: FactorResult?
-    let embeddedResources: EmbeddedResources?
-    let links: OktaAPIRequestLinks?
+    public private(set) var status: AuthStatus = .unauthenticated
+    public private(set) var stateToken: String?
+    public private(set) var sessionToken: String?
+    public private(set) var expirationDate: Date?
+    public private(set) var relayState: String?
+    public private(set) var factorResult: FactorResult?
+    public private(set) var embeddedResources: EmbeddedResources?
+    public private(set) var links: OktaAPIRequestLinks?
     
     enum CodingKeys: String, CodingKey {
         case status

@@ -114,7 +114,7 @@ public class AuthenticationClient {
 
     private func updateStatus(response: OktaAPISuccessResponse) {
         print("Updating status with: \(response)")
-        status = response.status ?? AuthStatus(raw: "<EMPTY>")
+        status = response.status
         stateToken = response.stateToken
         handleStatusChange()
     }
