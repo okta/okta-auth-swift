@@ -26,7 +26,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "NO">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -35,6 +35,16 @@
                BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
                BuildableName = "OktaAuth iOS Tests.xctest"
                BlueprintName = "OktaAuth iOS Tests"
+               ReferencedContainer = "container:../OktaAuth.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2FF5C86321D3BA1900EECA75"
+               BuildableName = "OktaAuth iOS Integration Tests.xctest"
+               BlueprintName = "OktaAuth iOS Integration Tests"
                ReferencedContainer = "container:../OktaAuth.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -48,6 +58,23 @@
             ReferencedContainer = "container:OktaAuth Example.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "DOMAIN_URL"
+            value = "{test domeain url}"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "USERNAME"
+            value = "{test username}"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "PASSWORD"
+            value = "{test password}"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
