@@ -1,5 +1,5 @@
 //
-//  OktaAuth_iOS_Integration_Tests.swift
+//  OktaAuthiOSIntegrationTests.swift
 //  OktaAuth iOS Integration Tests
 //
 //  Created by Anastasiia Iurok on 12/26/18.
@@ -9,7 +9,7 @@ import XCTest
 
 @testable import OktaAuth
 
-class OktaAuth_iOS_Integration_Tests: XCTestCase {
+class OktaAuthiOSIntegrationTests: XCTestCase {
 
     var domainURL = ProcessInfo.processInfo.environment["DOMAIN_URL"]!
     var username = ProcessInfo.processInfo.environment["USERNAME"]!
@@ -42,7 +42,7 @@ class OktaAuth_iOS_Integration_Tests: XCTestCase {
                 case .error(let error):
                     XCTFail("Unexpected error: \(error)")
                 case .success(let response):
-                    XCTAssertEqual("SUCCESS", response.status)
+                    XCTAssertEqual(.success, response.status)
                     // TODO: extend response verification once model is implemented
                     break
             }
