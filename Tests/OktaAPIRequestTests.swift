@@ -88,7 +88,7 @@ class OktaAPIRequestTests : XCTestCase {
         let status = "SUCCESS"
         let exp = XCTestExpectation(description: "Success result")
         let req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in
-            if case .success(let response) = res, response.status == status {
+            if case .success(let response) = res, response.status.rawValue == status {
                 exp.fulfill()
             } else {
                 XCTFail()
