@@ -14,9 +14,7 @@ class OktaAPIRequestTests : XCTestCase {
     var req: OktaAPIRequest!
     
     override func setUp() {
-        req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in }
-        req.baseURL = url
-        req.path = "/"
+        req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in }
     }
     
     override func tearDown() {
@@ -85,10 +83,10 @@ class OktaAPIRequestTests : XCTestCase {
     }
     
     func testHandleSuccessResponse() {
-        let status = "SUCCESS"
+        let status = AuthStatus.success
         let exp = XCTestExpectation(description: "Success result")
-        let req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in
-            if case .success(let response) = res, response.status.rawValue == status {
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in
+            if case .success(let response) = res, response.status == status {
                 exp.fulfill()
             } else {
                 XCTFail()
@@ -96,7 +94,7 @@ class OktaAPIRequestTests : XCTestCase {
         }
         
         let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
-        let data = "{\"status\":\"\(status)\"}".data(using: .utf8)!
+        let data = "{\"status\":\"SUCCESS\"}".data(using: .utf8)!
         
         req.handleResponse(data: data, response: httpResponse)
         
@@ -106,7 +104,7 @@ class OktaAPIRequestTests : XCTestCase {
     func testErrorResponse() {
         let errorCode = "42"
         let exp = XCTestExpectation(description: "Error result")
-        let req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in
             if case .error(let error) = res,
                 case .serverRespondedWithError(let response) = error,
                 response.errorCode == errorCode {

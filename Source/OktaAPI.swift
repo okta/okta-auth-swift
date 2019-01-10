@@ -74,15 +74,27 @@ public class OktaAPI {
         req.bodyParams = ["stateToken": stateToken]
         req.run()
     }
+    
+    public func perform(link: LinksResponse.Link,
+                        stateToken: String,
+                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.bodyParams = ["stateToken": stateToken]
+        req.run()
+    }
 
     // MARK: - Private
 
-    private func buildBaseRequest(completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
-        let req = OktaAPIRequest(urlSession: urlSession,  completion: { [weak self] req, result in
+    private func buildBaseRequest(url: URL? = nil,
+                                  completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
+        let req = OktaAPIRequest(baseURL: url ?? oktaDomain,
+                                 urlSession: urlSession,
+                                 completion: { [weak self] req, result in
             completion?(result)
             self?.commonCompletion?(req, result)
         })
-        req.baseURL = oktaDomain
         return req
     }
 }

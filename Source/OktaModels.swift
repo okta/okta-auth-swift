@@ -21,14 +21,14 @@ public struct OktaAPISuccessResponse: Codable {
         case error = "ERROR"
     }
 
-    public private(set) var status: AuthStatus = .unauthenticated
+    public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
     public private(set) var expirationDate: Date?
     public private(set) var relayState: String?
     public private(set) var factorResult: FactorResult?
-    public private(set) var embeddedResources: EmbeddedResources?
-    public private(set) var links: OktaAPIRequestLinks?
+    public private(set) var embedded: EmbeddedResponse?
+    public private(set) var links: LinksResponse?
     
     enum CodingKeys: String, CodingKey {
         case status
@@ -37,7 +37,7 @@ public struct OktaAPISuccessResponse: Codable {
         case expirationDate = "expiresAt"
         case relayState
         case factorResult
-        case embeddedResources = "_embedded"
+        case embedded = "_embedded"
         case links = "_links"
     }
 }
@@ -54,9 +54,9 @@ public struct OktaAPIErrorResponse: Codable {
     var errorCauses: [ErrorCause]?
 }
 
-public struct OktaAPIRequestLinks: Codable {
-    struct Link: Codable {
-        let href: URL?
+public struct LinksResponse: Codable {
+    public struct Link: Codable {
+        let href: URL
         let hints: [String:[String]]
     }
     
@@ -67,21 +67,14 @@ public struct OktaAPIRequestLinks: Codable {
     let resend: Link?
 }
 
-/// OktaAPISuccessResponse types
-public extension OktaAPISuccessResponse {
-    struct EmbeddedResources : Codable {
-        let user: User?
-        let target: Target?
-        let policy: Policy?
-        let authentication: AuthenticationObject?
-    }
-}
-
-/// OktaAPISuccessResponse.EmbeddedResources types
-public extension OktaAPISuccessResponse.EmbeddedResources {
+public struct EmbeddedResponse: Codable {
+    let user: User?
+    let target: Target?
+    let policy: Policy?
+    let authentication: AuthenticationObject?
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
-    struct User : Codable {
+    public struct User : Codable {
         
         /// Subset of profile properties for a user.
         struct Profile: Codable {
@@ -115,7 +108,7 @@ public extension OktaAPISuccessResponse.EmbeddedResources {
         let type: String?
         let name: String?
         let label: String?
-        let links: OktaAPIRequestLinks?
+        let links: LinksResponse?
         
         enum CodingKeys: String, CodingKey {
             case type

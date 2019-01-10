@@ -16,7 +16,10 @@ public class OktaAPIRequest {
         case error(OktaError)
     }
 
-    public init(urlSession: URLSession, completion: @escaping (OktaAPIRequest, Result) -> Void) {
+    public init(baseURL: URL,
+                urlSession: URLSession,
+                completion: @escaping (OktaAPIRequest, Result) -> Void) {
+        self.baseURL = baseURL
         self.urlSession = urlSession
         self.completion = completion
         decoder = JSONDecoder()
@@ -27,7 +30,7 @@ public class OktaAPIRequest {
     }
 
     public var method: Method = .post
-    public var baseURL: URL?
+    public var baseURL: URL
     public var path: String?
     public var urlParams: [String: String]?
     public var bodyParams: [String: Any]?
@@ -37,13 +40,13 @@ public class OktaAPIRequest {
     }
 
     public func buildRequest() -> URLRequest? {
-        guard let baseURL = baseURL,
-            let path = path,
-            var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
-                return nil
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
+            return nil
         }
         components.scheme = "https"
-        components.path = path
+        if let path = path {
+            components.path = path
+        }
         components.queryItems = urlParams?.map { URLQueryItem(name: $0.key, value: $0.value) }
         guard let url = components.url else {
             return nil

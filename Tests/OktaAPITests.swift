@@ -90,4 +90,20 @@ class OktaAPITests : XCTestCase {
         
         wait(for: [exp], timeout: 60.0)
     }
+    
+    func testPerformLink() {
+        let link = LinksResponse.Link(href: url, hints: [:])
+        let token = "token"
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            exp.fulfill()
+        }
+        
+        api.perform(link: link, stateToken: token)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
 }

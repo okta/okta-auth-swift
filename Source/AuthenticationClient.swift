@@ -75,6 +75,14 @@ public class AuthenticationClient {
             self?.updateStatus(response: response)
         }
     }
+    
+    public func perform(link: LinksResponse.Link) {
+        guard let stateToken = stateToken else { return }
+        api.perform(link: link, stateToken: stateToken) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateStatus(response: response)
+        }
+    }
 
     // MARK: - Internal
 
@@ -88,10 +96,10 @@ public class AuthenticationClient {
     public private(set) var stateToken: String?
 
     /// Link relations for the current status.
-    public private(set) var links: [String: String] = [:]
+    public private(set) var links: LinksResponse?
 
     // Embedded resources for current status
-    public private(set) var embedded: [String: String] = [:]
+    public private(set) var embedded: EmbeddedResponse?
 
     /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
     public private(set) var recoveryToken: String?
@@ -113,28 +121,31 @@ public class AuthenticationClient {
     }
 
     private func updateStatus(response: OktaAPISuccessResponse) {
-        print("Updating status with: \(response)")
-        status = response.status
+        status = response.status ?? .unauthenticated
         stateToken = response.stateToken
+        sessionToken = response.sessionToken
+        links = response.links
+        embedded = response.embedded
         handleStatusChange()
     }
     
     private func resetStatus() {
         status = .unauthenticated
         stateToken = nil
+        sessionToken = nil
+        links = nil
+        embedded = nil
         handleStatusChange()
     }
 
     private func handleStatusChange() {
-        print("Handling status change: \(status.description)")
-
         switch status {
             
         case .passwordWarning:
             delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
                 if skip {
-                    // TBD Process `next` link
-                    print("*** SKIP ***")
+                    guard let next = self?.links?.next else { return }
+                    self?.perform(link: next)
                 } else {
                     guard let old = old, let new = new else { return }
                     self?.changePassword(oldPassword: old, newPassword: new)
@@ -154,6 +165,9 @@ public class AuthenticationClient {
 
         case .success:
             delegate?.handleSuccess()
+        
+        case .unauthenticated:
+            break
 
         default:
             delegate?.handleError(.authenicationStatusNotSupported(status))
