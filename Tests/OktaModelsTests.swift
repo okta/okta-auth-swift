@@ -46,19 +46,19 @@ class OktaModelsTests: XCTestCase {
         XCTAssertNil(response.relayState)
         XCTAssertNil(response.factorResult)
 
-        XCTAssertNotNil(response.embeddedResources)
+        XCTAssertNotNil(response.embedded)
         
         // User
-        XCTAssertEqual("test_user_id", response.embeddedResources?.user?.id)
-        XCTAssertNotNil(response.embeddedResources?.user?.passwordChanged)
-        XCTAssertEqual("testname.testlastname@okta.com", response.embeddedResources?.user?.profile?.login)
-        XCTAssertEqual("TestName", response.embeddedResources?.user?.profile?.firstName)
-        XCTAssertEqual("TestLastName", response.embeddedResources?.user?.profile?.lastName)
-        XCTAssertEqual("America/Los_Angeles", response.embeddedResources?.user?.profile?.timeZone)
+        XCTAssertEqual("test_user_id", response.embedded?.user?.id)
+        XCTAssertNotNil(response.embedded?.user?.passwordChanged)
+        XCTAssertEqual("testname.testlastname@okta.com", response.embedded?.user?.profile?.login)
+        XCTAssertEqual("TestName", response.embedded?.user?.profile?.firstName)
+        XCTAssertEqual("TestLastName", response.embedded?.user?.profile?.lastName)
+        XCTAssertEqual("America/Los_Angeles", response.embedded?.user?.profile?.timeZone)
         
-        XCTAssertNil(response.embeddedResources?.policy)
-        XCTAssertNil(response.embeddedResources?.target)
-        XCTAssertNil(response.embeddedResources?.authentication)
+        XCTAssertNil(response.embedded?.policy)
+        XCTAssertNil(response.embedded?.target)
+        XCTAssertNil(response.embedded?.authentication)
         
         XCTAssertNil(response.links)
     }
@@ -84,19 +84,19 @@ class OktaModelsTests: XCTestCase {
         XCTAssertNil(response.relayState)
         XCTAssertNil(response.factorResult)
 
-        XCTAssertNotNil(response.embeddedResources)
+        XCTAssertNotNil(response.embedded)
         
         // User
-        XCTAssertEqual("test_user_id", response.embeddedResources?.user?.id)
-        XCTAssertNotNil(response.embeddedResources?.user?.passwordChanged)
-        XCTAssertEqual("testname.testlastname@okta.com", response.embeddedResources?.user?.profile?.login)
-        XCTAssertEqual("TestName", response.embeddedResources?.user?.profile?.firstName)
-        XCTAssertEqual("TestLastName", response.embeddedResources?.user?.profile?.lastName)
-        XCTAssertEqual("America/Los_Angeles", response.embeddedResources?.user?.profile?.timeZone)
+        XCTAssertEqual("test_user_id", response.embedded?.user?.id)
+        XCTAssertNotNil(response.embedded?.user?.passwordChanged)
+        XCTAssertEqual("testname.testlastname@okta.com", response.embedded?.user?.profile?.login)
+        XCTAssertEqual("TestName", response.embedded?.user?.profile?.firstName)
+        XCTAssertEqual("TestLastName", response.embedded?.user?.profile?.lastName)
+        XCTAssertEqual("America/Los_Angeles", response.embedded?.user?.profile?.timeZone)
         
         // Policy
-        XCTAssertNotNil(response.embeddedResources?.policy)
-        if case .rememberDevice(let rememberDevice)? = response.embeddedResources?.policy {
+        XCTAssertNotNil(response.embedded?.policy)
+        if case .rememberDevice(let rememberDevice)? = response.embedded?.policy {
             XCTAssertEqual(false, rememberDevice.allowRememberDevice)
             XCTAssertEqual(0, rememberDevice.rememberDeviceLifetimeInMinutes)
             XCTAssertEqual(false, rememberDevice.rememberDeviceByDefault)
@@ -104,8 +104,8 @@ class OktaModelsTests: XCTestCase {
             XCTFail("Failed to parse policy.")
         }
         
-        XCTAssertNil(response.embeddedResources?.target)
-        XCTAssertNil(response.embeddedResources?.authentication)
+        XCTAssertNil(response.embedded?.target)
+        XCTAssertNil(response.embedded?.authentication)
         
         XCTAssertNotNil(response.links)
         XCTAssertNotNil(response.links?.cancel)
