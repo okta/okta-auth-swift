@@ -21,10 +21,11 @@ public protocol AuthenticationClientDelegate: class {
 
 /// Our SDK provides default state machine implementation,
 /// but developer able to implement custom handler by implementing
-/// `OktaStateMachineHandler` protocol
+/// `OktaStateMachineHandler` protocol. If `statusHandler` property set,
+/// `AuthenticationClient.handleStatusChange()` will not be called.
 
 public protocol AuthenticationClientStatusHandler: class {
-    func handleStatus() // to be extended
+    func handleStatusChange()
 }
 
 /// AuthenticationClient class is main entry point for developer
@@ -75,6 +76,54 @@ public class AuthenticationClient {
             self?.updateStatus(response: response)
         }
     }
+    
+    public func updateStatus(response: OktaAPISuccessResponse) {
+        print("Updating status with: \(response)")
+        status = response.status
+        stateToken = response.stateToken
+        performStatusChangeHandling()
+    }
+    
+    public func resetStatus() {
+        status = .unauthenticated
+        stateToken = nil
+        performStatusChangeHandling()
+    }
+    
+    public func handleStatusChange() {
+        print("Handling status change: \(status.description)")
+        
+        switch status {
+            
+        case .passwordWarning:
+            delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
+                if skip {
+                    // TBD Process `next` link
+                    print("*** SKIP ***")
+                } else {
+                    guard let old = old, let new = new else { return }
+                    self?.changePassword(oldPassword: old, newPassword: new)
+                }
+            })
+            
+        case .passwordExpired:
+            delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
+                guard let old = old, let new = new else { return }
+                self?.changePassword(oldPassword: old, newPassword: new)
+            })
+            
+        case .MFARequired:
+            delegate?.handleMultifactorAuthenication(callback: { code in
+                print("Code: \(code)")
+            })
+            
+        case .success:
+            delegate?.handleSuccess()
+            
+        default:
+            delegate?.handleError(.authenicationStatusNotSupported(status))
+        }
+    }
 
     // MARK: - Internal
 
@@ -101,6 +150,14 @@ public class AuthenticationClient {
 
     // MARK: - Private
     
+    private func performStatusChangeHandling() {
+        if let statusHandler = statusHandler {
+            statusHandler.handleStatusChange()
+        } else {
+            handleStatusChange()
+        }
+    }
+    
     private func checkAPIResultError(_ result: OktaAPIRequest.Result) -> OktaAPISuccessResponse? {
         switch result {
         case .error(let error):
@@ -109,54 +166,6 @@ public class AuthenticationClient {
             return nil
         case .success(let success):
             return success
-        }
-    }
-
-    private func updateStatus(response: OktaAPISuccessResponse) {
-        print("Updating status with: \(response)")
-        status = response.status
-        stateToken = response.stateToken
-        handleStatusChange()
-    }
-    
-    private func resetStatus() {
-        status = .unauthenticated
-        stateToken = nil
-        handleStatusChange()
-    }
-
-    private func handleStatusChange() {
-        print("Handling status change: \(status.description)")
-
-        switch status {
-            
-        case .passwordWarning:
-            delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
-                if skip {
-                    // TBD Process `next` link
-                    print("*** SKIP ***")
-                } else {
-                    guard let old = old, let new = new else { return }
-                    self?.changePassword(oldPassword: old, newPassword: new)
-                }
-            })
-            
-        case .passwordExpired:
-            delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
-                guard let old = old, let new = new else { return }
-                self?.changePassword(oldPassword: old, newPassword: new)
-            })
-
-        case .MFARequired:
-            delegate?.handleMultifactorAuthenication(callback: { code in
-                print("Code: \(code)")
-            })
-
-        case .success:
-            delegate?.handleSuccess()
-
-        default:
-            delegate?.handleError(.authenicationStatusNotSupported(status))
         }
     }
 }
