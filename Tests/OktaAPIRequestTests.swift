@@ -56,6 +56,19 @@ class OktaAPIRequestTests : XCTestCase {
         XCTAssertNotNil(URLRequest.value(forHTTPHeaderField: "User-Agent"))
     }
     
+    func testAdditionalHeders() {
+        let header = "X-Test-Header"
+        let value = "HEADER_VALUE"
+        req.additionalHeaders = [header: value]
+        
+        guard let URLRequest = req.buildRequest() else {
+            XCTFail("No URL request")
+            return
+        }
+        
+        XCTAssertEqual(URLRequest.value(forHTTPHeaderField: header), value)
+    }
+    
     func testBodyParams() {
         req.bodyParams = ["root_param": [ "nested_param": "value" ]]
         

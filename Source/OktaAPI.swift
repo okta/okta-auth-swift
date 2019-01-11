@@ -29,6 +29,7 @@ public class OktaAPI {
                                       warnBeforePasswordExpired: Bool = true,
                                       token: String? = nil,
                                       deviceToken: String? = nil,
+                                      deviceFingerprint: String? = nil,
                                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
         let req = buildBaseRequest(completion: completion)
         req.method = .post
@@ -46,6 +47,10 @@ public class OktaAPI {
         bodyParams["context"] = context
         bodyParams["token"] = token
         req.bodyParams = bodyParams
+        
+        if let deviceFingerprint = deviceFingerprint {
+            req.additionalHeaders = ["X-Device-Fingerprint": deviceFingerprint]
+        }
         req.run()
     }
 

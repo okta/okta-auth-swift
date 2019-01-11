@@ -39,9 +39,11 @@ public class AuthenticationClient {
     public weak var delegate: AuthenticationClientDelegate?
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
 
-    public func logIn(username: String, password: String) {
+    public func logIn(username: String, password: String, deviceFingerprint: String? = nil) {
         guard case .unauthenticated = status else { return }
-        api.primaryAuthentication(username: username, password: password) { [weak self] result in
+        api.primaryAuthentication(username: username,
+                                  password: password,
+                                  deviceFingerprint: deviceFingerprint) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }

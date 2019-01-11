@@ -31,6 +31,7 @@ public class OktaAPIRequest {
     public var path: String?
     public var urlParams: [String: String]?
     public var bodyParams: [String: Any]?
+    public var additionalHeaders: [String: String]?
 
     public enum Method: String {
         case get, post, put, delete, options
@@ -53,7 +54,8 @@ public class OktaAPIRequest {
         urlRequest.httpMethod = method.rawValue.uppercased()
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.addValue(buildUserAgent(), forHTTPHeaderField: "User-Agent")
+        urlRequest.setValue(buildUserAgent(), forHTTPHeaderField: "User-Agent")
+        additionalHeaders?.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
 
         if let bodyParams = bodyParams {
             guard let body = try? JSONSerialization.data(withJSONObject: bodyParams, options: []) else {
