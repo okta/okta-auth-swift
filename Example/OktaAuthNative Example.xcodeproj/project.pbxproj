@@ -31,7 +31,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		FAC5AEE421C7F9A600C3DC91 /* OktaAuth Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OktaAuth Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC5AEE421C7F9A600C3DC91 /* OktaAuthNative Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OktaAuthNative Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		FAC5AEEC21C7F9A600C3DC91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 		FAC5AEE521C7F9A600C3DC91 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FAC5AEE421C7F9A600C3DC91 /* OktaAuth Example.app */,
+				FAC5AEE421C7F9A600C3DC91 /* OktaAuthNative Example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,9 +86,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FAC5AEE321C7F9A600C3DC91 /* OktaAuth Example */ = {
+		FAC5AEE321C7F9A600C3DC91 /* OktaAuthNative Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FAC5AEF621C7F9A700C3DC91 /* Build configuration list for PBXNativeTarget "OktaAuth Example" */;
+			buildConfigurationList = FAC5AEF621C7F9A700C3DC91 /* Build configuration list for PBXNativeTarget "OktaAuthNative Example" */;
 			buildPhases = (
 				FAC5AEE021C7F9A600C3DC91 /* Sources */,
 				FAC5AEE121C7F9A600C3DC91 /* Frameworks */,
@@ -99,9 +99,9 @@
 			);
 			dependencies = (
 			);
-			name = "OktaAuth Example";
+			name = "OktaAuthNative Example";
 			productName = "OktaAuth Example";
-			productReference = FAC5AEE421C7F9A600C3DC91 /* OktaAuth Example.app */;
+			productReference = FAC5AEE421C7F9A600C3DC91 /* OktaAuthNative Example.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -119,7 +119,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FAC5AEDF21C7F9A600C3DC91 /* Build configuration list for PBXProject "OktaAuth Example" */;
+			buildConfigurationList = FAC5AEDF21C7F9A600C3DC91 /* Build configuration list for PBXProject "OktaAuthNative Example" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -132,7 +132,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FAC5AEE321C7F9A600C3DC91 /* OktaAuth Example */,
+				FAC5AEE321C7F9A600C3DC91 /* OktaAuthNative Example */,
 			);
 		};
 /* End PBXProject section */
@@ -335,7 +335,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FAC5AEDF21C7F9A600C3DC91 /* Build configuration list for PBXProject "OktaAuth Example" */ = {
+		FAC5AEDF21C7F9A600C3DC91 /* Build configuration list for PBXProject "OktaAuthNative Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FAC5AEF421C7F9A700C3DC91 /* Debug */,
@@ -344,7 +344,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FAC5AEF621C7F9A700C3DC91 /* Build configuration list for PBXNativeTarget "OktaAuth Example" */ = {
+		FAC5AEF621C7F9A700C3DC91 /* Build configuration list for PBXNativeTarget "OktaAuthNative Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FAC5AEF721C7F9A700C3DC91 /* Debug */,

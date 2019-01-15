@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FAC5ADBF21C7B89600C3DC91"
-               BuildableName = "OktaAuth.framework"
-               BlueprintName = "OktaAuth macOS"
-               ReferencedContainer = "container:OktaAuth.xcodeproj">
+               BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
+               BuildableName = "OktaAuthNative.framework"
+               BlueprintName = "OktaAuthNative iOS"
+               ReferencedContainer = "container:OktaAuthNative.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,7 +28,36 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
+               BuildableName = "OktaAuthNative iOS Tests.xctest"
+               BlueprintName = "OktaAuthNative iOS Tests"
+               ReferencedContainer = "container:OktaAuthNative.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2FF5C86321D3BA1900EECA75"
+               BuildableName = "OktaAuthNative iOS Integration Tests.xctest"
+               BlueprintName = "OktaAuthNative iOS Integration Tests"
+               ReferencedContainer = "container:OktaAuthNative.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
+            BuildableName = "OktaAuthNative.framework"
+            BlueprintName = "OktaAuthNative iOS"
+            ReferencedContainer = "container:OktaAuthNative.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -45,10 +74,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FAC5ADBF21C7B89600C3DC91"
-            BuildableName = "OktaAuth.framework"
-            BlueprintName = "OktaAuth macOS"
-            ReferencedContainer = "container:OktaAuth.xcodeproj">
+            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
+            BuildableName = "OktaAuthNative.framework"
+            BlueprintName = "OktaAuthNative iOS"
+            ReferencedContainer = "container:OktaAuthNative.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +92,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FAC5ADBF21C7B89600C3DC91"
-            BuildableName = "OktaAuth.framework"
-            BlueprintName = "OktaAuth macOS"
-            ReferencedContainer = "container:OktaAuth.xcodeproj">
+            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
+            BuildableName = "OktaAuthNative.framework"
+            BlueprintName = "OktaAuthNative iOS"
+            ReferencedContainer = "container:OktaAuthNative.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

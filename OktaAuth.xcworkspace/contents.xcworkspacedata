@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "container:OktaAuth.xcodeproj">
+      location = "container:OktaAuthNative.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Example/OktaAuth Example.xcodeproj">
+      location = "group:Example/OktaAuthNative Example.xcodeproj">
    </FileRef>
 </Workspace>

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
-               BuildableName = "OktaAuth.framework"
-               BlueprintName = "OktaAuth iOS"
-               ReferencedContainer = "container:OktaAuth.xcodeproj">
+               BlueprintIdentifier = "FAC5AEE321C7F9A600C3DC91"
+               BuildableName = "OktaAuthNative Example.app"
+               BlueprintName = "OktaAuthNative Example"
+               ReferencedContainer = "container:OktaAuthNative Example.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
                BuildableName = "OktaAuth iOS Tests.xctest"
                BlueprintName = "OktaAuth iOS Tests"
-               ReferencedContainer = "container:OktaAuth.xcodeproj">
+               ReferencedContainer = "container:../OktaAuth.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -45,17 +45,17 @@
                BlueprintIdentifier = "2FF5C86321D3BA1900EECA75"
                BuildableName = "OktaAuth iOS Integration Tests.xctest"
                BlueprintName = "OktaAuth iOS Integration Tests"
-               ReferencedContainer = "container:OktaAuth.xcodeproj">
+               ReferencedContainer = "container:../OktaAuth.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
-            BuildableName = "OktaAuth.framework"
-            BlueprintName = "OktaAuth iOS"
-            ReferencedContainer = "container:OktaAuth.xcodeproj">
+            BlueprintIdentifier = "FAC5AEE321C7F9A600C3DC91"
+            BuildableName = "OktaAuthNative Example.app"
+            BlueprintName = "OktaAuthNative Example"
+            ReferencedContainer = "container:OktaAuthNative Example.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <EnvironmentVariables>
@@ -88,15 +88,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
-            BuildableName = "OktaAuth.framework"
-            BlueprintName = "OktaAuth iOS"
-            ReferencedContainer = "container:OktaAuth.xcodeproj">
+            BlueprintIdentifier = "FAC5AEE321C7F9A600C3DC91"
+            BuildableName = "OktaAuthNative Example.app"
+            BlueprintName = "OktaAuthNative Example"
+            ReferencedContainer = "container:OktaAuthNative Example.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -106,15 +107,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
-            BuildableName = "OktaAuth.framework"
-            BlueprintName = "OktaAuth iOS"
-            ReferencedContainer = "container:OktaAuth.xcodeproj">
+            BlueprintIdentifier = "FAC5AEE321C7F9A600C3DC91"
+            BuildableName = "OktaAuthNative Example.app"
+            BlueprintName = "OktaAuthNative Example"
+            ReferencedContainer = "container:OktaAuthNative Example.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
