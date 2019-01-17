@@ -68,32 +68,32 @@ public struct LinksResponse: Codable {
 }
 
 public struct EmbeddedResponse: Codable {
-    let user: User?
-    let target: Target?
-    let policy: Policy?
-    let authentication: AuthenticationObject?
+    public let user: User?
+    public let target: Target?
+    public let policy: Policy?
+    public let authentication: AuthenticationObject?
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
-    public struct User : Codable {
+    public struct User: Codable {
         
         /// Subset of profile properties for a user.
-        struct Profile: Codable {
-            let login: String?
-            let firstName: String?
-            let lastName: String?
-            let locale: String?
-            let timeZone: String?
+        public struct Profile: Codable {
+            public let login: String?
+            public let firstName: String?
+            public let lastName: String?
+            public let locale: String?
+            public let timeZone: String?
         }
         
         /// User’s recovery question used for verification of a recovery transaction.
-        struct RecoveryQuestion: Codable {
+        public struct RecoveryQuestion: Codable {
             let question: String?
         }
         
-        let id: String?
-        let passwordChanged: Date?
-        let profile: Profile?
-        let recoveryQuestion: RecoveryQuestion?
+        public let id: String?
+        public let passwordChanged: Date?
+        public let profile: Profile?
+        public let recoveryQuestion: RecoveryQuestion?
         
         enum CodingKeys: String, CodingKey {
             case id
@@ -104,11 +104,11 @@ public struct EmbeddedResponse: Codable {
     }
     
     // Represents the target resource that user tried accessing. Typically this is the app that user is trying to sign-in.
-    struct Target: Codable {
-        let type: String?
-        let name: String?
-        let label: String?
-        let links: LinksResponse?
+    public struct Target: Codable {
+        public let type: String?
+        public let name: String?
+        public let label: String?
+        public let links: LinksResponse?
         
         enum CodingKeys: String, CodingKey {
             case type
@@ -119,24 +119,24 @@ public struct EmbeddedResponse: Codable {
     }
     
     // Represents the authentication details that the target resource is using.
-    struct AuthenticationObject: Codable {
+    public struct AuthenticationObject: Codable {
 
         /// The protocol of authentication.
-        enum AuthProtocol: String, Codable {
+        public enum AuthProtocol: String, Codable {
             case saml_2_0 = "SAML2.0"
             case saml_1_1 = "SAML1.1"
             case ws_fed = "WS-FED"
         }
         
         /// The issuer that generates the assertion after the authentication finishes.
-        struct Issuer: Codable {
-            let id: String?
-            let name: String?
-            let uri: String?
+        public struct Issuer: Codable {
+            public let id: String?
+            public let name: String?
+            public let uri: String?
         }
         
-        let authProtocol: AuthProtocol?
-        let issuer: Issuer?
+        public let authProtocol: AuthProtocol?
+        public let issuer: Issuer?
         
         enum CodingKeys: String, CodingKey {
             case authProtocol = "protocol"
@@ -147,31 +147,31 @@ public struct EmbeddedResponse: Codable {
     public enum Policy: Codable {
         /// A subset of policy settings of the Sign-On Policy or App Sign-On Policy.
         public struct RememberDevice: Codable {
-            let allowRememberDevice: Bool?
-            let rememberDeviceByDefault: Bool?
-            let rememberDeviceLifetimeInMinutes: Int?
+            public let allowRememberDevice: Bool?
+            public let rememberDeviceByDefault: Bool?
+            public let rememberDeviceLifetimeInMinutes: Int?
         }
         
         /// A subset of policy settings for the user’s assigned password policy.
         public struct Password: Codable {
 
             // Specifies the password age requirements of the assigned password policy.
-            struct PasswordExpiration: Codable {
-                let passwordExpireDays: Int?
+            public struct PasswordExpiration: Codable {
+                public let passwordExpireDays: Int?
             }
             
             /// Specifies the password complexity requirements of the assigned password policy.
-            struct PasswordComplexity: Codable {
-                let minLength: Int?
-                let minLowerCase: Int?
-                let minUpperCase: Int?
-                let minNumber: Int?
-                let minSymbol: Int?
-                let excludeUsername: Bool
+            public struct PasswordComplexity: Codable {
+                public let minLength: Int?
+                public let minLowerCase: Int?
+                public let minUpperCase: Int?
+                public let minNumber: Int?
+                public let minSymbol: Int?
+                public let excludeUsername: Bool
             }
 
-            let expiration: PasswordExpiration?
-            let complexity: PasswordComplexity?
+            public let expiration: PasswordExpiration?
+            public let complexity: PasswordComplexity?
         }
     
         case rememberDevice(RememberDevice)
