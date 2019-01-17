@@ -15,6 +15,7 @@ public enum OktaError: Error {
     case serverRespondedWithError(OktaAPIErrorResponse)
     case authenicationStatusNotSupported(AuthStatus)
     case unexpectedResponse
+    case wrongState(String)
 }
 
 public extension OktaError {
@@ -42,6 +43,8 @@ public extension OktaError {
             return "Authenication state not supported (\(status.description))"
         case .unexpectedResponse:
             return "Unexpected response"
+        case .wrongState:
+            return "Wrong state"
         }
     }
 }

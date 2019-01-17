@@ -64,10 +64,10 @@ Once you initialize a `AuthenticationClient`, you can call methods to make reque
 
 ### Authenticate a User
 
-An authentication flow usually starts with a call to `logIn`:
+An authentication flow usually starts with a call to `authenticate`:
 
 ```swift
-client.logIn(username: username, password: password)
+client.authenticate(username: username, password: password)
 ```
 
 The client must implement the [`AuthenticationClientDelegate`](https://github.com/okta/okta-auth-swift/blob/dev/Source/AuthenticationClient.swift) protocol. This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.)

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import OktaAuth
+@testable import OktaAuthNative
 
 class OktaAPIRequestTests : XCTestCase {
     

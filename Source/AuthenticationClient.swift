@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol AuthenticationClientDelegate: class {
-    func handleSuccess()
+    func handleSuccess(sessionToken: String)
 
     func handleError(_ error: OktaError)
 
@@ -40,8 +40,11 @@ public class AuthenticationClient {
     public weak var delegate: AuthenticationClientDelegate?
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
 
-    public func logIn(username: String, password: String, deviceFingerprint: String? = nil) {
-        guard case .unauthenticated = status else { return }
+    public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
+        guard case .unauthenticated = status else {
+            delegate?.handleError(.wrongState("'unauthenticated' state expected"))
+            return
+        }
         api.primaryAuthentication(username: username,
                                   password: password,
                                   deviceFingerprint: deviceFingerprint) { [weak self] result in
@@ -51,7 +54,10 @@ public class AuthenticationClient {
     }
 
     public func cancel() {
-        guard let stateToken = stateToken else { return }
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
         api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }
             self?.resetStatus()
@@ -60,7 +66,10 @@ public class AuthenticationClient {
     }
     
     public func updateStatus() {
-        guard let stateToken = stateToken else { return }
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
         api.getTransactionState(stateToken: stateToken) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
@@ -68,10 +77,16 @@ public class AuthenticationClient {
     }
     
     public func changePassword(oldPassword: String, newPassword: String) {
-        guard let stateToken = stateToken else { return }
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
         switch status {
-            case .passwordExpired, .passwordWarning: break
-            default: return
+            case .passwordExpired, .passwordWarning:
+                break
+            default:
+                delegate?.handleError(.wrongState("'passwordExpired' or 'passwordWarning' state expected"))
+                return
         }
         api.changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
@@ -80,7 +95,10 @@ public class AuthenticationClient {
     }
     
     public func perform(link: LinksResponse.Link) {
-        guard let stateToken = stateToken else { return }
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
         api.perform(link: link, stateToken: stateToken) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
@@ -111,18 +129,19 @@ public class AuthenticationClient {
         case .passwordWarning:
             delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
                 if skip {
-                    guard let next = self?.links?.next else { return }
+                    guard let next = self?.links?.next else {
+                        self?.delegate?.handleError(.wrongState("Can't find 'next' link in response"))
+                        return
+                    }
                     self?.perform(link: next)
                 } else {
-                    guard let old = old, let new = new else { return }
-                    self?.changePassword(oldPassword: old, newPassword: new)
+                    self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
                 }
             })
             
         case .passwordExpired:
             delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
-                guard let old = old, let new = new else { return }
-                self?.changePassword(oldPassword: old, newPassword: new)
+                self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
             })
             
         case .MFARequired:
@@ -131,7 +150,11 @@ public class AuthenticationClient {
             })
             
         case .success:
-            delegate?.handleSuccess()
+            guard let sessionToken = sessionToken else {
+                delegate?.handleError(.unexpectedResponse)
+                return
+            }
+            delegate?.handleSuccess(sessionToken: sessionToken)
             
         case .unauthenticated:
             break

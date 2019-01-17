@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import OktaAuth
+import OktaAuthNative
 
 class ViewController: UIViewController {
 
@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         activityIndicator.startAnimating()
         loginButton.isEnabled = false
 
-        client.logIn(username: username, password: password)
+        client.authenticate(username: username, password: password)
     }
 
     private func updateStatus() {
@@ -40,7 +40,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: AuthenticationClientDelegate {
-    func handleSuccess() {
+    func handleSuccess(sessionToken: String) {
         activityIndicator.stopAnimating()
         loginButton.isEnabled = true
         updateStatus()

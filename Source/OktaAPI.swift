@@ -11,9 +11,13 @@ import Foundation
 
 public class OktaAPI {
 
-    public init(oktaDomain: URL) {
+    public init(oktaDomain: URL, urlSession: URLSession? = nil) {
         self.oktaDomain = oktaDomain
-        urlSession = URLSession(configuration: .default)
+        if let urlSession = urlSession {
+            self.urlSession = urlSession
+        } else {
+            self.urlSession = URLSession(configuration: .default)
+        }
     }
 
     public var commonCompletion: ((OktaAPIRequest, OktaAPIRequest.Result) -> Void)?
