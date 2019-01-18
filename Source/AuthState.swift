@@ -54,6 +54,37 @@ public extension AuthStatus {
             self = .unknown(raw)
         }
     }
+    
+    public var rawValue: String {
+        switch self {
+        case .unauthenticated:
+            return "UNAUTHENTICATED"
+        case .passwordWarning:
+            return "PASSWORD_WARN"
+        case .passwordExpired:
+            return "PASSWORD_EXPIRED"
+        case .recovery:
+            return "RECOVERY"
+        case .recoveryChallenge:
+            return "RECOVERY_CHALLENGE"
+        case .passwordReset:
+            return "PASSWORD_RESET"
+        case .lockedOut:
+            return "LOCKED_OUT"
+        case .MFAEnroll:
+            return "MFA_ENROLL"
+        case .MFAEnrollActivate:
+            return "MFA_ENROLL_ACTIVATE"
+        case .MFARequired:
+            return "MFA_REQUIRED"
+        case .MFAChallenge:
+            return "MFA_CHALLENGE"
+        case .success:
+            return "SUCCESS"
+        case .unknown(let raw):
+            return raw
+        }
+    }
 
     public var description: String {
         switch self {
@@ -86,3 +117,5 @@ public extension AuthStatus {
         }
     }
 }
+
+extension AuthStatus : Equatable {}

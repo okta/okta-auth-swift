@@ -6,13 +6,13 @@
 //
 
 import UIKit
-import OktaAuth
+import OktaAuthNative
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
         updateStatus()
     }
 
@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         activityIndicator.startAnimating()
         loginButton.isEnabled = false
 
-        client.logIn(username: username, password: password)
+        client.authenticate(username: username, password: password)
     }
 
     private func updateStatus() {
@@ -40,7 +40,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: AuthenticationClientDelegate {
-    func handleSuccess() {
+    func handleSuccess(sessionToken: String) {
         activityIndicator.stopAnimating()
         loginButton.isEnabled = true
         updateStatus()

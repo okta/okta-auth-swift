@@ -16,31 +16,38 @@ public class OktaAPIRequest {
         case error(OktaError)
     }
 
-    public init(urlSession: URLSession, completion: @escaping (OktaAPIRequest, Result) -> Void) {
+    public init(baseURL: URL,
+                urlSession: URLSession,
+                completion: @escaping (OktaAPIRequest, Result) -> Void) {
+        self.baseURL = baseURL
         self.urlSession = urlSession
         self.completion = completion
         decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        decoder.dateDecodingStrategy = .formatted(formatter)
     }
 
     public var method: Method = .post
-    public var baseURL: URL?
+    public var baseURL: URL
     public var path: String?
     public var urlParams: [String: String]?
     public var bodyParams: [String: Any]?
+    public var additionalHeaders: [String: String]?
 
     public enum Method: String {
         case get, post, put, delete, options
     }
 
     public func buildRequest() -> URLRequest? {
-        guard let baseURL = baseURL,
-            let path = path,
-            var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
-                return nil
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
+            return nil
         }
         components.scheme = "https"
-        components.path = path
+        if let path = path {
+            components.path = path
+        }
         components.queryItems = urlParams?.map { URLQueryItem(name: $0.key, value: $0.value) }
         guard let url = components.url else {
             return nil
@@ -50,7 +57,8 @@ public class OktaAPIRequest {
         urlRequest.httpMethod = method.rawValue.uppercased()
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.addValue(buildUserAgent(), forHTTPHeaderField: "User-Agent")
+        urlRequest.setValue(buildUserAgent(), forHTTPHeaderField: "User-Agent")
+        additionalHeaders?.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
 
         if let bodyParams = bodyParams {
             guard let body = try? JSONSerialization.data(withJSONObject: bodyParams, options: []) else {

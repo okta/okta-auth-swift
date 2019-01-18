@@ -11,9 +11,13 @@ import Foundation
 
 public class OktaAPI {
 
-    public init(oktaDomain: URL) {
+    public init(oktaDomain: URL, urlSession: URLSession? = nil) {
         self.oktaDomain = oktaDomain
-        urlSession = URLSession(configuration: .default)
+        if let urlSession = urlSession {
+            self.urlSession = urlSession
+        } else {
+            self.urlSession = URLSession(configuration: .default)
+        }
     }
 
     public var commonCompletion: ((OktaAPIRequest, OktaAPIRequest.Result) -> Void)?
@@ -29,6 +33,7 @@ public class OktaAPI {
                                       warnBeforePasswordExpired: Bool = true,
                                       token: String? = nil,
                                       deviceToken: String? = nil,
+                                      deviceFingerprint: String? = nil,
                                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
         let req = buildBaseRequest(completion: completion)
         req.method = .post
@@ -46,6 +51,10 @@ public class OktaAPI {
         bodyParams["context"] = context
         bodyParams["token"] = token
         req.bodyParams = bodyParams
+        
+        if let deviceFingerprint = deviceFingerprint {
+            req.additionalHeaders = ["X-Device-Fingerprint": deviceFingerprint]
+        }
         req.run()
     }
 
@@ -74,15 +83,27 @@ public class OktaAPI {
         req.bodyParams = ["stateToken": stateToken]
         req.run()
     }
+    
+    public func perform(link: LinksResponse.Link,
+                        stateToken: String,
+                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.bodyParams = ["stateToken": stateToken]
+        req.run()
+    }
 
     // MARK: - Private
 
-    private func buildBaseRequest(completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
-        let req = OktaAPIRequest(urlSession: urlSession,  completion: { [weak self] req, result in
+    private func buildBaseRequest(url: URL? = nil,
+                                  completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
+        let req = OktaAPIRequest(baseURL: url ?? oktaDomain,
+                                 urlSession: urlSession,
+                                 completion: { [weak self] req, result in
             completion?(result)
             self?.commonCompletion?(req, result)
         })
-        req.baseURL = oktaDomain
         return req
     }
 }

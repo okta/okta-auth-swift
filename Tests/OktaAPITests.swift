@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import OktaAuth
+@testable import OktaAuthNative
 
 class OktaAPITests : XCTestCase {
     
@@ -35,6 +35,26 @@ class OktaAPITests : XCTestCase {
         }
         
         api.primaryAuthentication(username: username, password: password)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+    
+    func testPrimaryAuthenticationWithDeviceFingerprint() {
+        let username = "username"
+        let password = "password"
+        let deviceFingerprint = "fingerprint"
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.path, "/api/v1/authn")
+            XCTAssertEqual(req.bodyParams?["username"] as? String, username)
+            XCTAssertEqual(req.bodyParams?["password"] as? String, password)
+            XCTAssertEqual(req.additionalHeaders?["X-Device-Fingerprint"] , deviceFingerprint)
+            exp.fulfill()
+        }
+        
+        api.primaryAuthentication(username: username, password: password, deviceFingerprint: deviceFingerprint)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -87,6 +107,22 @@ class OktaAPITests : XCTestCase {
         }
         
         api.cancelTransaction(stateToken: token)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+    
+    func testPerformLink() {
+        let link = LinksResponse.Link(href: url, hints: [:])
+        let token = "token"
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            exp.fulfill()
+        }
+        
+        api.perform(link: link, stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }

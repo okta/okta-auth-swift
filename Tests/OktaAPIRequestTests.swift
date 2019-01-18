@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import OktaAuth
+@testable import OktaAuthNative
 
 class OktaAPIRequestTests : XCTestCase {
     
@@ -14,9 +14,7 @@ class OktaAPIRequestTests : XCTestCase {
     var req: OktaAPIRequest!
     
     override func setUp() {
-        req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in }
-        req.baseURL = url
-        req.path = "/"
+        req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in }
     }
     
     override func tearDown() {
@@ -56,6 +54,19 @@ class OktaAPIRequestTests : XCTestCase {
         XCTAssertNotNil(URLRequest.value(forHTTPHeaderField: "User-Agent"))
     }
     
+    func testAdditionalHeders() {
+        let header = "X-Test-Header"
+        let value = "HEADER_VALUE"
+        req.additionalHeaders = [header: value]
+        
+        guard let URLRequest = req.buildRequest() else {
+            XCTFail("No URL request")
+            return
+        }
+        
+        XCTAssertEqual(URLRequest.value(forHTTPHeaderField: header), value)
+    }
+    
     func testBodyParams() {
         req.bodyParams = ["root_param": [ "nested_param": "value" ]]
         
@@ -85,9 +96,9 @@ class OktaAPIRequestTests : XCTestCase {
     }
     
     func testHandleSuccessResponse() {
-        let status = "SUCCESS"
+        let status = AuthStatus.success
         let exp = XCTestExpectation(description: "Success result")
-        let req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in
             if case .success(let response) = res, response.status == status {
                 exp.fulfill()
             } else {
@@ -96,7 +107,7 @@ class OktaAPIRequestTests : XCTestCase {
         }
         
         let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
-        let data = "{\"status\":\"\(status)\"}".data(using: .utf8)!
+        let data = "{\"status\":\"SUCCESS\"}".data(using: .utf8)!
         
         req.handleResponse(data: data, response: httpResponse)
         
@@ -106,7 +117,7 @@ class OktaAPIRequestTests : XCTestCase {
     func testErrorResponse() {
         let errorCode = "42"
         let exp = XCTestExpectation(description: "Error result")
-        let req = OktaAPIRequest(urlSession: URLSession.shared) { req, res in
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared) { req, res in
             if case .error(let error) = res,
                 case .serverRespondedWithError(let response) = error,
                 response.errorCode == errorCode {
