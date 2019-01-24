@@ -107,6 +107,29 @@ public class OktaAPI {
         req.run()
         return req
     }
+    
+    public func verify(factorId: String,
+                       stateToken: String,
+                       answer: String? = nil,
+                       passCode: String? = nil,
+                       rememberDevice: Bool? = nil,
+                       autoPush: Bool? = nil,
+                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+        let req = buildBaseRequest(completion: completion)
+        req.path = "/api/v1/authn/factors/\(factorId)/verify"
+        req.method = .post
+        req.urlParams = [:]
+        if let rememberDevice = rememberDevice {
+            req.urlParams?["rememberDevice"] = rememberDevice ? "true" : "false"
+        }
+        if let autoPush = autoPush {
+            req.urlParams?["autoPush"] = autoPush ? "true" : "false"
+        }
+        req.bodyParams = ["stateToken": stateToken]
+        req.bodyParams?["answer"] = answer
+        req.bodyParams?["passCode"] = passCode
+        req.run()
+    }                       
 
     // MARK: - Private
 

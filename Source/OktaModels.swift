@@ -64,6 +64,14 @@ public struct EmbeddedResponse: Codable {
     public let target: Target?
     public let policy: Policy?
     public let authentication: AuthenticationObject?
+    public let factors: [Factor]?
+    
+    public struct Factor: Codable {
+        public let id: String?
+        public let factorType: String?
+        public let provider: String?
+        public let vendorName: String?
+    }
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
     public struct User: Codable {
