@@ -13,10 +13,14 @@ public protocol AuthenticationClientDelegate: class {
     func handleError(_ error: OktaError)
 
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void)
-
-    func handleMultifactorAuthenication(callback: @escaping (_ code: String) -> Void)
     
     func transactionCancelled()
+}
+
+public protocol AuthenticationClientMFAHandler: class {
+    func handleMFASelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void)
+    
+    func handleMFAProvideAnswer(callback: @escaping (_ passCode: String) -> Void)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -39,6 +43,7 @@ public class AuthenticationClient {
 
     public weak var delegate: AuthenticationClientDelegate?
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
+    public weak var MFAHandler: AuthenticationClientMFAHandler? = nil
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard case .unauthenticated = status else {
@@ -94,6 +99,14 @@ public class AuthenticationClient {
         }
     }
     
+    public func enroll(factor: Factor, options: [String: String]) {
+        
+    }
+    
+    public func activate(factor: Factor, options: [String: String]) {
+        
+    }
+    
     public func perform(link: LinksResponse.Link) {
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
@@ -144,10 +157,10 @@ public class AuthenticationClient {
                 self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
             })
             
-        case .MFARequired:
-            delegate?.handleMultifactorAuthenication(callback: { code in
-                print("Code: \(code)")
-            })
+//        case .MFARequired:
+//            delegate?.handleMultifactorAuthenication(callback: { code in
+//                print("Code: \(code)")
+//            })
             
         case .success:
             guard let sessionToken = sessionToken else {
