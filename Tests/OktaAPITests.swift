@@ -79,6 +79,24 @@ class OktaAPITests : XCTestCase {
         wait(for: [exp], timeout: 60.0)
     }
     
+    func testUnlockAccount() {
+        let username = "test_username"
+        let factorType = FactorType.email
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.path, "/api/v1/authn/recovery/unlock")
+            XCTAssertEqual(req.bodyParams?["username"] as? String, username)
+            XCTAssertEqual(req.bodyParams?["factorType"] as? String, factorType.rawValue)
+            exp.fulfill()
+        }
+        
+        api.unlockAccount(username: username, factor: factorType)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+    
     func testGetTransactionState() {
         let token = "token"
         

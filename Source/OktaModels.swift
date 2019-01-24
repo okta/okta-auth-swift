@@ -11,22 +11,13 @@ import Foundation
 
 public struct OktaAPISuccessResponse: Codable {
 
-    // Provides additional context for the last factor verification attempt.
-    public enum FactorResult: String, Codable {
-        case waiting = "WAITING"
-        case cancelled = "CANCELLED"
-        case timeout = "TIMEOUT"
-        case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
-        case passcodeReplayed = "PASSCODE_REPLAYED"
-        case error = "ERROR"
-    }
-
     public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
     public private(set) var expirationDate: Date?
     public private(set) var relayState: String?
     public private(set) var factorResult: FactorResult?
+    public private(set) var factorType: FactorType?
     public private(set) var embedded: EmbeddedResponse?
     public private(set) var links: LinksResponse?
     
@@ -37,6 +28,7 @@ public struct OktaAPISuccessResponse: Codable {
         case expirationDate = "expiresAt"
         case relayState
         case factorResult
+        case factorType
         case embedded = "_embedded"
         case links = "_links"
     }
@@ -214,4 +206,19 @@ extension AuthStatus : Codable {
         let stringValue = try container.decode(String.self)
         self = AuthStatus(raw: stringValue)
     }
+}
+
+// Provides additional context for the last factor verification attempt.
+public enum FactorResult: String, Codable {
+    case waiting = "WAITING"
+    case cancelled = "CANCELLED"
+    case timeout = "TIMEOUT"
+    case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
+    case passcodeReplayed = "PASSCODE_REPLAYED"
+    case error = "ERROR"
+}
+
+public enum FactorType: String, Codable {
+    case sms = "SMS"
+    case email = "EMAIL"
 }
