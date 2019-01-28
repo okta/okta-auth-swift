@@ -15,6 +15,7 @@
 		2FF5C85E21D3B15000EECA75 /* AuthenticationFailedError in Resources */ = {isa = PBXBuildFile; fileRef = 2FF5C85D21D3B15000EECA75 /* AuthenticationFailedError */; };
 		2FF5C86721D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF5C86621D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift */; };
 		2FF5C86921D3BA1900EECA75 /* OktaAuthNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */; };
+		F57E875421FF3FF40060BEFF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A9BAD621F9C255002DB437 /* Types.swift */; };
 		F5A9BAD721F9C255002DB437 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A9BAD621F9C255002DB437 /* Types.swift */; };
 		F5CC2AD921D3C27700649C33 /* OktaAPIRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC2AD821D3C27700649C33 /* OktaAPIRequestTests.swift */; };
 		F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC2ADA21D5056D00649C33 /* OktaAPITests.swift */; };
@@ -411,6 +412,7 @@
 				FAC5ADC821C7B91400C3DC91 /* AuthenticationClient.swift in Sources */,
 				FA42E2E921C92A6000325723 /* AuthState.swift in Sources */,
 				FAC5ADCC21C7B91E00C3DC91 /* OktaModels.swift in Sources */,
+				F57E875421FF3FF40060BEFF /* Types.swift in Sources */,
 				FA42E2EC21C94E7800325723 /* Utils.swift in Sources */,
 				FAC5ADCA21C7B91900C3DC91 /* OktaAPI.swift in Sources */,
 				FAC5ADC921C7B91700C3DC91 /* OktaAPIRequest.swift in Sources */,
