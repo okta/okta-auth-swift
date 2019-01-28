@@ -19,6 +19,7 @@ public struct OktaAPISuccessResponse: Codable {
         case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
         case passcodeReplayed = "PASSCODE_REPLAYED"
         case error = "ERROR"
+        case rejected = "REJECTED"
     }
 
     public private(set) var status: AuthStatus?
@@ -64,7 +65,7 @@ public struct LinksResponse: Codable {
     let prev: Link?
     let cancel: Link?
     let skip: Link?
-    let resend: Link?
+    let resend: [Link]?
 }
 
 public struct EmbeddedResponse: Codable {
@@ -72,6 +73,7 @@ public struct EmbeddedResponse: Codable {
     public let target: Target?
     public let policy: Policy?
     public let authentication: AuthenticationObject?
+    public let factor: Factor?
     public let factors: [Factor]?
     
     public struct Factor: Codable {

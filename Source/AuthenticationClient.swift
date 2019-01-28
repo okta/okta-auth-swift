@@ -18,9 +18,11 @@ public protocol AuthenticationClientDelegate: class {
 }
 
 public protocol AuthenticationClientMFAHandler: class {
-    func handleMFASelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void)
+    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void)
     
-    func handleMFAProvideAnswer(callback: @escaping (_ passCode: String) -> Void)
+    func mfaPushState(_ state: OktaAPISuccessResponse.FactorResult)
+    
+    func mfaProvideCode(factor: EmbeddedResponse.Factor, callback: @escaping (_ passCode: String) -> Void)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -43,7 +45,9 @@ public class AuthenticationClient {
 
     public weak var delegate: AuthenticationClientDelegate?
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
-    public weak var MFAHandler: AuthenticationClientMFAHandler? = nil
+    public weak var mfaHandler: AuthenticationClientMFAHandler? = nil
+    
+    public var factorResultPollRate: TimeInterval = 3
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard case .unauthenticated = status else {
@@ -99,12 +103,32 @@ public class AuthenticationClient {
         }
     }
     
-    public func enroll(factor: Factor, options: [String: String]) {
+    public func enroll(factor: EmbeddedResponse.Factor, options: [String: String]) {
         
     }
     
-    public func activate(factor: Factor, options: [String: String]) {
+    public func activate(factor: EmbeddedResponse.Factor, options: [String: String]) {
         
+    }
+
+    public func verify(factor: EmbeddedResponse.Factor,
+                       answer: String? = nil,
+                       passCode: String? = nil,
+                       rememberDevice: Bool? = nil,
+                       autoPush: Bool? = nil) {
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
+        api.verify(factorId: factor.id!,
+                   stateToken: stateToken,
+                   answer: answer,
+                   passCode: passCode,
+                   rememberDevice: rememberDevice,
+                   autoPush: autoPush) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateStatus(response: response)
+        }
     }
     
     public func perform(link: LinksResponse.Link) {
@@ -122,6 +146,7 @@ public class AuthenticationClient {
         status = response.status ?? .unauthenticated
         stateToken = response.stateToken
         sessionToken = response.sessionToken
+        factorResult = response.factorResult
         links = response.links
         embedded = response.embedded
         performStatusChangeHandling()
@@ -131,6 +156,7 @@ public class AuthenticationClient {
         status = .unauthenticated
         stateToken = nil
         sessionToken = nil
+        factorResult = nil
         links = nil
         embedded = nil
         performStatusChangeHandling()
@@ -157,10 +183,54 @@ public class AuthenticationClient {
                 self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
             })
             
-//        case .MFARequired:
-//            delegate?.handleMultifactorAuthenication(callback: { code in
-//                print("Code: \(code)")
-//            })
+        case .MFARequired:
+            guard let mfaHandler = mfaHandler else {
+                delegate?.handleError(.authenicationStatusNotSupported(status))
+                return
+            }
+            guard let factors = embedded?.factors else {
+                return
+            }
+            
+            mfaHandler.mfaSelecFactor(factors: factors) { index in
+                
+                let factor = factors[index] // ADD GUARD
+                
+                self.verify(factor: factor)
+                
+            }
+            
+        case .MFAChallenge:
+            guard let factor = embedded?.factor, let factorType = factor.factorType else { // HANDLE
+                return
+            }
+            
+            if factorType == "push" {
+                guard let factorResult = factorResult else {
+                    return
+                }
+                
+                mfaHandler?.mfaPushState( factorResult )
+                
+                switch factorResult {
+                case .waiting:
+                    DispatchQueue.main.asyncAfter(deadline: .now() + factorResultPollRate) {
+                        self.verify(factor: factor)
+                        return
+                    }
+                default:
+                    cancel()
+                }
+                
+            } else if factorType == "token:software:totp" {
+                mfaHandler?.mfaProvideCode(factor: factor) { code in
+                    self.verify(factor: factor, passCode: code)
+                }
+            } else {
+                
+                delegate?.handleError(.factorNotSupported(.RSASecurID)) // CORRECT ENUM
+                
+            }
             
         case .success:
             guard let sessionToken = sessionToken else {
@@ -187,6 +257,8 @@ public class AuthenticationClient {
 
     /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
     public private(set) var stateToken: String?
+    
+    public private(set) var factorResult: OktaAPISuccessResponse.FactorResult?
 
     /// Link relations for the current status.
     public private(set) var links: LinksResponse?
