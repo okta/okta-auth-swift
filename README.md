@@ -9,7 +9,7 @@
 * [API Reference](#api-reference)
     * [authenticate](#authenticate)
     * [cancel](#cancel)
-    * [updateStatus](#update-status)
+    * [updateStatus]
     * [changePassword](#change-password)
     * [performLink](#perform-link)
     * [resetStatus](#reset-status)
@@ -91,7 +91,7 @@ Start the authorization flow by simply calling `authenticate` with user credenti
 ```
 
 ### cancel
-To cancel authorization flow by calling `cancel`. It will cancel current transaction and reset auth status. 
+To cancel authorization call `cancel`. It will cancel current transaction and reset auth status. 
 
 ```swift
     client.cancel()
