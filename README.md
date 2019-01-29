@@ -9,11 +9,11 @@
 * [API Reference](#api-reference)
     * [authenticate](#authenticate)
     * [cancel](#cancel)
-    * [updateStatus]
-    * [changePassword](#change-password)
-    * [performLink](#perform-link)
-    * [resetStatus](#reset-status)
-    * [handleStatusChange](#handle-status-change)
+    * [updateStatus](#updateStatus)
+    * [changePassword](#changePassword)
+    * [performLink](#performLink)
+    * [resetStatus](#resetStatus)
+    * [handleStatusChange](#handleStatusChange)
 * [Contributing](#contributing)
  
 The Okta Authentication SDK is a convenience wrapper around [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn.html).
@@ -64,6 +64,8 @@ let client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDoma
  
 Hard-coding the Okta domain works for quick tests, but for real projects you should use a more secure way of storing these values (such as environment variables). 
 
+The client must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
+
 ## Usage guide
 
 These examples will help you understand how to use this library.
@@ -78,7 +80,52 @@ An authentication flow usually starts with a call to `authenticate`:
 client.authenticate(username: username, password: password)
 ```
 
-The client must implement the [`AuthenticationClientDelegate`](https://github.com/okta/okta-auth-swift/blob/dev/Source/AuthenticationClient.swift) protocol. This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.)
+### AuthenticationClientDelegate
+
+This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.) Also delegate is used to resolve states requiring user input (e.g. reset password when user should be prompted to enter new password).
+
+```swift
+extension ViewController: AuthenticationClientDelegate {
+    func handleSuccess(sessionToken: String) {
+        // update UI accordingly
+        presentAlert("Sign In Succeeded!")
+    }
+
+    func handleError(_ error: OktaError) {
+        // update UI accordingly
+        presentAlert("Sign In Failed!")
+    }
+
+    func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
+        // Ask user to enter old and new password, and resume flow by calling callback
+        presentChangePasswordForm(
+            canSkip: canSkip,
+            completion: { oldPassword, newPassword, skip in
+                callback(oldPassword, newPassword, false)
+            }
+            skip: {
+                callback(nil, nil, true)
+            }
+        )
+    }
+
+    func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
+        // Ask user to perform factor auth, enter auth code, and resume flow by calling callback
+        presentMFAForm(){ code in
+            guard let code = code else {
+                self.client.cancel()
+                return
+            }
+            
+            callback(code)
+        }
+    }
+    
+    func transactionCancelled() {
+        // Update UI accordingly
+    }
+}
+```
 
 ## API Reference
 
