@@ -82,7 +82,7 @@ client.authenticate(username: username, password: password)
 
 ### AuthenticationClientDelegate
 
-This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.) Also delegate is used to resolve states requiring user input (e.g. reset password when user should be prompted to enter new password).
+This protocol allows the client to provide handlers for each state that the Authentication API may return. Also delegate is used to resolve states requiring user input (e.g. reset password when user should be prompted to enter new password).
 
 ```swift
 extension ViewController: AuthenticationClientDelegate {
@@ -131,14 +131,14 @@ extension ViewController: AuthenticationClientDelegate {
 
 ### authenticate
 
-Start the authorization flow by simply calling `authenticate` with user credentials. Use the [`handleStatusChange`](#handle-status-change) method to take more control over authorization flow.
+Start the authentication flow by simply calling `authenticate` with user credentials. Use the [`handleStatusChange`](#handle-status-change) method to take more control over authentication flow.
 
 ```swift
     client.authenticate(username: username, password: password)
 ```
 
 ### cancel
-To cancel authorization call `cancel`. It will cancel current transaction and reset auth status. 
+Call `cancel` to cancel active authentication flow. SDK will send cancel request and reset internal states upon completion. Use the  `transactionCancelled` delegate method to handle cancellation event. 
 
 ```swift
     client.cancel()
@@ -154,7 +154,7 @@ To update application auth status call `updateStatus`. This operation can be per
 
 ### changePassword
 
-When auth state is `PASSWORD_WARN` or `PASSWORD_EXPIRED` user should be prompted to reset the password. To complete this operation call `changePassword`.
+When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the password. In case of  `PASSWORD_WARN` state user also can be prompted to chage their password (however there could be another flow). To complete this operation call `changePassword`.
 
 ```swift
     client.changePassword(oldPassword: old, newPassword: new)
