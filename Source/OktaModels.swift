@@ -78,8 +78,8 @@ public struct EmbeddedResponse: Codable {
     
     public struct Factor: Codable {
         public let id: String?
-        public let factorType: String?
-        public let provider: String?
+        public let factorType: FactorType?
+        public let provider: FactorProvider?
         public let vendorName: String?
     }
 

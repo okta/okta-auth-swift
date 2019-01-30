@@ -14,7 +14,7 @@ public enum OktaError: Error {
     case responseSerializationError(Error)
     case serverRespondedWithError(OktaAPIErrorResponse)
     case authenicationStatusNotSupported(AuthStatus)
-    case factorNotSupported(Factor)
+    case factorNotSupported(EmbeddedResponse.Factor)
     case unexpectedResponse
     case wrongState(String)
 }

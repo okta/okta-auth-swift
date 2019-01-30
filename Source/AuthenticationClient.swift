@@ -20,9 +20,9 @@ public protocol AuthenticationClientDelegate: class {
 public protocol AuthenticationClientMFAHandler: class {
     func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void)
     
-    func mfaPushState(_ state: OktaAPISuccessResponse.FactorResult)
+    func mfaPushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult)
     
-    func mfaProvideCode(factor: EmbeddedResponse.Factor, callback: @escaping (_ passCode: String) -> Void)
+    func mfaRequestCode(factor: EmbeddedResponse.Factor, callback: @escaping (_ passCode: String) -> Void)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -103,14 +103,6 @@ public class AuthenticationClient {
         }
     }
     
-    public func enroll(factor: EmbeddedResponse.Factor, options: [String: String]) {
-        
-    }
-    
-    public func activate(factor: EmbeddedResponse.Factor, options: [String: String]) {
-        
-    }
-
     public func verify(factor: EmbeddedResponse.Factor,
                        answer: String? = nil,
                        passCode: String? = nil,
@@ -189,29 +181,24 @@ public class AuthenticationClient {
                 return
             }
             guard let factors = embedded?.factors else {
+                delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
                 return
             }
-            
             mfaHandler.mfaSelecFactor(factors: factors) { index in
-                
-                let factor = factors[index] // ADD GUARD
-                
+                let factor = factors[index]
                 self.verify(factor: factor)
-                
             }
             
         case .MFAChallenge:
-            guard let factor = embedded?.factor, let factorType = factor.factorType else { // HANDLE
+            guard let factor = embedded?.factor, let factorType = factor.factorType else {
+                delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
                 return
             }
-            
-            if factorType == "push" {
+            if factorType == .push {
                 guard let factorResult = factorResult else {
                     return
                 }
-                
-                mfaHandler?.mfaPushState( factorResult )
-                
+                mfaHandler?.mfaPushStateUpdated(factorResult)
                 switch factorResult {
                 case .waiting:
                     DispatchQueue.main.asyncAfter(deadline: .now() + factorResultPollRate) {
@@ -221,15 +208,12 @@ public class AuthenticationClient {
                 default:
                     cancel()
                 }
-                
-            } else if factorType == "token:software:totp" {
-                mfaHandler?.mfaProvideCode(factor: factor) { code in
+            } else if factorType == .TOTP {
+                mfaHandler?.mfaRequestCode(factor: factor) { code in
                     self.verify(factor: factor, passCode: code)
                 }
             } else {
-                
-                delegate?.handleError(.factorNotSupported(.RSASecurID)) // CORRECT ENUM
-                
+                delegate?.handleError(.factorNotSupported(factor))
             }
             
         case .success:
