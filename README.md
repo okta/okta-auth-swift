@@ -11,6 +11,7 @@
     * [cancel](#cancel)
     * [updateStatus](#updateStatus)
     * [changePassword](#changePassword)
+    * [unlockAccount](#unlockAccount)
     * [performLink](#performLink)
     * [resetStatus](#resetStatus)
     * [handleStatusChange](#handleStatusChange)
@@ -108,6 +109,24 @@ extension ViewController: AuthenticationClientDelegate {
             }
         )
     }
+    
+    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void) {
+        let factor = ... // Factor implemented by the app 
+        presentUnlockForm() { username in
+            callback(username, factor)
+        }
+    }
+    
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
+        guard factorType == expected else {
+            // Error
+            return
+        } 
+        
+        switch factorResult {
+            // Update UI accordingly
+        }
+    }
 
     func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
         // Ask user to perform factor auth, enter auth code, and resume flow by calling callback
@@ -154,10 +173,18 @@ To update application auth status call `updateStatus`. This operation can be per
 
 ### changePassword
 
-When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the password. In case of  `PASSWORD_WARN` state user also can be prompted to chage their password (however there could be another flow). To complete this operation call `changePassword`.
+When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the password. In case of  `PASSWORD_WARN` state user also can be prompted to change their password (however there could be another flow). To complete this operation call `changePassword`.
 
 ```swift
     client.changePassword(oldPassword: old, newPassword: new)
+```
+
+### unlockAccount
+
+When auth state is `LOCKED_OUT` user should be prompted to unlock their account. To complete this operation call `unlockAccount`. Use the  `handleRecoveryChallenge` delegate method to handle further processing of transaction. 
+
+```swift
+    client.unlockAccount(username, factorType)
 ```
 
 ### performLink
