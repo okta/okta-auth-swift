@@ -69,7 +69,7 @@ public class AuthenticationClient {
         }
     }
     
-    public func updateStatus() {
+    public func fetchTransactionState() {
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return

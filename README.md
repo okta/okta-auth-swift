@@ -9,7 +9,7 @@
 * [API Reference](#api-reference)
     * [authenticate](#authenticate)
     * [cancel](#cancel)
-    * [updateStatus](#updateStatus)
+    * [fetchTransactionState](#fetchTransactionState)
     * [changePassword](#changePassword)
     * [unlockAccount](#unlockAccount)
     * [performLink](#performLink)
@@ -163,12 +163,12 @@ Call `cancel` to cancel active authentication flow. SDK will send cancel request
     client.cancel()
 ```
 
-### updateStatus
+### fetchTransactionState
 
-To update application auth status call `updateStatus`. This operation can be performed if  `stateToken` is available.
+To retrieves the current transaction state for a state token call `fetchTransactionState`. Useful when user has state token only and wants to know details about current transaction state.
 
 ```swift
-    client.updateStatus()
+    client.fetchTransactionState()
 ```
 
 ### changePassword
