@@ -67,15 +67,6 @@ public class OktaAPI {
         req.bodyParams = ["stateToken": stateToken, "oldPassword": oldPassword, "newPassword": newPassword]
         req.run()
     }
-    
-    public func unlockAccount(username: String,
-                              factor: FactorType,
-                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
-        let req = buildBaseRequest(completion: completion)
-        req.path = "/api/v1/authn/recovery/unlock"
-        req.bodyParams = ["username": username, "factorType": factor.rawValue]
-        req.run()
-    }
 
     public func getTransactionState(stateToken: String,
                                     completion: ((OktaAPIRequest.Result) -> Void)? =  nil) {

@@ -14,10 +14,6 @@ public protocol AuthenticationClientDelegate: class {
 
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void)
     
-    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void)
-    
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?)
-    
     func transactionCancelled()
 }
 
@@ -122,14 +118,6 @@ public class AuthenticationClient {
                    passCode: passCode,
                    rememberDevice: rememberDevice,
                    autoPush: autoPush) { [weak self] result in
-                                        
-            guard let response = self?.checkAPIResultError(result) else { return }
-            self?.updateStatus(response: response)
-        }
-    }
-  
-    public func unlockAccount(_ username: String, factor: FactorType) {
-        api.unlockAccount(username: username, factor: factor) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
@@ -153,8 +141,6 @@ public class AuthenticationClient {
         factorResult = response.factorResult
         links = response.links
         embedded = response.embedded
-        factorType = response.factorType
-        factorResult = response.factorResult
         performStatusChangeHandling()
     }
     
@@ -165,8 +151,6 @@ public class AuthenticationClient {
         factorResult = nil
         links = nil
         embedded = nil
-        factorResult = nil
-        factorType = nil
         performStatusChangeHandling()
     }
     
@@ -185,9 +169,6 @@ public class AuthenticationClient {
                     self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
                 }
             })
-            
-        case .recoveryChallenge:
-            self.delegate?.handleRecoveryChallenge(factorType: self.factorType, factorResult: self.factorResult)
             
         case .passwordExpired:
             delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
@@ -242,11 +223,6 @@ public class AuthenticationClient {
             }
             delegate?.handleSuccess(sessionToken: sessionToken)
             
-        case .lockedOut:
-            delegate?.handleAccountLockedOut { [weak self] username, factor in
-                self?.unlockAccount(username, factor: factor)
-            }
-            
         case .unauthenticated:
             break
             
@@ -279,12 +255,6 @@ public class AuthenticationClient {
 
     /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
     public private(set) var sessionToken: String?
-
-    /// Factor type that is related to the current state
-    public private(set) var factorType: FactorType?
-    
-    /// Provides additional context for the last factor verification attempt.
-    public private(set) var factorResult: FactorResult?
 
     // MARK: - Private
     
