@@ -86,6 +86,37 @@ extension ViewController: AuthenticationClientDelegate {
         }
         present(alert, animated: true, completion: nil)
     }
+    
+    func handleAccountLockedOut(callback: @escaping (String, FactorType) -> Void) {
+        updateStatus()
+        let alert = UIAlertController(title: "Your Okta account has been locked!", message: "To unlock account, please specify username.", preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Username" }
+        alert.addAction(UIAlertAction(title: "Unlock via email", style: .default, handler: { _ in
+            guard let username = alert.textFields?[0].text else { return }
+            callback(username, .email)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.resetStatus()
+            self.activityIndicator.stopAnimating()
+            self.loginButton.isEnabled = true
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
+        guard factorType == .email else { return }
+        
+        if factorResult == .waiting {
+            client.resetStatus()
+            activityIndicator.stopAnimating()
+            loginButton.isEnabled = true
+            updateStatus()
+            
+            let alert = UIAlertController(title: "Recovery email is sent!", message: "Please, follow the instructions from email to unlock your account.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
+    }
 
     func transactionCancelled() {
         activityIndicator.stopAnimating()
