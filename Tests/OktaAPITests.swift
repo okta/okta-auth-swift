@@ -144,4 +144,32 @@ class OktaAPITests : XCTestCase {
         
         wait(for: [exp], timeout: 60.0)
     }
+
+    func testMFAVerify() {
+        let factorId = "id"
+        let token = "token"
+        let answer = "answer"
+        let passCode = "passCode"
+        let rememberDevice = true
+        let autoPush = false
+
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.urlParams?["rememberDevice"], "true")
+            XCTAssertEqual(req.urlParams?["autoPush"], "false")
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            XCTAssertEqual(req.bodyParams?["answer"] as? String, answer)
+            XCTAssertEqual(req.bodyParams?["passCode"] as? String, passCode)
+            exp.fulfill()
+        }
+
+        api.verify(factorId: factorId,
+                   stateToken: token,
+                   answer: answer,
+                   passCode: passCode,
+                   rememberDevice: rememberDevice,
+                   autoPush: autoPush)
+
+        wait(for: [exp], timeout: 60.0)
+    }
 }
