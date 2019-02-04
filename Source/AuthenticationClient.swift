@@ -286,7 +286,6 @@ public class AuthenticationClient {
         switch result {
         case .error(let error):
             delegate?.handleError(error)
-            resetStatus()
             return nil
         case .success(let success):
             return success
