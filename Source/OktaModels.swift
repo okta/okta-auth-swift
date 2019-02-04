@@ -81,6 +81,12 @@ public struct EmbeddedResponse: Codable {
         public let factorType: FactorType?
         public let provider: FactorProvider?
         public let vendorName: String?
+        public let profile: Profile?
+        
+        public struct Profile: Codable {
+            public let phoneNumber: String?
+        }
+        
     }
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
