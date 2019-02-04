@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
         client.mfaHandler = self
         updateStatus()
     }
@@ -104,13 +104,13 @@ extension ViewController: AuthenticationClientDelegate {
 }
 
 extension ViewController: AuthenticationClientMFAHandler {
-    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void) {
+    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
         updateStatus()
         
         let alert = UIAlertController(title: "Select verification factor", message: nil, preferredStyle: .actionSheet)
-        factors.enumerated().forEach { i, factor in
+        factors.forEach { factor in
             alert.addAction(UIAlertAction(title: factor.factorType?.description, style: .default, handler: { _ in
-                callback(i)
+                callback(factor)
             }))
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -125,6 +125,7 @@ extension ViewController: AuthenticationClientMFAHandler {
     
     func mfaRequestCode(factor: EmbeddedResponse.Factor, callback: @escaping (String) -> Void) {
         updateStatus()
+        
         let factorTypeDescription = factor.factorType?.description ?? "?"
         let factorProviderDescription = factor.provider?.description ?? "?"
         
