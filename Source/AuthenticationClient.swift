@@ -25,6 +25,8 @@ public protocol AuthenticationClientMFAHandler: class {
     func mfaRequestTOTP(callback: @escaping (_ code: String) -> Void)
     
     func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void)
+    
+    func mfaSecurityQuestion(question: String, callback: @escaping (_ answer: String) -> Void)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -248,6 +250,14 @@ public class AuthenticationClient {
                 let phoneNumber = factor.profile?.phoneNumber
                 mfaHandler?.mfaRequestSMSCode(phoneNumber: phoneNumber) { code in
                     self.verify(factor: factor, passCode: code)
+                }
+            } else if factorType == .question {
+                guard let question = factor.profile?.questionText else {
+                    delegate?.handleError(.wrongState("Can't find 'question' object in response"))
+                    return
+                }
+                mfaHandler?.mfaSecurityQuestion(question: question) { answer in
+                    self.verify(factor: factor, answer: answer)
                 }
             } else {
                 delegate?.handleError(.factorNotSupported(factor))
