@@ -18,7 +18,7 @@ public protocol AuthenticationClientDelegate: class {
 }
 
 public protocol AuthenticationClientMFAHandler: class {
-    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ index: Int) -> Void)
+    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void)
     
     func mfaPushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult)
     
@@ -184,8 +184,7 @@ public class AuthenticationClient {
                 delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
                 return
             }
-            mfaHandler.mfaSelecFactor(factors: factors) { index in
-                let factor = factors[index]
+            mfaHandler.mfaSelecFactor(factors: factors) { factor in
                 self.verify(factor: factor)
             }
             
