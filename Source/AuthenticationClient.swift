@@ -22,7 +22,9 @@ public protocol AuthenticationClientMFAHandler: class {
     
     func mfaPushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult)
     
-    func mfaRequestCode(factor: EmbeddedResponse.Factor, callback: @escaping (_ passCode: String) -> Void)
+    func mfaRequestTOTP(callback: @escaping (_ code: String) -> Void)
+    
+    func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -239,7 +241,12 @@ public class AuthenticationClient {
                     cancel()
                 }
             } else if factorType == .TOTP {
-                mfaHandler?.mfaRequestCode(factor: factor) { code in
+                mfaHandler?.mfaRequestTOTP() { code in
+                    self.verify(factor: factor, passCode: code)
+                }
+            } else if factorType == .sms {
+                let phoneNumber = factor.profile?.phoneNumber
+                mfaHandler?.mfaRequestSMSCode(phoneNumber: phoneNumber) { code in
                     self.verify(factor: factor, passCode: code)
                 }
             } else {

@@ -103,7 +103,7 @@ extension ViewController: AuthenticationClientDelegate {
     }
 }
 
-extension ViewController: AuthenticationClientMFAHandler {
+extension ViewController: AuthenticationClientMFAHandler {  
     func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
         updateStatus()
         
@@ -123,14 +123,21 @@ extension ViewController: AuthenticationClientMFAHandler {
         updateStatus()
     }
     
-    func mfaRequestCode(factor: EmbeddedResponse.Factor, callback: @escaping (String) -> Void) {
-        updateStatus()
-        
-        let factorTypeDescription = factor.factorType?.description ?? "?"
-        let factorProviderDescription = factor.provider?.description ?? "?"
-        
-        let message = "Please enter code for \(factorTypeDescription) (\(factorProviderDescription))"
-        let alert = UIAlertController(title: "MFA", message: message, preferredStyle: .alert)
+    func mfaRequestTOTP(callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please enter TOTP code", preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Code" }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let code = alert.textFields?[0].text else { return }
+            callback(code)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancel()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             guard let code = alert.textFields?[0].text else { return }
