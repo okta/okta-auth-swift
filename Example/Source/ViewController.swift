@@ -94,7 +94,7 @@ extension ViewController: AuthenticationClientDelegate {
     }
 }
 
-extension ViewController: AuthenticationClientMFAHandler {  
+extension ViewController: AuthenticationClientMFAHandler {
     func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
         updateStatus()
         
@@ -128,8 +128,21 @@ extension ViewController: AuthenticationClientMFAHandler {
     }
     
     func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (String) -> Void) {
-        let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS", preferredStyle: .alert)
+        let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS on \(phoneNumber ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let code = alert.textFields?[0].text else { return }
+            callback(code)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancel()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func mfaSecurityQuestion(question: String, callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please answer security question: \(question)", preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Answer" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             guard let code = alert.textFields?[0].text else { return }
             callback(code)
