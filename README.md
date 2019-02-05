@@ -62,8 +62,6 @@ Construct a client instance by passing it your Okta domain name and API token:
 let client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDomain}")!, delegate: self)
 ```
 [//]: # (end: createClient)
- 
-Hard-coding the Okta domain works for quick tests, but for real projects you should use a more secure way of storing these values (such as environment variables). 
 
 The client must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
 
