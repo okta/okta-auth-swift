@@ -76,7 +76,7 @@ extension ViewController: AuthenticationClientDelegate {
             }))
         } else {
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-                self.client.cancel()
+                self.client.cancelTransaction()
             }))
         }
         present(alert, animated: true, completion: nil)
@@ -122,7 +122,7 @@ extension ViewController: AuthenticationClientDelegate {
             callback(code)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.client.cancel()
+            self.client.cancelTransaction()
         }))
         present(alert, animated: true, completion: nil)
     }
