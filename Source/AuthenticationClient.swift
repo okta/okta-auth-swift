@@ -250,27 +250,27 @@ public class AuthenticationClient {
     // MARK: - Internal
 
     /// Okta REST API client
-    public private(set) var api: OktaAPI
+    public internal(set) var api: OktaAPI
 
     /// Current status of the authentication transaction.
-    public private(set) var status: AuthStatus = .unauthenticated
+    public internal(set) var status: AuthStatus = .unauthenticated
 
     /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
-    public private(set) var stateToken: String?
+    public internal(set) var stateToken: String?
     
-    public private(set) var factorResult: OktaAPISuccessResponse.FactorResult?
+    public internal(set) var factorResult: OktaAPISuccessResponse.FactorResult?
 
     /// Link relations for the current status.
-    public private(set) var links: LinksResponse?
+    public internal(set) var links: LinksResponse?
 
     // Embedded resources for current status
-    public private(set) var embedded: EmbeddedResponse?
+    public internal(set) var embedded: EmbeddedResponse?
 
     /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
-    public private(set) var recoveryToken: String?
+    public internal(set) var recoveryToken: String?
 
     /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
-    public private(set) var sessionToken: String?
+    public internal(set) var sessionToken: String?
 
     // MARK: - Private
     
