@@ -9,7 +9,7 @@ import Foundation
 
 /// Represents Okta REST API
 
-public class OktaAPI {
+open class OktaAPI {
 
     public init(oktaDomain: URL, urlSession: URLSession? = nil) {
         self.oktaDomain = oktaDomain
@@ -25,7 +25,7 @@ public class OktaAPI {
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
 
-    public func primaryAuthentication(username: String?,
+    open func primaryAuthentication(username: String?,
                                       password: String?,
                                       audience: String? = nil,
                                       relayState: String? = nil,
@@ -59,7 +59,7 @@ public class OktaAPI {
         return req
     }
 
-    public func changePassword(stateToken: String,
+    open func changePassword(stateToken: String,
                                oldPassword: String,
                                newPassword: String,
                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
@@ -88,7 +88,7 @@ public class OktaAPI {
         return req
     }
     
-    public func perform(link: LinksResponse.Link,
+    open func perform(link: LinksResponse.Link,
                         stateToken: String,
                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
@@ -99,7 +99,7 @@ public class OktaAPI {
         return req
     }
     
-    public func verify(factorId: String,
+    open func verify(factorId: String,
                        stateToken: String,
                        answer: String? = nil,
                        passCode: String? = nil,
