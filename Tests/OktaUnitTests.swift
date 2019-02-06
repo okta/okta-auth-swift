@@ -24,7 +24,7 @@ class OktaUnitTests: XCTestCase {
         client = nil
     }
     
-    func testAuthenticate() {
+    func testAuthenticateBasicSuccessFlow() {
 
         let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "PrimaryAuthResponse")
         if let oktaApiMock = oktaApiMock {
@@ -38,7 +38,7 @@ class OktaUnitTests: XCTestCase {
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
         if delegateVerifyer.handleSuccessCalled {
-            XCTAssertTrue(delegateVerifyer.handleSuccessCalled, "handleError delegate method has been successfully called")
+            XCTAssertTrue(delegateVerifyer.handleSuccessCalled, "handleSuccess delegate method has been successfully called")
             XCTAssertEqual("test_session_token", delegateVerifyer.sessionToken)
             XCTAssertEqual(.success, client.status)
             XCTAssertNil(client.stateToken)
@@ -51,8 +51,87 @@ class OktaUnitTests: XCTestCase {
             XCTFail("Expected delegate method handleSuccess to be called")
         }
     }
+    
+    func testChangePasswordBasicSuccessFlow() {
+        
+        let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
+        
+        client.stateToken = "state_token"
+        client.status = .passwordExpired
+        client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        if delegateVerifyer.handleSuccessCalled {
+            XCTAssertTrue(delegateVerifyer.handleSuccessCalled, "handleSuccess delegate method has been successfully called")
+            XCTAssertEqual("test_session_token", delegateVerifyer.sessionToken)
+            XCTAssertEqual(.success, client.status)
+            XCTAssertNil(client.stateToken)
+            XCTAssertEqual("test_session_token", client.sessionToken)
+            XCTAssertNil(client.factorResult)
+            XCTAssertNil(client.links)
+            XCTAssertNil(client.recoveryToken)
+            XCTAssertNotNil(client.embedded)
+        } else {
+            XCTFail("Expected delegate method handleSuccess to be called")
+        }
+        
+        client.stateToken = "state_token"
+        client.status = .passwordWarning
+        client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        
+        delegateVerifyer.asyncExpectation = XCTestExpectation()
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        if delegateVerifyer.handleSuccessCalled {
+            XCTAssertTrue(delegateVerifyer.handleSuccessCalled, "handleSuccess delegate method has been successfully called")
+            XCTAssertEqual("test_session_token", delegateVerifyer.sessionToken)
+            XCTAssertEqual(.success, client.status)
+            XCTAssertNil(client.stateToken)
+            XCTAssertEqual("test_session_token", client.sessionToken)
+            XCTAssertNil(client.factorResult)
+            XCTAssertNil(client.links)
+            XCTAssertNil(client.recoveryToken)
+            XCTAssertNotNil(client.embedded)
+        } else {
+            XCTFail("Expected delegate method handleSuccess to be called")
+        }
+    }
+    
+    func testCancellationBasicSuccessFlow() {
+        
+        let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "TransactionCancellationSuccess")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
+        
+        client.stateToken = "state_token"
+        client.cancel()
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        if delegateVerifyer.transactionCancelledCalled {
+            XCTAssertTrue(delegateVerifyer.transactionCancelledCalled, "transactionCancelled delegate method has been successfully called")
+            XCTAssertEqual(.unauthenticated, client.status)
+            XCTAssertNil(client.stateToken)
+            XCTAssertNil(client.sessionToken)
+            XCTAssertNil(client.factorResult)
+            XCTAssertNil(client.links)
+            XCTAssertNil(client.recoveryToken)
+            XCTAssertNil(client.embedded)
+        } else {
+            XCTFail("Expected delegate method transactionCancelled to be called")
+        }
+    }
 
-    func testCheckAPIResultError() {
+    func testCheckAPIResultErrorBasicAuthFlow() {
         
         let oktaApiMock = OktaApiMock(successCase: false, json: nil, resourceName: "AuthenticationFailedError")
         if let oktaApiMock = oktaApiMock {

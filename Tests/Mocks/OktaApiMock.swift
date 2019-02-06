@@ -68,6 +68,20 @@ class OktaApiMock: OktaAPI {
         }
     }
     
+    override public func cancelTransaction(stateToken: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
+        
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+    }
+    
+    override public func changePassword(stateToken: String, oldPassword: String, newPassword: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
+     
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+    }
+    
     var json: String?
     var resourceName: String?
     private var result: OktaAPIRequest.Result
