@@ -12,8 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self)
-        client.mfaHandler = self
+        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self, mfaHandler: self)
         updateStatus()
     }
 
@@ -104,7 +103,7 @@ extension ViewController: AuthenticationClientDelegate {
 }
 
 extension ViewController: AuthenticationClientMFAHandler {
-    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
+    func selectFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
         updateStatus()
         
         let alert = UIAlertController(title: "Select verification factor", message: nil, preferredStyle: .actionSheet)
@@ -119,11 +118,11 @@ extension ViewController: AuthenticationClientMFAHandler {
         present(alert, animated: true, completion: nil)
     }
     
-    func mfaPushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
+    func pushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
         updateStatus()
     }
     
-    func mfaRequestTOTP(callback: @escaping (String) -> Void) {
+    func requestTOTP(callback: @escaping (String) -> Void) {
         let alert = UIAlertController(title: "MFA", message: "Please enter TOTP code", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
@@ -136,7 +135,7 @@ extension ViewController: AuthenticationClientMFAHandler {
         present(alert, animated: true, completion: nil)
     }
     
-    func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (String) -> Void) {
+    func requestSMSCode(phoneNumber: String?, callback: @escaping (String) -> Void) {
         let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS on \(phoneNumber ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
@@ -149,7 +148,7 @@ extension ViewController: AuthenticationClientMFAHandler {
         present(alert, animated: true, completion: nil)
     }
     
-    func mfaSecurityQuestion(question: String, callback: @escaping (String) -> Void) {
+    func securityQuestion(question: String, callback: @escaping (String) -> Void) {
         let alert = UIAlertController(title: "MFA", message: "Please answer security question: \(question)", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Answer" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in

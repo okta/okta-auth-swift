@@ -17,18 +17,6 @@ public protocol AuthenticationClientDelegate: class {
     func transactionCancelled()
 }
 
-public protocol AuthenticationClientMFAHandler: class {
-    func mfaSelecFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void)
-    
-    func mfaPushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult)
-    
-    func mfaRequestTOTP(callback: @escaping (_ code: String) -> Void)
-    
-    func mfaRequestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void)
-    
-    func mfaSecurityQuestion(question: String, callback: @escaping (_ answer: String) -> Void)
-}
-
 /// Our SDK provides default state machine implementation,
 /// but developer able to implement custom handler by implementing
 /// `OktaStateMachineHandler` protocol. If `statusHandler` property set,
@@ -38,12 +26,25 @@ public protocol AuthenticationClientStatusHandler: class {
     func handleStatusChange()
 }
 
+public protocol AuthenticationClientMFAHandler: class {
+    func selectFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void)
+
+    func pushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult)
+
+    func requestTOTP(callback: @escaping (_ code: String) -> Void)
+
+    func requestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void)
+
+    func securityQuestion(question: String, callback: @escaping (_ answer: String) -> Void)
+}
+
 /// AuthenticationClient class is main entry point for developer
 
 public class AuthenticationClient {
 
-    public init(oktaDomain: URL, delegate: AuthenticationClientDelegate) {
+    public init(oktaDomain: URL, delegate: AuthenticationClientDelegate, mfaHandler: AuthenticationClientMFAHandler) {
         self.delegate = delegate
+        self.mfaHandler = mfaHandler
         self.api = OktaAPI(oktaDomain: oktaDomain)
     }
 
@@ -52,6 +53,8 @@ public class AuthenticationClient {
     public weak var mfaHandler: AuthenticationClientMFAHandler? = nil
     
     public var factorResultPollRate: TimeInterval = 3
+
+    private weak var factorResultPollTimer: Timer? = nil
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard currentRequest == nil else {
@@ -75,8 +78,9 @@ public class AuthenticationClient {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        cancelCurrentRequest()
-        currentRequest = api.cancelTransaction(stateToken: stateToken) { [weak self] result in
+
+        factorResultPollTimer?.invalidate()
+        api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }
             self?.resetStatus()
             self?.delegate?.transactionCancelled()
@@ -219,7 +223,7 @@ public class AuthenticationClient {
                 delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
                 return
             }
-            mfaHandler.mfaSelecFactor(factors: factors) { factor in
+            mfaHandler.selectFactor(factors: factors) { factor in
                 self.verify(factor: factor)
             }
             
@@ -232,23 +236,22 @@ public class AuthenticationClient {
                 guard let factorResult = factorResult else {
                     return
                 }
-                mfaHandler?.mfaPushStateUpdated(factorResult)
+                mfaHandler?.pushStateUpdated(factorResult)
                 switch factorResult {
                 case .waiting:
-                    DispatchQueue.main.asyncAfter(deadline: .now() + factorResultPollRate) {
-                        self.verify(factor: factor)
-                        return
+                    factorResultPollTimer = Timer.scheduledTimer(withTimeInterval: factorResultPollRate, repeats: false) { [weak self] _ in
+                        self?.verify(factor: factor)
                     }
                 default:
                     cancel()
                 }
             } else if factorType == .TOTP {
-                mfaHandler?.mfaRequestTOTP() { code in
+                mfaHandler?.requestTOTP() { code in
                     self.verify(factor: factor, passCode: code)
                 }
             } else if factorType == .sms {
                 let phoneNumber = factor.profile?.phoneNumber
-                mfaHandler?.mfaRequestSMSCode(phoneNumber: phoneNumber) { code in
+                mfaHandler?.requestSMSCode(phoneNumber: phoneNumber) { code in
                     self.verify(factor: factor, passCode: code)
                 }
             } else if factorType == .question {
@@ -256,7 +259,7 @@ public class AuthenticationClient {
                     delegate?.handleError(.wrongState("Can't find 'question' object in response"))
                     return
                 }
-                mfaHandler?.mfaSecurityQuestion(question: question) { answer in
+                mfaHandler?.securityQuestion(question: question) { answer in
                     self.verify(factor: factor, answer: answer)
                 }
             } else {
