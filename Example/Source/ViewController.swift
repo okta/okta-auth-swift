@@ -22,16 +22,27 @@ class ViewController: UIViewController {
     @IBOutlet private var usernameField: UITextField!
     @IBOutlet private var passwordField: UITextField!
     @IBOutlet private var loginButton: UIButton!
+    @IBOutlet private var cancelButton: UIButton!
+    @IBOutlet private var resetButton: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
 
     @IBAction private func loginTapped() {
         guard let username = usernameField.text,
             let password = passwordField.text else { return }
 
-        activityIndicator.startAnimating()
-        loginButton.isEnabled = false
-
         client.authenticate(username: username, password: password)
+
+        activityIndicator.startAnimating()
+        updateStatus()
+    }
+    
+    @IBAction private func cancelTapped() {
+        client.cancelCurrentRequest()
+        activityIndicator.stopAnimating()
+    }
+    
+    @IBAction private func resetTapped() {
+        client.resetStatus()
     }
 
     private func updateStatus() {
@@ -42,7 +53,6 @@ class ViewController: UIViewController {
 extension ViewController: AuthenticationClientDelegate {
     func handleSuccess(sessionToken: String) {
         activityIndicator.stopAnimating()
-        loginButton.isEnabled = true
         updateStatus()
 
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
@@ -52,7 +62,6 @@ extension ViewController: AuthenticationClientDelegate {
 
     func handleError(_ error: OktaError) {
         activityIndicator.stopAnimating()
-        loginButton.isEnabled = true
         updateStatus()
 
         let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: .alert)
@@ -76,7 +85,7 @@ extension ViewController: AuthenticationClientDelegate {
             }))
         } else {
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-                self.client.cancel()
+                self.client.cancelTransaction()
             }))
         }
         present(alert, animated: true, completion: nil)
@@ -122,14 +131,13 @@ extension ViewController: AuthenticationClientDelegate {
             callback(code)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.client.cancel()
+            self.client.cancelTransaction()
         }))
         present(alert, animated: true, completion: nil)
     }
     
     func transactionCancelled() {
         activityIndicator.stopAnimating()
-        loginButton.isEnabled = true
         updateStatus()
     }
 }

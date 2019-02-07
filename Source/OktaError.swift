@@ -16,6 +16,7 @@ public enum OktaError: Error {
     case authenicationStatusNotSupported(AuthStatus)
     case unexpectedResponse
     case wrongState(String)
+    case alreadyInProgress
 }
 
 public extension OktaError {
@@ -45,6 +46,8 @@ public extension OktaError {
             return "Unexpected response"
         case .wrongState:
             return "Wrong state"
+        case .alreadyInProgress:
+            return "Another request is in progress"
         }
     }
 }

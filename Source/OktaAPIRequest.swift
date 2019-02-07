@@ -35,6 +35,9 @@ public class OktaAPIRequest {
     public var urlParams: [String: String]?
     public var bodyParams: [String: Any]?
     public var additionalHeaders: [String: String]?
+    
+    public private(set) weak var task: URLSessionDataTask?
+    public private(set) var isCancelled: Bool = false
 
     public enum Method: String {
         case get, post, put, delete, options
@@ -71,21 +74,37 @@ public class OktaAPIRequest {
     }
 
     public func run() {
+        guard task == nil, isCancelled == false else {
+            return
+        }
         guard let urlRequest = buildRequest() else {
             completion(self, .error(.errorBuildingURLRequest))
             return
         }
 
         // `self` captured here to keep `OktaAPIRequest` retained until request is finished
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-            guard error == nil else {
-                self.handleResponseError(error: error!)
-                return
+        task = urlSession.dataTask(with: urlRequest) { data, response, error in
+            DispatchQueue.main.async {
+                guard self.isCancelled == false else {
+                    return
+                }
+                guard error == nil else {
+                    self.handleResponseError(error: error!)
+                    return
+                }
+                let response = response as! HTTPURLResponse
+                self.handleResponse(data: data, response: response)
             }
-            let response = response as! HTTPURLResponse
-            self.handleResponse(data: data, response: response)
         }
-        task.resume()
+        task?.resume()
+    }
+    
+    public func cancel() {
+        guard let task = task else {
+            return
+        }
+        isCancelled = true
+        task.cancel()
     }
 
     // MARK: - Private
@@ -121,8 +140,6 @@ public class OktaAPIRequest {
     }
 
     internal func callCompletion(_ result: Result) {
-        DispatchQueue.main.async {
-            self.completion(self, result)
-        }
+        self.completion(self, result)
     }
 }

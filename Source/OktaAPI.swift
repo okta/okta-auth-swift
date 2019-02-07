@@ -34,7 +34,7 @@ public class OktaAPI {
                                       token: String? = nil,
                                       deviceToken: String? = nil,
                                       deviceFingerprint: String? = nil,
-                                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.method = .post
         req.path = "/api/v1/authn"
@@ -56,16 +56,18 @@ public class OktaAPI {
             req.additionalHeaders = ["X-Device-Fingerprint": deviceFingerprint]
         }
         req.run()
+        return req
     }
 
     public func changePassword(stateToken: String,
                                oldPassword: String,
                                newPassword: String,
-                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/credentials/change_password"
         req.bodyParams = ["stateToken": stateToken, "oldPassword": oldPassword, "newPassword": newPassword]
         req.run()
+        return req
     }
     
     public func unlockAccount(username: String,
@@ -78,29 +80,32 @@ public class OktaAPI {
     }
 
     public func getTransactionState(stateToken: String,
-                                    completion: ((OktaAPIRequest.Result) -> Void)? =  nil) {
+                                    completion: ((OktaAPIRequest.Result) -> Void)? =  nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn"
         req.bodyParams = ["stateToken": stateToken]
         req.run()
+        return req
     }
 
     public func cancelTransaction(stateToken: String,
-                                  completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                                  completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/cancel"
         req.bodyParams = ["stateToken": stateToken]
         req.run()
+        return req
     }
     
     public func perform(link: LinksResponse.Link,
                         stateToken: String,
-                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
         req.method = .post
         req.bodyParams = ["stateToken": stateToken]
         req.run()
+        return req
     }
 
     // MARK: - Private
