@@ -84,15 +84,17 @@ public class OktaAPIRequest {
 
         // `self` captured here to keep `OktaAPIRequest` retained until request is finished
         task = urlSession.dataTask(with: urlRequest) { data, response, error in
-            guard self.isCancelled == false else {
-                return
+            DispatchQueue.main.async {
+                guard self.isCancelled == false else {
+                    return
+                }
+                guard error == nil else {
+                    self.handleResponseError(error: error!)
+                    return
+                }
+                let response = response as! HTTPURLResponse
+                self.handleResponse(data: data, response: response)
             }
-            guard error == nil else {
-                self.handleResponseError(error: error!)
-                return
-            }
-            let response = response as! HTTPURLResponse
-            self.handleResponse(data: data, response: response)
         }
         task?.resume()
     }
@@ -138,8 +140,6 @@ public class OktaAPIRequest {
     }
 
     internal func callCompletion(_ result: Result) {
-        DispatchQueue.main.async {
-            self.completion(self, result)
-        }
+        self.completion(self, result)
     }
 }
