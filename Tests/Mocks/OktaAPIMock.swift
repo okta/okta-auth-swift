@@ -1,5 +1,5 @@
 //
-//  OktaApiMock.swift
+//  OktaAPIMock.swift
 //  OktaAuthNative iOS Tests
 //
 //  Created by Ildar Abdullin on 2/5/19.
@@ -8,14 +8,14 @@
 import Foundation
 import OktaAuthNative
 
-class OktaApiMock: OktaAPI {
+class OktaAPIMock: OktaAPI {
     
     public init?(successCase: Bool, json: String?, resourceName: String?) {
         
         var jsonData: Data?
         if let resourceName = resourceName {
         
-            let url = Bundle.init(for: OktaApiMock.self).url(forResource: resourceName, withExtension: nil)
+            let url = Bundle.init(for: OktaAPIMock.self).url(forResource: resourceName, withExtension: nil)
             do {
                 jsonData = try Data(contentsOf: url!)
             } catch {
@@ -61,7 +61,26 @@ class OktaApiMock: OktaAPI {
         super.init(oktaDomain: URL(string: "https://dummy.url")!)
     }
     
-    override public func primaryAuthentication(username: String?, password: String?, audience: String?, relayState: String?, multiOptionalFactorEnroll: Bool, warnBeforePasswordExpired: Bool, token: String?, deviceToken: String?, deviceFingerprint: String?, completion: ((OktaAPIRequest.Result) -> Void)?) {
+    public convenience init?(successCase: Bool, json: String) {
+        
+        self.init(successCase: successCase, json: json, resourceName: nil)
+    }
+    
+    public convenience init?(successCase: Bool, resourceName: String) {
+        
+        self.init(successCase: successCase, json: nil, resourceName: resourceName)
+    }
+    
+    override public func primaryAuthentication(username: String?,
+                                               password: String?,
+                                               audience: String?,
+                                               relayState: String?,
+                                               multiOptionalFactorEnroll: Bool,
+                                               warnBeforePasswordExpired: Bool,
+                                               token: String?,
+                                               deviceToken: String?,
+                                               deviceFingerprint: String?,
+                                               completion: ((OktaAPIRequest.Result) -> Void)?) {
         
         DispatchQueue.main.async {
             completion?(self.result)
@@ -81,8 +100,6 @@ class OktaApiMock: OktaAPI {
             completion?(self.result)
         }
     }
-    
-    var json: String?
-    var resourceName: String?
-    private var result: OktaAPIRequest.Result
+
+    private let result: OktaAPIRequest.Result
 }

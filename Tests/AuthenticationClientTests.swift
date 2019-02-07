@@ -1,5 +1,5 @@
 //
-//  OktaUnitTests.swift
+//  AuthenticationClientTests.swift
 //  OktaAuthNative iOS Tests
 //
 //  Created by Ildar Abdullin on 2/4/19.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import OktaAuthNative
 
-class OktaUnitTests: XCTestCase {
+class AuthenticationClientTests: XCTestCase {
 
     var client: AuthenticationClient!
     var delegateVerifyer: AuthenticationClientDelegateVerifyer!
@@ -26,7 +26,7 @@ class OktaUnitTests: XCTestCase {
     
     func testAuthenticateBasicSuccessFlow() {
 
-        let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "PrimaryAuthResponse")
+        let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
@@ -54,7 +54,7 @@ class OktaUnitTests: XCTestCase {
     
     func testChangePasswordBasicSuccessFlow() {
         
-        let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "PrimaryAuthResponse")
+        let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
@@ -105,7 +105,7 @@ class OktaUnitTests: XCTestCase {
     
     func testCancellationBasicSuccessFlow() {
         
-        let oktaApiMock = OktaApiMock(successCase: true, json: nil, resourceName: "TransactionCancellationSuccess")
+        let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "TransactionCancellationSuccess")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
@@ -133,7 +133,7 @@ class OktaUnitTests: XCTestCase {
 
     func testCheckAPIResultErrorBasicAuthFlow() {
         
-        let oktaApiMock = OktaApiMock(successCase: false, json: nil, resourceName: "AuthenticationFailedError")
+        let oktaApiMock = OktaAPIMock(successCase: false, resourceName: "AuthenticationFailedError")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
