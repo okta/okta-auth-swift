@@ -100,12 +100,12 @@ open class OktaAPI {
     }
     
     open func verify(factorId: String,
-                       stateToken: String,
-                       answer: String? = nil,
-                       passCode: String? = nil,
-                       rememberDevice: Bool? = nil,
-                       autoPush: Bool? = nil,
-                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                     stateToken: String,
+                     answer: String? = nil,
+                     passCode: String? = nil,
+                     rememberDevice: Bool? = nil,
+                     autoPush: Bool? = nil,
+                     completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/factors/\(factorId)/verify"
         req.method = .post
