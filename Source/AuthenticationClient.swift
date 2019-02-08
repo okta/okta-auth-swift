@@ -45,11 +45,15 @@ public class AuthenticationClient {
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
         guard case .unauthenticated = status else {
             delegate?.handleError(.wrongState("'unauthenticated' state expected"))
             return
         }
-        api.primaryAuthentication(username: username,
+        currentRequest = api.primaryAuthentication(username: username,
                                   password: password,
                                   deviceFingerprint: deviceFingerprint) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
@@ -57,12 +61,13 @@ public class AuthenticationClient {
         }
     }
 
-    public func cancel() {
+    public func cancelTransaction() {
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        api.cancelTransaction(stateToken: stateToken) { [weak self] result in
+        cancelCurrentRequest()
+        currentRequest = api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }
             self?.resetStatus()
             self?.delegate?.transactionCancelled()
@@ -70,17 +75,25 @@ public class AuthenticationClient {
     }
     
     public func fetchTransactionState() {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        api.getTransactionState(stateToken: stateToken) { [weak self] result in
+        currentRequest = api.getTransactionState(stateToken: stateToken) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
     }
     
     public func changePassword(oldPassword: String, newPassword: String) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
@@ -92,7 +105,7 @@ public class AuthenticationClient {
                 delegate?.handleError(.wrongState("'passwordExpired' or 'passwordWarning' state expected"))
                 return
         }
-        api.changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword) { [weak self] result in
+        currentRequest = api.changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
@@ -106,14 +119,25 @@ public class AuthenticationClient {
     }
     
     public func perform(link: LinksResponse.Link) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        api.perform(link: link, stateToken: stateToken) { [weak self] result in
+        currentRequest = api.perform(link: link, stateToken: stateToken) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
+    }
+    
+    public func cancelCurrentRequest() {
+        guard let currentRequest = currentRequest else {
+            return
+        }
+        currentRequest.cancel()
     }
     
     private func updateStatus(response: OktaAPISuccessResponse) {
@@ -191,6 +215,8 @@ public class AuthenticationClient {
 
     /// Okta REST API client
     public private(set) var api: OktaAPI
+    
+    public private(set) weak var currentRequest: OktaAPIRequest?
 
     /// Current status of the authentication transaction.
     public private(set) var status: AuthStatus = .unauthenticated
