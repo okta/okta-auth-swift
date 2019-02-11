@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
+        client.mfaEnrollmentDelegate = self
         updateStatus()
     }
 
@@ -47,6 +48,12 @@ class ViewController: UIViewController {
 
     private func updateStatus() {
         stateLabel.text = client.status.description
+    }
+    
+    private func transactionCanceled() {
+        self.client.resetStatus()
+        self.activityIndicator.stopAnimating()
+        self.loginButton.isEnabled = true
     }
 }
 
@@ -100,14 +107,12 @@ extension ViewController: AuthenticationClientDelegate {
             callback(username, .email)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.client.resetStatus()
-            self.activityIndicator.stopAnimating()
-            self.loginButton.isEnabled = true
+            self.transactionCanceled()
         }))
         present(alert, animated: true, completion: nil)
     }
     
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: OktaAPISuccessResponse.FactorResult?) {
         guard factorType == .email else { return }
         
         if factorResult == .waiting {
@@ -139,5 +144,85 @@ extension ViewController: AuthenticationClientDelegate {
     func transactionCancelled() {
         activityIndicator.stopAnimating()
         updateStatus()
+    }
+}
+
+extension ViewController: MFAEnrollmentDelegate {
+    
+    func handleUnenrolledFactors(_ factors: [EmbeddedResponse.Factor], callback: ((EmbeddedResponse.Factor, FactorProfile) -> Void)?) {
+        updateStatus()
+        
+        let alert = UIAlertController(title: "Set up multifactor authentication", message: nil, preferredStyle: .actionSheet)
+        factors.forEach { factor in
+            alert.addAction(UIAlertAction(title: factor.factorType?.description, style: .default, handler: { _ in
+                self.setupFactor(factor) { profile in
+                    callback?(factor, profile)
+                }
+            }))
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancelTransaction()
+            self.transactionCanceled()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func handleActivateFactor(_ factor: EmbeddedResponse.Factor, callback: ((String) -> Void)?) {
+        guard let factorType = factor.factorType else {
+            return
+        }
+        
+        switch factorType {
+
+        case .TOTP, .sms, .call:
+            let alert = UIAlertController(title: "Please, enter code", message: nil, preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = "Code" }
+            alert.addAction(UIAlertAction(title: "Verify", style: .default, handler: { _ in
+                guard let code = alert.textFields?[0].text else {
+                    return
+                }
+                
+                callback?(code)
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                self.transactionCanceled()
+            }))
+            present(alert, animated: true, completion: nil)
+
+        default:
+            break
+        }
+        
+    }
+}
+
+private extension ViewController {
+    
+    func setupFactor(_ factor: EmbeddedResponse.Factor, callback: @escaping ((FactorProfile) -> Void)) {
+        guard let factorType = factor.factorType else {
+            return
+        }
+
+        switch factorType {
+            
+        case .sms:
+            let alert = UIAlertController(title: "Receive a code via SMS to authenticate", message: nil, preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = "Phone Number" }
+            alert.addAction(UIAlertAction(title: "Send Code", style: .default, handler: { _ in
+                guard let number = alert.textFields?[0].text else {
+                    return
+                }
+                
+                let smsProfile = FactorProfile.SMS(phoneNumber: number)
+                callback(FactorProfile.sms(smsProfile))
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                self.transactionCanceled()
+            }))
+            present(alert, animated: true, completion: nil)
+            
+        default:
+            break
+        }
     }
 }

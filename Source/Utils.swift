@@ -36,3 +36,15 @@ internal func deviceModel() -> String {
     }
     return model
 }
+
+internal extension Encodable {
+    func toDictionary() -> [String: Any] {
+        guard let data = try? JSONEncoder().encode(self),
+            let object = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
+            let dictionary = object as? [String: Any] else {
+            return [:]
+        }
+        
+        return dictionary
+    }
+}

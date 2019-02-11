@@ -4,12 +4,21 @@
 //
 //  Created by Alex on 13 Dec 18.
 //
-
 import Foundation
 
 // OktaAPISuceess and OktaAPIError are models for REST API json responses
-
 public struct OktaAPISuccessResponse: Codable {
+
+    // Provides additional context for the last factor verification attempt.
+    public enum FactorResult: String, Codable {
+        case waiting = "WAITING"
+        case cancelled = "CANCELLED"
+        case timeout = "TIMEOUT"
+        case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
+        case passcodeReplayed = "PASSCODE_REPLAYED"
+        case error = "ERROR"
+        case rejected = "REJECTED"
+    }
 
     public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
@@ -56,7 +65,7 @@ public struct LinksResponse: Codable {
     let prev: Link?
     let cancel: Link?
     let skip: Link?
-    let resend: Link?
+    let resend: [Link]?
 }
 
 public struct EmbeddedResponse: Codable {
@@ -64,6 +73,22 @@ public struct EmbeddedResponse: Codable {
     public let target: Target?
     public let policy: Policy?
     public let authentication: AuthenticationObject?
+    public let factor: Factor?
+    public let factors: [Factor]?
+    
+    public struct Factor: Codable {
+        public let id: String?
+        public let factorType: FactorType?
+        public let provider: FactorProvider?
+        public let vendorName: String?
+        public let profile: Profile?
+        
+        public struct Profile: Codable {
+            public let phoneNumber: String?
+            public let question: String?
+            public let questionText: String?
+        }
+    }
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
     public struct User: Codable {
@@ -206,19 +231,4 @@ extension AuthStatus : Codable {
         let stringValue = try container.decode(String.self)
         self = AuthStatus(raw: stringValue)
     }
-}
-
-// Provides additional context for the last factor verification attempt.
-public enum FactorResult: String, Codable {
-    case waiting = "WAITING"
-    case cancelled = "CANCELLED"
-    case timeout = "TIMEOUT"
-    case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
-    case passcodeReplayed = "PASSCODE_REPLAYED"
-    case error = "ERROR"
-}
-
-public enum FactorType: String, Codable {
-    case sms = "SMS"
-    case email = "EMAIL"
 }

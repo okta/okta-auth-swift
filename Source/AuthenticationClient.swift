@@ -18,9 +18,16 @@ public protocol AuthenticationClientDelegate: class {
     
     func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void)
     
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?)
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: OktaAPISuccessResponse.FactorResult?)
     
     func transactionCancelled()
+}
+
+public protocol MFAEnrollmentDelegate: class {
+
+    func handleUnenrolledFactors(_ factors: [EmbeddedResponse.Factor], callback: ((_ factor: EmbeddedResponse.Factor, _ profile: FactorProfile) -> Void)?)
+    
+    func handleActivateFactor(_ factor: EmbeddedResponse.Factor, callback: ((_ code: String) -> Void)?)
 }
 
 /// Our SDK provides default state machine implementation,
@@ -42,6 +49,7 @@ public class AuthenticationClient {
     }
 
     public weak var delegate: AuthenticationClientDelegate?
+    public weak var mfaEnrollmentDelegate: MFAEnrollmentDelegate?
     public weak var statusHandler: AuthenticationClientStatusHandler? = nil
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
@@ -118,6 +126,50 @@ public class AuthenticationClient {
         }
     }
     
+    public func enrollMFA(factor: EmbeddedResponse.Factor, profile: FactorProfile) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
+
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
+        
+        guard let factorType = factor.factorType, let provider = factor.provider else {
+            delegate?.handleError(.wrongState("Unknown factor type and/or provider"))
+            return
+        }
+        
+        currentRequest = api.enrollMFAFactor(stateToken: stateToken, factor: factorType, provider: provider, profile: profile) { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateStatus(response: response)
+        }
+    }
+    
+    public func activateFactor(_ factorId: String, passCode: String) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
+        
+        guard let stateToken = stateToken else {
+            delegate?.handleError(.wrongState("No state token"))
+            return
+        }
+        
+        guard let next = links?.next?.href else {
+            delegate?.handleError(.wrongState("Can't find 'next' link in response"))
+            return
+        }
+        
+        currentRequest = api.activateMFAFactor(url: next, stateToken: stateToken, factorId: factorId, code: passCode)  { [weak self] result in
+            guard let response = self?.checkAPIResultError(result) else { return }
+            self?.updateStatus(response: response)
+        }
+    }
+    
     public func perform(link: LinksResponse.Link) {
         guard currentRequest == nil else {
             delegate?.handleError(.alreadyInProgress)
@@ -186,6 +238,24 @@ public class AuthenticationClient {
                 self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
             })
             
+        case .MFAEnroll:
+            mfaEnrollmentDelegate?.handleUnenrolledFactors(embedded?.factors ?? [], callback: { [weak self] factor, profile in
+                self?.enrollMFA(factor: factor, profile: profile)
+            })
+            
+        case .MFAEnrollActivate:
+            guard let factor = embedded?.factor else {
+                self.delegate?.handleError(.wrongState("Response does not contain factor to activate"))
+                return
+            }
+            mfaEnrollmentDelegate?.handleActivateFactor(factor) { [weak self] code in
+                guard let factorId = factor.id else {
+                    self?.delegate?.handleError(.wrongState("Response does not contain factor identifier"))
+                    return
+                }
+                self?.activateFactor(factorId, passCode: code)
+            }
+            
         case .MFARequired:
             delegate?.handleMultifactorAuthenication(callback: { code in
                 print("Code: \(code)")
@@ -240,7 +310,7 @@ public class AuthenticationClient {
     public private(set) var factorType: FactorType?
     
     /// Provides additional context for the last factor verification attempt.
-    public private(set) var factorResult: FactorResult?
+    public private(set) var factorResult: OktaAPISuccessResponse.FactorResult?
 
     // MARK: - Private
     

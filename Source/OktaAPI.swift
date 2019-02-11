@@ -97,6 +97,38 @@ public class OktaAPI {
         return req
     }
     
+    public func enrollMFAFactor(stateToken: String,
+                                factor: FactorType,
+                                provider: FactorProvider,
+                                profile: FactorProfile,
+                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.path = "/api/v1/authn/factors"
+        req.bodyParams = [
+            "stateToken" : stateToken,
+            "factorType" : factor.rawValue,
+            "provider" : provider.rawValue,
+            "profile": profile.toDictionary()
+        ]
+        req.run()
+        return req
+    }
+    
+    public func activateMFAFactor(url: URL,
+                                  stateToken: String,
+                                  factorId: String,
+                                  code: String,
+                                  completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(url: url, completion: completion)
+        req.bodyParams = [
+            "stateToken" : stateToken,
+            "factorId" : factorId,
+            "passCode" : code
+        ]
+        req.run()
+        return req
+    }
+    
     public func perform(link: LinksResponse.Link,
                         stateToken: String,
                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
