@@ -6,6 +6,15 @@
 * [Need help?](#need-help)
 * [Getting started](#getting-started)
 * [Usage guide](#usage-guide)
+* [API Reference](#api-reference)
+    * [authenticate](#authenticate)
+    * [cancel](#cancel)
+    * [fetchTransactionState](#fetchTransactionState)
+    * [changePassword](#changePassword)
+    * [unlockAccount](#unlockAccount)
+    * [performLink](#performLink)
+    * [resetStatus](#resetStatus)
+    * [handleStatusChange](#handleStatusChange)
 * [Contributing](#contributing)
  
 The Okta Authentication SDK is a convenience wrapper around [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn.html).
@@ -53,8 +62,8 @@ Construct a client instance by passing it your Okta domain name and API token:
 let client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDomain}")!, delegate: self)
 ```
 [//]: # (end: createClient)
- 
-Hard-coding the Okta domain works for quick tests, but for real projects you should use a more secure way of storing these values (such as environment variables). 
+
+The client must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
 
 ## Usage guide
 
@@ -70,8 +79,140 @@ An authentication flow usually starts with a call to `authenticate`:
 client.authenticate(username: username, password: password)
 ```
 
-The client must implement the [`AuthenticationClientDelegate`](https://github.com/okta/okta-auth-swift/blob/dev/Source/AuthenticationClient.swift) protocol. This protocol allows the client to provide handlers for each state that the Authentication API may return. (This prevents you from needing a huge switch statement after each response.)
- 
+### AuthenticationClientDelegate
+
+This protocol allows the client to provide handlers for each state that the Authentication API may return. Also delegate is used to resolve states requiring user input (e.g. reset password when user should be prompted to enter new password).
+
+```swift
+extension ViewController: AuthenticationClientDelegate {
+    func handleSuccess(sessionToken: String) {
+        // update UI accordingly
+        presentAlert("Sign In Succeeded!")
+    }
+
+    func handleError(_ error: OktaError) {
+        // update UI accordingly
+        presentAlert("Sign In Failed!")
+    }
+
+    func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
+        // Ask user to enter old and new password, and resume flow by calling callback
+        presentChangePasswordForm(
+            canSkip: canSkip,
+            completion: { oldPassword, newPassword, skip in
+                callback(oldPassword, newPassword, false)
+            }
+            skip: {
+                callback(nil, nil, true)
+            }
+        )
+    }
+    
+    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void) {
+        let factor = ... // Factor implemented by the app 
+        presentUnlockForm() { username in
+            callback(username, factor)
+        }
+    }
+    
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
+        guard factorType == expected else {
+            // Error
+            return
+        } 
+        
+        switch factorResult {
+            // Update UI accordingly
+        }
+    }
+
+    func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
+        // Ask user to perform factor auth, enter auth code, and resume flow by calling callback
+        presentMFAForm(){ code in
+            guard let code = code else {
+                self.client.cancel()
+                return
+            }
+            
+            callback(code)
+        }
+    }
+    
+    func transactionCancelled() {
+        // Update UI accordingly
+    }
+}
+```
+
+## API Reference
+
+### authenticate
+
+Start the authentication flow by simply calling `authenticate` with user credentials. Use the [`handleStatusChange`](#handle-status-change) method to take more control over authentication flow.
+
+```swift
+    client.authenticate(username: username, password: password)
+```
+
+### cancel
+Call `cancel` to cancel active authentication flow. SDK will send cancel request and reset internal states upon completion. Use the  `transactionCancelled` delegate method to handle cancellation event. 
+
+```swift
+    client.cancel()
+```
+
+### fetchTransactionState
+
+To retrieves the current transaction state for a state token call `fetchTransactionState`. Useful when user has state token only and wants to know details about current transaction state.
+
+```swift
+    client.fetchTransactionState()
+```
+
+### changePassword
+
+When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the password. In case of  `PASSWORD_WARN` state user also can be prompted to change their password (however there could be another flow). To complete this operation call `changePassword`.
+
+```swift
+    client.changePassword(oldPassword: old, newPassword: new)
+```
+
+### unlockAccount
+
+When auth state is `LOCKED_OUT` user should be prompted to unlock their account. To complete this operation call `unlockAccount`. Use the  `handleRecoveryChallenge` delegate method to handle further processing of transaction. 
+
+```swift
+    client.unlockAccount(username, factorType)
+```
+
+### performLink
+
+If current auth state implies redirection to certain link, this can be implemented by calling `perform(link:)`. Note, you should use link from current auth state, in other case you can break consistency of current transaction. 
+
+```swift
+    perform(link: link)
+```
+
+### resetStatus
+
+To reset current auth state and clear all the stored credentials call `resetStatus`.
+
+```swift
+    client.resetStatus()
+```
+
+### handleStatusChange
+
+Default state machine implementation is described in `handleStatusChange`. Uses [`delegate`](#auth-client-delegate) to proceed auth flow if state requires user input.
+
+Usually clients are not expected to call this method by their own. It is called when AuthenticationClient receives updated auth state. Method is used to handle every possible auth state and therefore proceed authentication transaction. 
+
+Use the [`statusHandler`](#status-handler) property to provide custom implementation of state machine.
+
+```swift
+    client.handleStatusChange()
+```
+
 ## Contributing
  
 We're happy to accept contributions and PRs!

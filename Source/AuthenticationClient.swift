@@ -74,7 +74,7 @@ public class AuthenticationClient {
         }
     }
     
-    public func updateStatus() {
+    public func fetchTransactionState() {
         guard currentRequest == nil else {
             delegate?.handleError(.alreadyInProgress)
             return
