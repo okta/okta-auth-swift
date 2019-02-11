@@ -204,6 +204,23 @@ private extension ViewController {
         }
 
         switch factorType {
+        
+        case .call:
+            let alert = UIAlertController(title: "Follow phone call instructions to authenticate", message: nil, preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = "Phone Number" }
+            alert.addTextField { $0.placeholder = "Extension" }
+            alert.addAction(UIAlertAction(title: "Send Code", style: .default, handler: { _ in
+                guard let number = alert.textFields?[0].text else {
+                    return
+                }
+                
+                let callProfile = FactorProfile.Call(phoneNumber: number, phoneExtension: alert.textFields?[1].text)
+                callback(FactorProfile.call(callProfile))
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                self.transactionCanceled()
+            }))
+            present(alert, animated: true, completion: nil)
             
         case .sms:
             let alert = UIAlertController(title: "Receive a code via SMS to authenticate", message: nil, preferredStyle: .alert)

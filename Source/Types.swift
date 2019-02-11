@@ -95,7 +95,12 @@ public enum FactorProfile: Codable {
     
     public struct Call: Codable {
         public let phoneNumber: String
-        public let phoneExtension: String
+        public let phoneExtension: String?
+
+        public init(phoneNumber: String, phoneExtension: String?) {
+            self.phoneNumber = phoneNumber
+            self.phoneExtension = phoneExtension
+        }
     }
     
     public struct Token: Codable {
