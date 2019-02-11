@@ -54,7 +54,7 @@ public class AuthenticationClient {
     
     public var factorResultPollRate: TimeInterval = 3
 
-    private weak var factorResultPollTimer: Timer? = nil
+    private var factorResultPollTimer: Timer? = nil
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard currentRequest == nil else {
@@ -73,7 +73,15 @@ public class AuthenticationClient {
         }
     }
 
-    public func cancelTransaction() {
+    public func cancel() {
+        
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self .cancel()
+            }
+            return
+        }
+
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
@@ -239,9 +247,10 @@ public class AuthenticationClient {
                 mfaHandler?.pushStateUpdated(factorResult)
                 switch factorResult {
                 case .waiting:
-                    factorResultPollTimer = Timer.scheduledTimer(withTimeInterval: factorResultPollRate, repeats: false) { [weak self] _ in
+                    factorResultPollTimer = Timer(timeInterval: factorResultPollRate, repeats: false) { [weak self] _ in
                         self?.verify(factor: factor)
                     }
+                    RunLoop.main.add(factorResultPollTimer!, forMode: .default)
                 default:
                     cancel()
                 }
