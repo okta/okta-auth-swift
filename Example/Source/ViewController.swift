@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um-admin.oktapreview.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
         client.mfaEnrollmentDelegate = self
         updateStatus()
     }
