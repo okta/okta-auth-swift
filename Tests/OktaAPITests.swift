@@ -34,7 +34,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.primaryAuthentication(username: username, password: password)
+        let _ = api.primaryAuthentication(username: username, password: password)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -54,7 +54,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.primaryAuthentication(username: username, password: password, deviceFingerprint: deviceFingerprint)
+        let _ = api.primaryAuthentication(username: username, password: password, deviceFingerprint: deviceFingerprint)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -74,7 +74,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.changePassword(stateToken: token, oldPassword: oldpass, newPassword: newpass)
+        let _ = api.changePassword(stateToken: token, oldPassword: oldpass, newPassword: newpass)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -108,7 +108,50 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.getTransactionState(stateToken: token)
+        let _ = api.getTransactionState(stateToken: token)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+    
+    func testEnrollMFAFactor() {
+        let token = "token"
+        let factorType = FactorType.sms
+        let factorProvider = FactorProvider.okta
+        let phoneNumber = "12345678"
+        let profile = FactorProfile.sms(FactorProfile.SMS(phoneNumber: phoneNumber))
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.path, "/api/v1/authn/factors")
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            XCTAssertEqual(req.bodyParams?["factorType"] as? String, factorType.rawValue)
+            XCTAssertEqual(req.bodyParams?["provider"] as? String, factorProvider.rawValue)
+            XCTAssertEqual(req.bodyParams?["profile"] as? Dictionary, ["phoneNumber" : phoneNumber])
+            exp.fulfill()
+        }
+        
+        let _ = api.enrollMFAFactor(stateToken: token, factor: factorType, provider: factorProvider, profile: profile)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+    
+    func testActivateMFAFactor() {
+        let token = "token"
+        let factorId = "factorId"
+        let code = "code"
+        let url = URL(string: "http://test/url")!
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, url)
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            XCTAssertEqual(req.bodyParams?["factorId"] as? String, factorId)
+            XCTAssertEqual(req.bodyParams?["passCode"] as? String, code)
+            exp.fulfill()
+        }
+        
+        let _ = api.activateMFAFactor(url: url, stateToken: token, factorId: factorId, code: code)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -124,7 +167,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.cancelTransaction(stateToken: token)
+        let _ = api.cancelTransaction(stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -140,7 +183,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.perform(link: link, stateToken: token)
+        let _ = api.perform(link: link, stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }

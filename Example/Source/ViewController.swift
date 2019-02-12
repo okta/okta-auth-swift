@@ -39,7 +39,7 @@ class ViewController: UIViewController {
     
     @IBAction private func cancelTapped() {
         client.cancelCurrentRequest()
-        activityIndicator.stopAnimating()
+        resetUI()
     }
     
     @IBAction private func resetTapped() {
@@ -50,8 +50,7 @@ class ViewController: UIViewController {
         stateLabel.text = client.status.description
     }
     
-    private func transactionCanceled() {
-        self.client.resetStatus()
+    private func resetUI() {
         self.activityIndicator.stopAnimating()
         self.loginButton.isEnabled = true
     }
@@ -93,6 +92,7 @@ extension ViewController: AuthenticationClientDelegate {
         } else {
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
                 self.client.cancelTransaction()
+                self.resetUI()
             }))
         }
         present(alert, animated: true, completion: nil)
@@ -107,7 +107,8 @@ extension ViewController: AuthenticationClientDelegate {
             callback(username, .email)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.transactionCanceled()
+            self.client.cancelTransaction()
+            self.resetUI()
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -117,8 +118,7 @@ extension ViewController: AuthenticationClientDelegate {
         
         if factorResult == .waiting {
             client.resetStatus()
-            activityIndicator.stopAnimating()
-            loginButton.isEnabled = true
+            resetUI()
             updateStatus()
             
             let alert = UIAlertController(title: "Recovery email is sent!", message: "Please, follow the instructions from email to unlock your account.", preferredStyle: .alert)
@@ -162,7 +162,7 @@ extension ViewController: MFAEnrollmentDelegate {
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
             self.client.cancelTransaction()
-            self.transactionCanceled()
+            self.resetUI()
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -185,7 +185,8 @@ extension ViewController: MFAEnrollmentDelegate {
                 callback?(code)
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-                self.transactionCanceled()
+                self.client.cancelTransaction()
+                self.resetUI()
             }))
             present(alert, animated: true, completion: nil)
 
@@ -218,7 +219,8 @@ private extension ViewController {
                 callback(FactorProfile.call(callProfile))
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-                self.transactionCanceled()
+                self.client.cancelTransaction()
+                self.resetUI()
             }))
             present(alert, animated: true, completion: nil)
             
@@ -234,7 +236,8 @@ private extension ViewController {
                 callback(FactorProfile.sms(smsProfile))
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-                self.transactionCanceled()
+                self.client.cancelTransaction()
+                self.resetUI()
             }))
             present(alert, animated: true, completion: nil)
             
