@@ -232,3 +232,8 @@ extension AuthStatus : Codable {
         self = AuthStatus(raw: stringValue)
     }
 }
+
+public struct SecurityQuestion: Codable {
+    public let question: String
+    public let questionText: String
+}

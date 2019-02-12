@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um-admin.oktapreview.com")!, delegate: self)
         client.mfaEnrollmentDelegate = self
         updateStatus()
     }
@@ -54,6 +54,13 @@ class ViewController: UIViewController {
         self.activityIndicator.stopAnimating()
         self.loginButton.isEnabled = true
     }
+    
+    private func showError(_ error: OktaError){
+        let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
 }
 
 extension ViewController: AuthenticationClientDelegate {
@@ -70,9 +77,7 @@ extension ViewController: AuthenticationClientDelegate {
         activityIndicator.stopAnimating()
         updateStatus()
 
-        let alert = UIAlertController(title: "Error", message: error.description, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        self.showError(error)
     }
 
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
@@ -205,6 +210,29 @@ private extension ViewController {
         }
 
         switch factorType {
+        
+        case .question:
+            client.getSecurityQuestions { [weak self] (questions, error) in
+                guard let questions = questions else {
+                    self?.showError(error!)
+                    self?.client.cancelTransaction()
+                    self?.resetUI()
+                    return
+                }
+                
+                let controller = SecurityQuestionController.create(
+                    with: questions,
+                    completion: { [weak self] questionProfile in
+                        let profile = FactorProfile.question(questionProfile)
+                        self?.client.enrollMFA(factor: factor, profile: profile)
+                    },
+                    cancel: { [weak self] in
+                        self?.client.cancelTransaction()
+                        self?.resetUI()
+                    })
+
+                self?.present(controller, animated: true)
+            }
         
         case .call:
             let alert = UIAlertController(title: "Follow phone call instructions to authenticate", message: nil, preferredStyle: .alert)

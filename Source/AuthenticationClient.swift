@@ -185,6 +185,22 @@ public class AuthenticationClient {
         }
     }
     
+    public func getSecurityQuestions(_ completion: @escaping (([SecurityQuestion]?, OktaError?) -> Void)) {
+        guard let userId = embedded?.user?.id else {
+            completion(nil, OktaError.wrongState("Unknown User ID"))
+            return
+        }
+        
+        let _ = api.getSecurityQuestions(for: userId) { result in
+            switch result {
+            case .error(let error):
+                completion(nil, error)
+            case .success(let questions):
+                completion(questions, nil)
+            }
+        }
+    }
+    
     public func cancelCurrentRequest() {
         guard let currentRequest = currentRequest else {
             return
@@ -286,7 +302,7 @@ public class AuthenticationClient {
     /// Okta REST API client
     public private(set) var api: OktaAPI
     
-    public private(set) weak var currentRequest: OktaAPIRequest?
+    public private(set) weak var currentRequest: OktaAuthRequest?
 
     /// Current status of the authentication transaction.
     public private(set) var status: AuthStatus = .unauthenticated
@@ -322,7 +338,7 @@ public class AuthenticationClient {
         }
     }
     
-    private func checkAPIResultError(_ result: OktaAPIRequest.Result) -> OktaAPISuccessResponse? {
+    private func checkAPIResultError(_ result: OktaAuthRequest.Result) -> OktaAPISuccessResponse? {
         switch result {
         case .error(let error):
             delegate?.handleError(error)

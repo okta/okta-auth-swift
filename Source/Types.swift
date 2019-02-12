@@ -80,9 +80,15 @@ public extension FactorProvider {
 public enum FactorProfile: Codable {
     
     public struct Question: Codable {
-        public let question: String?
+        public let question: String
         public let questionText: String
         public let answer: String
+        
+        public init(question: String, questionText: String, answer: String) {
+            self.question = question
+            self.questionText = questionText
+            self.answer = answer
+        }
     }
     
     public struct SMS: Codable {

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2FFF34132212CC0C0098AB63 /* SecurityQuestionController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2FFF34152212CC0C0098AB63 /* SecurityQuestionController.storyboard */; };
+		2FFF34172212CC140098AB63 /* SecurityQuestionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFF34162212CC140098AB63 /* SecurityQuestionController.swift */; };
 		FAC5AEE821C7F9A600C3DC91 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */; };
 		FAC5AEEA21C7F9A600C3DC91 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */; };
 		FAC5AEED21C7F9A600C3DC91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC5AEEB21C7F9A600C3DC91 /* Main.storyboard */; };
@@ -31,6 +33,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2FFF34142212CC0C0098AB63 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/SecurityQuestionController.storyboard; sourceTree = "<group>"; };
+		2FFF34162212CC140098AB63 /* SecurityQuestionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityQuestionController.swift; sourceTree = "<group>"; };
 		FAC5AEE421C7F9A600C3DC91 /* OktaAuthNative Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OktaAuthNative Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -76,6 +80,8 @@
 				FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */,
 				FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */,
 				FAC5AEEB21C7F9A600C3DC91 /* Main.storyboard */,
+				2FFF34162212CC140098AB63 /* SecurityQuestionController.swift */,
+				2FFF34152212CC0C0098AB63 /* SecurityQuestionController.storyboard */,
 				FAC5AEEE21C7F9A700C3DC91 /* Assets.xcassets */,
 				FAC5AEF021C7F9A700C3DC91 /* LaunchScreen.storyboard */,
 				FAC5AEF321C7F9A700C3DC91 /* Info.plist */,
@@ -142,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FFF34132212CC0C0098AB63 /* SecurityQuestionController.storyboard in Resources */,
 				FAC5AEF221C7F9A700C3DC91 /* LaunchScreen.storyboard in Resources */,
 				FAC5AEEF21C7F9A700C3DC91 /* Assets.xcassets in Resources */,
 				FAC5AEED21C7F9A600C3DC91 /* Main.storyboard in Resources */,
@@ -155,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FFF34172212CC140098AB63 /* SecurityQuestionController.swift in Sources */,
 				FAC5AEEA21C7F9A600C3DC91 /* ViewController.swift in Sources */,
 				FAC5AEE821C7F9A600C3DC91 /* AppDelegate.swift in Sources */,
 			);
@@ -163,6 +171,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		2FFF34152212CC0C0098AB63 /* SecurityQuestionController.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2FFF34142212CC0C0098AB63 /* Base */,
+			);
+			name = SecurityQuestionController.storyboard;
+			sourceTree = "<group>";
+		};
 		FAC5AEEB21C7F9A600C3DC91 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

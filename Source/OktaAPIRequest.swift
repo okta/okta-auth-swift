@@ -9,10 +9,13 @@ import Foundation
 
 /// Constructs and runs Okta API URL request
 
-public class OktaAPIRequest {
+public typealias OktaAuthRequest = OktaAPIRequest<OktaAPISuccessResponse>
+public typealias SecurityQuestionsRequest = OktaAPIRequest<[SecurityQuestion]>
+
+public class OktaAPIRequest<T: Codable> {
 
     public enum Result {
-        case success(OktaAPISuccessResponse)
+        case success(T)
         case error(OktaError)
     }
 
@@ -128,7 +131,7 @@ public class OktaAPIRequest {
             return
         }
         do {
-            let successResponse = try decoder.decode(OktaAPISuccessResponse.self, from: data)
+            let successResponse = try decoder.decode(T.self, from: data)
             callCompletion(.success(successResponse))
         } catch let e {
             callCompletion(.error(.responseSerializationError(e)))
