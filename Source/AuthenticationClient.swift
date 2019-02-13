@@ -100,6 +100,7 @@ public class AuthenticationClient {
             delegate?.handleError(.alreadyInProgress)
             return
         }
+
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
@@ -173,6 +174,43 @@ public class AuthenticationClient {
             self?.updateStatus(response: response)
         }
     }
+
+    public func resetStatus() {
+        status = .unauthenticated
+        stateToken = nil
+        sessionToken = nil
+        factorResult = nil
+        links = nil
+        embedded = nil
+        performStatusChangeHandling()
+    }
+    
+    // MARK: - Internal
+
+    /// Okta REST API client
+    public internal(set) var api: OktaAPI
+
+    /// Current status of the authentication transaction.
+    public internal(set) var status: AuthStatus = .unauthenticated
+
+    /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
+    public internal(set) var stateToken: String?
+    
+    public internal(set) var factorResult: OktaAPISuccessResponse.FactorResult?
+
+    /// Link relations for the current status.
+    public internal(set) var links: LinksResponse?
+
+    // Embedded resources for current status
+    public internal(set) var embedded: EmbeddedResponse?
+
+    /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
+    public internal(set) var recoveryToken: String?
+
+    /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
+    public internal(set) var sessionToken: String?
+
+    // MARK: - Private
     
     public func cancelCurrentRequest() {
         guard let currentRequest = currentRequest else {
@@ -190,15 +228,13 @@ public class AuthenticationClient {
         embedded = response.embedded
         performStatusChangeHandling()
     }
-    
-    public func resetStatus() {
-        status = .unauthenticated
-        stateToken = nil
-        sessionToken = nil
-        factorResult = nil
-        links = nil
-        embedded = nil
-        performStatusChangeHandling()
+
+    private func performStatusChangeHandling() {
+        if let statusHandler = statusHandler {
+            statusHandler.handleStatusChange()
+        } else {
+            handleStatusChange()
+        }
     }
     
     public func handleStatusChange() {
@@ -326,7 +362,7 @@ public class AuthenticationClient {
             handleStatusChange()
         }
     }
-    
+
     private func checkAPIResultError(_ result: OktaAPIRequest.Result) -> OktaAPISuccessResponse? {
         switch result {
         case .error(let error):

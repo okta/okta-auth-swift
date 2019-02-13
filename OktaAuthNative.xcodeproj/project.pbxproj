@@ -15,6 +15,7 @@
 		2FF5C85E21D3B15000EECA75 /* AuthenticationFailedError in Resources */ = {isa = PBXBuildFile; fileRef = 2FF5C85D21D3B15000EECA75 /* AuthenticationFailedError */; };
 		2FF5C86721D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF5C86621D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift */; };
 		2FF5C86921D3BA1900EECA75 /* OktaAuthNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */; };
+		A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */; };
 		A1FCB128220908B70026F522 /* AuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB127220908B70026F522 /* AuthenticationClientTests.swift */; };
 		A1FCB12D220A43040026F522 /* AuthenticationClientDelegateVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12A220A419A0026F522 /* AuthenticationClientDelegateVerifyer.swift */; };
 		A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */; };
@@ -68,6 +69,7 @@
 		2FF5C86421D3BA1900EECA75 /* OktaAuthNative iOS Integration Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "OktaAuthNative iOS Integration Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FF5C86621D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthiOSIntegrationTests.swift; sourceTree = "<group>"; };
 		2FF5C86821D3BA1900EECA75 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientMFAHandlerVerifyer.swift; sourceTree = "<group>"; };
 		A1FCB127220908B70026F522 /* AuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientTests.swift; sourceTree = "<group>"; };
 		A1FCB12A220A419A0026F522 /* AuthenticationClientDelegateVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientDelegateVerifyer.swift; sourceTree = "<group>"; };
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 			children = (
 				A1FCB12A220A419A0026F522 /* AuthenticationClientDelegateVerifyer.swift */,
 				A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */,
+				A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -425,6 +428,7 @@
 				A1FCB128220908B70026F522 /* AuthenticationClientTests.swift in Sources */,
 				2F8D79F821E5FAE300CFDF12 /* OktaModelsTests.swift in Sources */,
 				F5CC2AD921D3C27700649C33 /* OktaAPIRequestTests.swift in Sources */,
+				A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */,
 				F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
