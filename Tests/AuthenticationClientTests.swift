@@ -34,6 +34,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.authenticate(username: "username", password: "password")
@@ -50,6 +51,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.stateToken = "state_token"
@@ -101,6 +103,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.stateToken = "state_token"
@@ -129,6 +132,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.stateToken = "state_token"
@@ -146,6 +150,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.stateToken = "state_token"
@@ -164,6 +169,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.stateToken = "state_token"
@@ -182,6 +188,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
 
         client.stateToken = "state_token"
@@ -218,6 +225,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
 
         client.authenticate(username: "username", password: "password")
@@ -249,6 +257,7 @@ class AuthenticationClientTests: XCTestCase {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
+            return
         }
         
         client.authenticate(username: "username", password: "password")
@@ -267,6 +276,57 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![1])
+        
+        XCTAssertTrue(mfaHandlerVerifyer.requestTOTPCalled, "Expected delegate method requestTOTPCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.requestTOTPCodeCompletion)
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        self.checkSuccessStateResults()
+    }
+    
+    func testAuthenticateWithSmsFactorSuccessFlow() {
+        
+        var oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthFactorsResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertNotNil(mfaHandlerVerifyer.factors)
+        XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "SendSMSChallenge")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
+        
+        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![2])
+        
+        mfaHandlerVerifyer.asyncExpectation = XCTestExpectation()
+        wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertNotNil(mfaHandlerVerifyer.phoneNumber)
+        XCTAssertTrue(mfaHandlerVerifyer.requestSMSCodeCalled, "Expected delegate method requestSMSCodeCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.requestSMSCodeCompletion)
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
+        
+        mfaHandlerVerifyer.requestSMSCodeCompletion!("1234")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         

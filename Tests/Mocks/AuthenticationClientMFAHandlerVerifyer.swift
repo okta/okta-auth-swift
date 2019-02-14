@@ -33,6 +33,7 @@ class AuthenticationClientMFAHandlerVerifyer: AuthenticationClientMFAHandler {
     func requestTOTP(callback: @escaping (_ code: String) -> Void) {
         
         requestTOTPCalled = true
+        self.requestTOTPCodeCompletion = callback
         if let expectation = asyncExpectation {
             expectation.fulfill()
         }
@@ -42,6 +43,7 @@ class AuthenticationClientMFAHandlerVerifyer: AuthenticationClientMFAHandler {
         
         requestSMSCodeCalled = true
         self.phoneNumber = phoneNumber
+        self.requestSMSCodeCompletion = callback
         if let expectation = asyncExpectation {
             expectation.fulfill()
         }
@@ -62,6 +64,8 @@ class AuthenticationClientMFAHandlerVerifyer: AuthenticationClientMFAHandler {
     var phoneNumber: String?
     var question: String?
     var selectFactorCompletion: ((_ factor: EmbeddedResponse.Factor) -> Void)?
+    var requestSMSCodeCompletion: ((_ code: String) -> Void)?
+    var requestTOTPCodeCompletion: ((_ code: String) -> Void)?
     
     var selectFactorCalled: Bool = false
     var pushStateUpdatedCalled: Bool = false
