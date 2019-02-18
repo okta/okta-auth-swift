@@ -145,12 +145,12 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
 
-        api.verify(factorId: factorId,
-                   stateToken: token,
-                   answer: answer,
-                   passCode: passCode,
-                   rememberDevice: rememberDevice,
-                   autoPush: autoPush)
+        api.verifyFactor(factorId: factorId,
+                         stateToken: token,
+                         answer: answer,
+                         passCode: passCode,
+                         rememberDevice: rememberDevice,
+                         autoPush: autoPush)
 
         wait(for: [exp], timeout: 60.0)
     }

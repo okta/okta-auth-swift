@@ -42,7 +42,7 @@ public protocol AuthenticationClientMFAHandler: class {
 
 public class AuthenticationClient {
 
-    public init(oktaDomain: URL, delegate: AuthenticationClientDelegate, mfaHandler: AuthenticationClientMFAHandler) {
+    public init(oktaDomain: URL, delegate: AuthenticationClientDelegate, mfaHandler: AuthenticationClientMFAHandler?) {
         self.delegate = delegate
         self.mfaHandler = mfaHandler
         self.api = OktaAPI(oktaDomain: oktaDomain)
@@ -88,6 +88,7 @@ public class AuthenticationClient {
         }
 
         factorResultPollTimer?.invalidate()
+
         api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }
             self?.resetStatus()
@@ -149,12 +150,12 @@ public class AuthenticationClient {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        api.verify(factorId: factor.id!,
-                   stateToken: stateToken,
-                   answer: answer,
-                   passCode: passCode,
-                   rememberDevice: rememberDevice,
-                   autoPush: autoPush) { [weak self] result in
+        api.verifyFactor(factorId: factor.id!,
+                         stateToken: stateToken,
+                         answer: answer,
+                         passCode: passCode,
+                         rememberDevice: rememberDevice,
+                         autoPush: autoPush) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
@@ -283,12 +284,13 @@ public class AuthenticationClient {
                 mfaHandler?.pushStateUpdated(factorResult)
                 switch factorResult {
                 case .waiting:
-                    factorResultPollTimer = Timer(timeInterval: factorResultPollRate, repeats: false) { [weak self] _ in
+                    let timer = Timer(timeInterval: factorResultPollRate, repeats: false) { [weak self] _ in
                         self?.verify(factor: factor)
                     }
-                    RunLoop.main.add(factorResultPollTimer!, forMode: .default)
+                    RunLoop.main.add(timer, forMode: .common)
+                    factorResultPollTimer = timer
                 default:
-                    cancel()
+                    break
                 }
             } else if factorType == .TOTP {
                 mfaHandler?.requestTOTP() { code in
