@@ -28,7 +28,7 @@ class OktaAuthiOSIntegrationTests: XCTestCase {
     func testPrimaryAuth_Success() {
         let exp = expectation(description: "Primary auth request should complete.")
         
-        oktaAPI.primaryAuthentication(
+        _ = oktaAPI.primaryAuthentication(
             username: username,
             password: password,
             audience: nil,
@@ -60,7 +60,7 @@ class OktaAuthiOSIntegrationTests: XCTestCase {
     func testPrimaryAuth_InvalidPassword() {
         let exp = expectation(description: "Primary auth request should complete.")
     
-        oktaAPI.primaryAuthentication(
+        _ = oktaAPI.primaryAuthentication(
             username: username,
             // generate invalid password
             password: UUID().uuidString,

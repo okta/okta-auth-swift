@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "your-org.okta.com")!, delegate: self)
+        client = AuthenticationClient(oktaDomain: URL(string: "https://lohika-um.oktapreview.com")!, delegate: self, mfaHandler: self)
         updateStatus()
     }
 
@@ -46,11 +46,16 @@ class ViewController: UIViewController {
     }
 
     private func updateStatus() {
-        stateLabel.text = client.status.description
+        if client.status == .MFAChallenge {
+            stateLabel.text = "\(client.status.description) (\(client.factorResult?.rawValue ?? "?"))"
+        } else {
+            stateLabel.text = client.status.description
+        }
     }
 }
 
 extension ViewController: AuthenticationClientDelegate {
+
     func handleSuccess(sessionToken: String) {
         activityIndicator.stopAnimating()
         updateStatus()
@@ -106,8 +111,8 @@ extension ViewController: AuthenticationClientDelegate {
         }))
         present(alert, animated: true, completion: nil)
     }
-    
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
+
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: OktaAPISuccessResponse.FactorResult?) {
         guard factorType == .email else { return }
         
         if factorResult == .waiting {
@@ -122,9 +127,35 @@ extension ViewController: AuthenticationClientDelegate {
         }
     }
 
-    func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
+    func transactionCancelled() {
+        activityIndicator.stopAnimating()
+        loginButton.isEnabled = true
         updateStatus()
-        let alert = UIAlertController(title: "MFA", message: "Please enter code from sms", preferredStyle: .alert)
+    }
+}
+
+extension ViewController: AuthenticationClientMFAHandler {
+    func selectFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
+        updateStatus()
+        
+        let alert = UIAlertController(title: "Select verification factor", message: nil, preferredStyle: .actionSheet)
+        factors.forEach { factor in
+            alert.addAction(UIAlertAction(title: factor.factorType?.description, style: .default, handler: { _ in
+                callback(factor)
+            }))
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancelTransaction()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func pushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
+        updateStatus()
+    }
+    
+    func requestTOTP(callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please enter TOTP code", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             guard let code = alert.textFields?[0].text else { return }
@@ -136,8 +167,29 @@ extension ViewController: AuthenticationClientDelegate {
         present(alert, animated: true, completion: nil)
     }
     
-    func transactionCancelled() {
-        activityIndicator.stopAnimating()
-        updateStatus()
+    func requestSMSCode(phoneNumber: String?, callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS on \(phoneNumber ?? "?")", preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Code" }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let code = alert.textFields?[0].text else { return }
+            callback(code)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancelTransaction()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func securityQuestion(question: String, callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: "MFA", message: "Please answer security question: \(question)", preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Answer" }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let code = alert.textFields?[0].text else { return }
+            callback(code)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.client.cancelTransaction()
+        }))
+        present(alert, animated: true, completion: nil)
     }
 }
