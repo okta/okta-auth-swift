@@ -81,11 +81,12 @@ open class OktaAPI {
     
     open func unlockAccount(username: String,
                             factor: FactorType,
-                            completion: ((OktaAPIRequest.Result) -> Void)? = nil) {
+                            completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/recovery/unlock"
         req.bodyParams = ["username": username, "factorType": factor.rawValue]
         req.run()
+        return req
     }
 
     open func cancelTransaction(stateToken: String,

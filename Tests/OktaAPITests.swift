@@ -34,7 +34,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.primaryAuthentication(username: username, password: password)
+        _ = api.primaryAuthentication(username: username, password: password)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -54,7 +54,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.primaryAuthentication(username: username, password: password, deviceFingerprint: deviceFingerprint)
+        _ = api.primaryAuthentication(username: username, password: password, deviceFingerprint: deviceFingerprint)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -74,7 +74,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.changePassword(stateToken: token, oldPassword: oldpass, newPassword: newpass)
+        _ = api.changePassword(stateToken: token, oldPassword: oldpass, newPassword: newpass)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -90,7 +90,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.getTransactionState(stateToken: token)
+        _ = api.getTransactionState(stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -106,7 +106,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.cancelTransaction(stateToken: token)
+        _ = api.cancelTransaction(stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -122,7 +122,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
         
-        api.perform(link: link, stateToken: token)
+        _ = api.perform(link: link, stateToken: token)
         
         wait(for: [exp], timeout: 60.0)
     }
@@ -145,7 +145,7 @@ class OktaAPITests : XCTestCase {
             exp.fulfill()
         }
 
-        api.verifyFactor(factorId: factorId,
+        _ = api.verifyFactor(factorId: factorId,
                          stateToken: token,
                          answer: answer,
                          passCode: passCode,

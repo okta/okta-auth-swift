@@ -226,6 +226,11 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertNotNil(mfaHandlerVerifyer.factors)
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
+
+        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![1])
+        
+        XCTAssertTrue(mfaHandlerVerifyer.requestTOTPCalled, "Expected delegate method requestTOTPCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.requestTOTPCodeCompletion)
         
         oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
         if let oktaApiMock = oktaApiMock {
@@ -234,10 +239,7 @@ class AuthenticationClientTests: XCTestCase {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![1])
-        
-        XCTAssertTrue(mfaHandlerVerifyer.requestTOTPCalled, "Expected delegate method requestTOTPCalled to be called")
-        XCTAssertNotNil(mfaHandlerVerifyer.requestTOTPCodeCompletion)
+        mfaHandlerVerifyer.requestTOTPCodeCompletion!("1234")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
