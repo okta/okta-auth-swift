@@ -77,6 +77,7 @@
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
 		A1FCB130220B93410026F522 /* TransactionCancellationSuccess */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TransactionCancellationSuccess; sourceTree = "<group>"; };
 		F5A9BAD621F9C255002DB437 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		2FFF3428221C357E0098AB63 /* OktaAuthNative.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = OktaAuthNative.podspec; sourceTree = "<group>"; };
 		F5CC2AD821D3C27700649C33 /* OktaAPIRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIRequestTests.swift; sourceTree = "<group>"; };
 		F5CC2ADA21D5056D00649C33 /* OktaAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPITests.swift; sourceTree = "<group>"; };
 		FA42E2E721C9270400325723 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
@@ -165,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				2F8D79F321D6601600CFDF12 /* README.md */,
+				2FFF3428221C357E0098AB63 /* OktaAuthNative.podspec */,
 				FA4ED9A421C149FC00A065A1 /* Source */,
 				FA500E4621C7FCD800444B1D /* Tests */,
 				2FF5C86521D3BA1900EECA75 /* IntegrationTests */,
