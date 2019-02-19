@@ -82,12 +82,12 @@ public class AuthenticationClient {
             return
         }
 
+        self.factorResultPollTimer?.invalidate()
+
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-
-        factorResultPollTimer?.invalidate()
 
         api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }

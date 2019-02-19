@@ -108,13 +108,13 @@ class OktaAPIMock: OktaAPI {
         }
     }
     
-    override public func verify(factorId: String,
-                                stateToken: String,
-                                answer: String?,
-                                passCode: String?,
-                                rememberDevice: Bool?,
-                                autoPush: Bool?,
-                                completion: ((OktaAPIRequest.Result) -> Void)?) {
+    override public func verifyFactor(factorId: String,
+                                      stateToken: String,
+                                      answer: String?,
+                                      passCode: String?,
+                                      rememberDevice: Bool?,
+                                      autoPush: Bool?,
+                                      completion: ((OktaAPIRequest.Result) -> Void)?) {
         
         DispatchQueue.main.async {
             completion?(self.result)
