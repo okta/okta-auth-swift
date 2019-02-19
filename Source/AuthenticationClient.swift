@@ -14,6 +14,10 @@ public protocol AuthenticationClientDelegate: class {
 
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void)
     
+    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void)
+
+    func handleRecoveryChallenge(factorType: FactorType?, factorResult: OktaAPISuccessResponse.FactorResult?)
+
     func transactionCancelled()
 }
 
@@ -53,8 +57,36 @@ public class AuthenticationClient {
     public weak var mfaHandler: AuthenticationClientMFAHandler? = nil
     
     public var factorResultPollRate: TimeInterval = 3
-
-    private var factorResultPollTimer: Timer? = nil
+    
+    // MARK: - Internal
+    
+    /// Okta REST API client
+    public internal(set) var api: OktaAPI
+    
+    public internal(set) weak var currentRequest: OktaAPIRequest?
+    
+    /// Current status of the authentication transaction.
+    public internal(set) var status: AuthStatus = .unauthenticated
+    
+    /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
+    public internal(set) var stateToken: String?
+    
+    public internal(set) var factorResult: OktaAPISuccessResponse.FactorResult?
+    
+    /// Link relations for the current status.
+    public internal(set) var links: LinksResponse?
+    
+    /// Embedded resources for current status
+    public internal(set) var embedded: EmbeddedResponse?
+    
+    /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
+    public internal(set) var recoveryToken: String?
+    
+    /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
+    public internal(set) var sessionToken: String?
+    
+    /// Factor type that is related to the current state
+    public private(set) var factorType: FactorType?
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard currentRequest == nil else {
@@ -73,11 +105,10 @@ public class AuthenticationClient {
         }
     }
 
-    public func cancel() {
-        
+    public func cancelTransaction() {
         if !Thread.isMainThread {
             DispatchQueue.main.async {
-                self .cancel()
+                self.cancelTransaction()
             }
             return
         }
@@ -89,7 +120,8 @@ public class AuthenticationClient {
             return
         }
 
-        api.cancelTransaction(stateToken: stateToken) { [weak self] result in
+        cancelCurrentRequest()
+        currentRequest = api.cancelTransaction(stateToken: stateToken) { [weak self] result in
             guard let _ = self?.checkAPIResultError(result) else { return }
             self?.resetStatus()
             self?.delegate?.transactionCancelled()
@@ -146,16 +178,20 @@ public class AuthenticationClient {
                        passCode: String? = nil,
                        rememberDevice: Bool? = nil,
                        autoPush: Bool? = nil) {
+        guard currentRequest == nil else {
+            delegate?.handleError(.alreadyInProgress)
+            return
+        }
         guard let stateToken = stateToken else {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        api.verifyFactor(factorId: factor.id!,
-                         stateToken: stateToken,
-                         answer: answer,
-                         passCode: passCode,
-                         rememberDevice: rememberDevice,
-                         autoPush: autoPush) { [weak self] result in
+        currentRequest = api.verifyFactor(factorId: factor.id!,
+                                          stateToken: stateToken,
+                                          answer: answer,
+                                          passCode: passCode,
+                                          rememberDevice: rememberDevice,
+                                          autoPush: autoPush) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
@@ -183,33 +219,9 @@ public class AuthenticationClient {
         factorResult = nil
         links = nil
         embedded = nil
+        factorType = nil
         performStatusChangeHandling()
     }
-    
-    // MARK: - Internal
-
-    /// Okta REST API client
-    public internal(set) var api: OktaAPI
-
-    /// Current status of the authentication transaction.
-    public internal(set) var status: AuthStatus = .unauthenticated
-
-    /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
-    public internal(set) var stateToken: String?
-    
-    public internal(set) var factorResult: OktaAPISuccessResponse.FactorResult?
-
-    /// Link relations for the current status.
-    public internal(set) var links: LinksResponse?
-
-    // Embedded resources for current status
-    public internal(set) var embedded: EmbeddedResponse?
-
-    /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
-    public internal(set) var recoveryToken: String?
-
-    /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
-    public internal(set) var sessionToken: String?
 
     // MARK: - Private
     
@@ -219,25 +231,7 @@ public class AuthenticationClient {
         }
         currentRequest.cancel()
     }
-    
-    private func updateStatus(response: OktaAPISuccessResponse) {
-        status = response.status ?? .unauthenticated
-        stateToken = response.stateToken
-        sessionToken = response.sessionToken
-        factorResult = response.factorResult
-        links = response.links
-        embedded = response.embedded
-        performStatusChangeHandling()
-    }
 
-    private func performStatusChangeHandling() {
-        if let statusHandler = statusHandler {
-            statusHandler.handleStatusChange()
-        } else {
-            handleStatusChange()
-        }
-    }
-    
     public func handleStatusChange() {
         switch status {
             
@@ -253,12 +247,20 @@ public class AuthenticationClient {
                     self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
                 }
             })
-            
+
+        case .recoveryChallenge:
+            self.delegate?.handleRecoveryChallenge(factorType: self.factorType, factorResult: self.factorResult)
+
+        case .lockedOut:
+            delegate?.handleAccountLockedOut { [weak self] username, factor in
+                self?.unlockAccount(username, factor: factor)
+            }
+
         case .passwordExpired:
             delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
                 self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
             })
-            
+
         case .MFARequired:
             guard let mfaHandler = mfaHandler else {
                 delegate?.handleError(.authenicationStatusNotSupported(status))
@@ -327,35 +329,10 @@ public class AuthenticationClient {
             delegate?.handleError(.authenicationStatusNotSupported(status))
         }
     }
-    
-    // MARK: - Internal
-
-    /// Okta REST API client
-    public private(set) var api: OktaAPI
-    
-    public private(set) weak var currentRequest: OktaAPIRequest?
-
-    /// Current status of the authentication transaction.
-    public internal(set) var status: AuthStatus = .unauthenticated
-
-    /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
-    public internal(set) var stateToken: String?
-    
-    public internal(set) var factorResult: OktaAPISuccessResponse.FactorResult?
-
-    /// Link relations for the current status.
-    public internal(set) var links: LinksResponse?
-
-    // Embedded resources for current status
-    public internal(set) var embedded: EmbeddedResponse?
-
-    /// One-time token issued as recoveryToken response parameter when a recovery transaction transitions to the RECOVERY status.
-    public internal(set) var recoveryToken: String?
-
-    /// One-time token isuued as `sessionToken` response parameter when an authenication transaction completes with the `SUCCESS` status.
-    public internal(set) var sessionToken: String?
 
     // MARK: - Private
+    
+    private var factorResultPollTimer: Timer? = nil
     
     private func performStatusChangeHandling() {
         if let statusHandler = statusHandler {
@@ -373,5 +350,16 @@ public class AuthenticationClient {
         case .success(let success):
             return success
         }
+    }
+    
+    private func updateStatus(response: OktaAPISuccessResponse) {
+        status = response.status ?? .unauthenticated
+        stateToken = response.stateToken
+        sessionToken = response.sessionToken
+        factorResult = response.factorResult
+        links = response.links
+        embedded = response.embedded
+        factorType = response.factorType
+        performStatusChangeHandling()
     }
 }

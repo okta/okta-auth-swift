@@ -85,7 +85,7 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         client.stateToken = "state_token"
-        client.cancel()
+        client.cancelTransaction()
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -114,7 +114,7 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         client.stateToken = "state_token"
-        client.fetchTransactionStatus()
+        client.fetchTransactionState()
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         

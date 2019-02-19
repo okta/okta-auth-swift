@@ -17,6 +17,7 @@ public enum FactorType: String, Codable {
     case tokenHardware = "token:hardware"
     case web = "web"
     case u2f = "u2f"
+    case email = "email"
 }
 
 public enum FactorProvider: String, Codable {
@@ -50,6 +51,8 @@ public extension FactorType {
             return "Web"
         case .u2f:
             return "U2F"
+        case .email:
+            return "Email"
         }
     }
 }

@@ -71,61 +71,103 @@ class OktaAPIMock: OktaAPI {
         self.init(successCase: successCase, json: nil, resourceName: resourceName)
     }
     
-    override public func primaryAuthentication(username: String?,
-                                               password: String?,
-                                               audience: String?,
-                                               relayState: String?,
-                                               multiOptionalFactorEnroll: Bool,
-                                               warnBeforePasswordExpired: Bool,
-                                               token: String?,
-                                               deviceToken: String?,
-                                               deviceFingerprint: String?,
-                                               completion: ((OktaAPIRequest.Result) -> Void)?) {
+    @discardableResult override public func primaryAuthentication(username: String?,
+                                                                  password: String?,
+                                                                  audience: String?,
+                                                                  relayState: String?,
+                                                                  multiOptionalFactorEnroll: Bool,
+                                                                  warnBeforePasswordExpired: Bool,
+                                                                  token: String?,
+                                                                  deviceToken: String?,
+                                                                  deviceFingerprint: String?,
+                                                                  completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
+    
+    @discardableResult override public func cancelTransaction(stateToken: String,
+                                                              completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         
         DispatchQueue.main.async {
             completion?(self.result)
         }
-    }
-    
-    override public func cancelTransaction(stateToken: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
         
-        DispatchQueue.main.async {
-            completion?(self.result)
-        }
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
     }
     
-    override public func changePassword(stateToken: String, oldPassword: String, newPassword: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
+    @discardableResult override public func changePassword(stateToken: String,
+                                                           oldPassword: String,
+                                                           newPassword: String,
+                                                           completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
      
         DispatchQueue.main.async {
             completion?(self.result)
         }
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
     }
     
-    override public func getTransactionState(stateToken: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
+    @discardableResult override public func getTransactionState(stateToken: String,
+                                                                completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         
         DispatchQueue.main.async {
             completion?(self.result)
         }
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
     }
     
-    override public func verifyFactor(factorId: String,
-                                      stateToken: String,
-                                      answer: String?,
-                                      passCode: String?,
-                                      rememberDevice: Bool?,
-                                      autoPush: Bool?,
-                                      completion: ((OktaAPIRequest.Result) -> Void)?) {
+    @discardableResult override public func verifyFactor(factorId: String,
+                                                         stateToken: String,
+                                                         answer: String?,
+                                                         passCode: String?,
+                                                         rememberDevice: Bool?,
+                                                         autoPush: Bool?,
+                                                         completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         
         DispatchQueue.main.async {
             completion?(self.result)
         }
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
     }
     
-    override public func perform(link: LinksResponse.Link, stateToken: String, completion: ((OktaAPIRequest.Result) -> Void)?) {
+    @discardableResult override public func perform(link: LinksResponse.Link,
+                                                    stateToken: String,
+                                                    completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         
         DispatchQueue.main.async {
             completion?(self.result)
         }
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
     }
 
     private let result: OktaAPIRequest.Result
