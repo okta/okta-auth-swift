@@ -25,16 +25,16 @@ open class OktaAPI {
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
 
-    open func primaryAuthentication(username: String?,
-                                    password: String?,
-                                    audience: String? = nil,
-                                    relayState: String? = nil,
-                                    multiOptionalFactorEnroll: Bool = true,
-                                    warnBeforePasswordExpired: Bool = true,
-                                    token: String? = nil,
-                                    deviceToken: String? = nil,
-                                    deviceFingerprint: String? = nil,
-                                    completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func primaryAuthentication(username: String?,
+                                                       password: String?,
+                                                       audience: String? = nil,
+                                                       relayState: String? = nil,
+                                                       multiOptionalFactorEnroll: Bool = true,
+                                                       warnBeforePasswordExpired: Bool = true,
+                                                       token: String? = nil,
+                                                       deviceToken: String? = nil,
+                                                       deviceFingerprint: String? = nil,
+                                                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.method = .post
         req.path = "/api/v1/authn"
@@ -59,10 +59,10 @@ open class OktaAPI {
         return req
     }
 
-    open func changePassword(stateToken: String,
-                             oldPassword: String,
-                             newPassword: String,
-                             completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func changePassword(stateToken: String,
+                                                oldPassword: String,
+                                                newPassword: String,
+                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/credentials/change_password"
         req.bodyParams = ["stateToken": stateToken, "oldPassword": oldPassword, "newPassword": newPassword]
@@ -70,8 +70,8 @@ open class OktaAPI {
         return req
     }
 
-    open func getTransactionState(stateToken: String,
-                                  completion: ((OktaAPIRequest.Result) -> Void)? =  nil) -> OktaAPIRequest {
+    @discardableResult open func getTransactionState(stateToken: String,
+                                                     completion: ((OktaAPIRequest.Result) -> Void)? =  nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn"
         req.bodyParams = ["stateToken": stateToken]
@@ -79,9 +79,9 @@ open class OktaAPI {
         return req
     }
     
-    open func unlockAccount(username: String,
-                            factor: FactorType,
-                            completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func unlockAccount(username: String,
+                                               factor: FactorType,
+                                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/recovery/unlock"
         req.bodyParams = ["username": username, "factorType": factor.rawValue]
@@ -89,8 +89,8 @@ open class OktaAPI {
         return req
     }
 
-    open func cancelTransaction(stateToken: String,
-                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func cancelTransaction(stateToken: String,
+                                                   completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/cancel"
         req.bodyParams = ["stateToken": stateToken]
@@ -98,9 +98,9 @@ open class OktaAPI {
         return req
     }
     
-    open func perform(link: LinksResponse.Link,
-                      stateToken: String,
-                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func perform(link: LinksResponse.Link,
+                                         stateToken: String,
+                                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
         req.method = .post
@@ -109,13 +109,13 @@ open class OktaAPI {
         return req
     }
     
-    open func verifyFactor(factorId: String,
-                           stateToken: String,
-                           answer: String? = nil,
-                           passCode: String? = nil,
-                           rememberDevice: Bool? = nil,
-                           autoPush: Bool? = nil,
-                           completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+    @discardableResult open func verifyFactor(factorId: String,
+                                              stateToken: String,
+                                              answer: String? = nil,
+                                              passCode: String? = nil,
+                                              rememberDevice: Bool? = nil,
+                                              autoPush: Bool? = nil,
+                                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.path = "/api/v1/authn/factors/\(factorId)/verify"
         req.method = .post

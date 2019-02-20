@@ -53,6 +53,7 @@ class AuthenticationClientMFAHandlerVerifyer: AuthenticationClientMFAHandler {
         
         securityQuestionCalled = true
         self.question = question
+        self.securityQuestionCompletion = callback
         if let expectation = asyncExpectation {
             expectation.fulfill()
         }
@@ -66,6 +67,7 @@ class AuthenticationClientMFAHandlerVerifyer: AuthenticationClientMFAHandler {
     var selectFactorCompletion: ((_ factor: EmbeddedResponse.Factor) -> Void)?
     var requestSMSCodeCompletion: ((_ code: String) -> Void)?
     var requestTOTPCodeCompletion: ((_ code: String) -> Void)?
+    var securityQuestionCompletion: ((_ answer: String) -> Void)?
     
     var selectFactorCalled: Bool = false
     var pushStateUpdatedCalled: Bool = false

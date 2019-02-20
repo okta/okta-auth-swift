@@ -200,7 +200,7 @@ public class AuthenticationClient {
             self?.updateStatus(response: response)
         }
     }
-    
+
     public func perform(link: LinksResponse.Link) {
         guard currentRequest == nil else {
             delegate?.handleError(.alreadyInProgress)
@@ -278,6 +278,14 @@ public class AuthenticationClient {
                 if factor.factorType == .TOTP {
                     mfaHandler.requestTOTP() { code in
                         self.verify(factor: factor, passCode: code)
+                    }
+                } else if factor.factorType == .question {
+                    guard let question = factor.profile?.questionText else {
+                        self.delegate?.handleError(.wrongState("Can't find 'question' object in response"))
+                        return
+                    }
+                    mfaHandler.securityQuestion(question: question) { answer in
+                        self.verify(factor: factor, answer: answer)
                     }
                 } else {
                     self.verify(factor: factor)
