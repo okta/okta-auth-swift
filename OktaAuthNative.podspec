@@ -9,22 +9,12 @@ Integrate your native app with Okta.
   s.homepage         = 'https://github.com/okta/okta-auth-swift'
   s.license          = { :type => 'APACHE2', :file => 'LICENSE' }
   s.authors          = { "Okta Developers" => "developer@okta.com"}
-
-  s.platforms    = { :ios => "10.0", :osx => "10.14" }
-
   s.source           = { :git => 'https://github.com/okta/okta-auth-swift.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '10.0'
-  s.osx.deployment_target = '10.14'
-
   s.source_files = 'Source/**/*'
-
-  s.ios.exclude_files = [
+  s.exclude_files = [
     'Source/*_macOS*',
-    'Source/Info.plist'
-  ]
-  s.osx.exclude_files = [
-    'Source/*_iOS*',
     'Source/Info.plist'
   ]
 end
