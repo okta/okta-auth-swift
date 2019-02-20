@@ -79,24 +79,6 @@ class OktaAPITests : XCTestCase {
         wait(for: [exp], timeout: 60.0)
     }
     
-    func testUnlockAccount() {
-        let username = "test_username"
-        let factorType = FactorType.email
-        
-        let exp = XCTestExpectation()
-        api.commonCompletion = { req, _ in
-            XCTAssertEqual(req.baseURL, self.url)
-            XCTAssertEqual(req.path, "/api/v1/authn/recovery/unlock")
-            XCTAssertEqual(req.bodyParams?["username"] as? String, username)
-            XCTAssertEqual(req.bodyParams?["factorType"] as? String, factorType.rawValue)
-            exp.fulfill()
-        }
-        
-        api.unlockAccount(username: username, factor: factorType)
-        
-        wait(for: [exp], timeout: 60.0)
-    }
-    
     func testGetTransactionState() {
         let token = "token"
         
@@ -142,6 +124,34 @@ class OktaAPITests : XCTestCase {
         
         api.perform(link: link, stateToken: token)
         
+        wait(for: [exp], timeout: 60.0)
+    }
+
+    func testMFAVerify() {
+        let factorId = "id"
+        let token = "token"
+        let answer = "answer"
+        let passCode = "passCode"
+        let rememberDevice = true
+        let autoPush = false
+
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.urlParams?["rememberDevice"], "true")
+            XCTAssertEqual(req.urlParams?["autoPush"], "false")
+            XCTAssertEqual(req.bodyParams?["stateToken"] as? String, token)
+            XCTAssertEqual(req.bodyParams?["answer"] as? String, answer)
+            XCTAssertEqual(req.bodyParams?["passCode"] as? String, passCode)
+            exp.fulfill()
+        }
+
+        api.verifyFactor(factorId: factorId,
+                         stateToken: token,
+                         answer: answer,
+                         passCode: passCode,
+                         rememberDevice: rememberDevice,
+                         autoPush: autoPush)
+
         wait(for: [exp], timeout: 60.0)
     }
 }
