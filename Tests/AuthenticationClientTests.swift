@@ -226,6 +226,11 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertNotNil(mfaHandlerVerifyer.factors)
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
+
+        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![1])
+        
+        XCTAssertTrue(mfaHandlerVerifyer.requestTOTPCalled, "Expected delegate method requestTOTPCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.requestTOTPCodeCompletion)
         
         oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
         if let oktaApiMock = oktaApiMock {
@@ -234,10 +239,7 @@ class AuthenticationClientTests: XCTestCase {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![1])
-        
-        XCTAssertTrue(mfaHandlerVerifyer.requestTOTPCalled, "Expected delegate method requestTOTPCalled to be called")
-        XCTAssertNotNil(mfaHandlerVerifyer.requestTOTPCodeCompletion)
+        mfaHandlerVerifyer.requestTOTPCodeCompletion!("1234")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -334,6 +336,45 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         client.verify(factor: mfaHandlerVerifyer.factors![2], passCode: "1234")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        self.checkSuccessStateResults()
+    }
+    
+    func testAuthenticateWithQuestionFactorSuccessFlow() {
+        
+        var oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthFactorsResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertNotNil(mfaHandlerVerifyer.factors)
+        XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
+        
+        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![3])
+        
+        XCTAssertTrue(mfaHandlerVerifyer.securityQuestionCalled, "Expected delegate method securityQuestionCalled to be called")
+        XCTAssertNotNil(mfaHandlerVerifyer.securityQuestionCompletion)
+        XCTAssertNotNil(mfaHandlerVerifyer.question)
+        XCTAssertEqual(mfaHandlerVerifyer.question, "What is your favorite piece of art?")
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
+        
+        mfaHandlerVerifyer.securityQuestionCompletion!("answer")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         

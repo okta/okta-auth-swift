@@ -71,6 +71,22 @@
                     }
                 }
             }
+        }, {
+            "id": "question1981BEROPBNZKPPE",
+            "factorType": "question",
+            "provider": "OKTA",
+            "profile": {
+                "question": "favorite_art_piece",
+                "questionText": "What is your favorite piece of art?"
+            },
+            "_links": {
+                "verify": {
+                    "href": "https://test.sandbox.com/api/v1/authn/factors/question1981BEROPBNZKPPE/verify",
+                    "hints": {
+                        "allow": ["POST"]
+                    }
+                }
+            }
         }],
         "policy": {
             "allowRememberDevice": false,
