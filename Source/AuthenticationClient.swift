@@ -10,24 +10,11 @@ import Foundation
 public protocol AuthenticationClientDelegate: class {
     func handleSuccess(sessionToken: String)
 
-    func handleError(_ error: OktaError)
-
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void)
-    
-    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void)
-
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: OktaAPISuccessResponse.FactorResult?)
 
     func transactionCancelled()
-}
-
-/// Our SDK provides default state machine implementation,
-/// but developer able to implement custom handler by implementing
-/// `OktaStateMachineHandler` protocol. If `statusHandler` property set,
-/// `AuthenticationClient.handleStatusChange()` will not be called.
-
-public protocol AuthenticationClientStatusHandler: class {
-    func handleStatusChange()
+    
+    func handleError(_ error: OktaError)
 }
 
 public protocol AuthenticationClientMFAHandler: class {
@@ -42,6 +29,15 @@ public protocol AuthenticationClientMFAHandler: class {
     func securityQuestion(question: String, callback: @escaping (_ answer: String) -> Void)
 }
 
+/// SDK provides default state machine implementation,
+/// but developer able to implement custom handler by implementing
+/// `AuthenticationClientStateHandler` protocol. If `statusHandler` property set,
+/// `AuthenticationClient.handleStateChange()` will not be called.
+
+public protocol AuthenticationClientStatusHandler: class {
+    func handleStatusChange(status: AuthStatus)
+}
+
 /// AuthenticationClient class is main entry point for developer
 
 public class AuthenticationClient {
@@ -53,13 +49,11 @@ public class AuthenticationClient {
     }
 
     public weak var delegate: AuthenticationClientDelegate?
-    public weak var statusHandler: AuthenticationClientStatusHandler? = nil
     public weak var mfaHandler: AuthenticationClientMFAHandler? = nil
+    public weak var statusHandler: AuthenticationClientStatusHandler? = nil
     
     public var factorResultPollRate: TimeInterval = 3
-    
-    // MARK: - Internal
-    
+
     /// Okta REST API client
     public internal(set) var api: OktaAPI
     
@@ -86,7 +80,7 @@ public class AuthenticationClient {
     public internal(set) var sessionToken: String?
     
     /// Factor type that is related to the current state
-    public private(set) var factorType: FactorType?
+    public internal(set) var factorType: FactorType?
 
     public func authenticate(username: String, password: String, deviceFingerprint: String? = nil) {
         guard currentRequest == nil else {
@@ -98,8 +92,8 @@ public class AuthenticationClient {
             return
         }
         currentRequest = api.primaryAuthentication(username: username,
-                                  password: password,
-                                  deviceFingerprint: deviceFingerprint) { [weak self] result in
+                                                   password: password,
+                                                   deviceFingerprint: deviceFingerprint) { [weak self] result in
             guard let response = self?.checkAPIResultError(result) else { return }
             self?.updateStatus(response: response)
         }
@@ -165,18 +159,7 @@ public class AuthenticationClient {
             self?.updateStatus(response: response)
         }
     }
-    
-    public func unlockAccount(_ username: String, factor: FactorType) {
-        guard currentRequest == nil else {
-            delegate?.handleError(.alreadyInProgress)
-            return
-        }
-        currentRequest = api.unlockAccount(username: username, factor: factor) { [weak self] result in
-            guard let response = self?.checkAPIResultError(result) else { return }
-            self?.updateStatus(response: response)
-        }
-    }
-    
+
     public func verify(factor: EmbeddedResponse.Factor,
                        answer: String? = nil,
                        passCode: String? = nil,
@@ -227,8 +210,6 @@ public class AuthenticationClient {
         performStatusChangeHandling()
     }
 
-    // MARK: - Private
-    
     public func cancelCurrentRequest() {
         guard let currentRequest = currentRequest else {
             return
@@ -252,14 +233,6 @@ public class AuthenticationClient {
                 }
             })
 
-        case .recoveryChallenge:
-            self.delegate?.handleRecoveryChallenge(factorType: self.factorType, factorResult: self.factorResult)
-
-        case .lockedOut:
-            delegate?.handleAccountLockedOut { [weak self] username, factor in
-                self?.unlockAccount(username, factor: factor)
-            }
-
         case .passwordExpired:
             delegate?.handleChangePassword(canSkip: false, callback: { [weak self] old, new, skip in
                 self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
@@ -267,7 +240,7 @@ public class AuthenticationClient {
 
         case .MFARequired:
             guard let mfaHandler = mfaHandler else {
-                delegate?.handleError(.authenicationStatusNotSupported(status))
+                delegate?.handleError(.authenicationStateNotSupported(status))
                 return
             }
             guard let factors = embedded?.factors else {
@@ -340,7 +313,7 @@ public class AuthenticationClient {
             break
             
         default:
-            delegate?.handleError(.authenicationStatusNotSupported(status))
+            delegate?.handleError(.authenicationStateNotSupported(status))
         }
     }
 
@@ -349,8 +322,8 @@ public class AuthenticationClient {
     private var factorResultPollTimer: Timer? = nil
     
     private func performStatusChangeHandling() {
-        if let statusHandler = statusHandler {
-            statusHandler.handleStatusChange()
+        if let stateHandler = statusHandler {
+            stateHandler.handleStatusChange(status: status)
         } else {
             handleStatusChange()
         }
