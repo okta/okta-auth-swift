@@ -57,7 +57,7 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         client.stateToken = "state_token"
-        client.state = .passwordExpired
+        client.status = .passwordExpired
         client.changePassword(oldPassword: "old_password", newPassword: "new_password")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
@@ -65,7 +65,7 @@ class AuthenticationClientTests: XCTestCase {
         checkSuccessStateResults()
         
         client.stateToken = "state_token"
-        client.state = .passwordWarning
+        client.status = .passwordWarning
         client.changePassword(oldPassword: "old_password", newPassword: "new_password")
         
         delegateVerifyer.asyncExpectation = XCTestExpectation()
@@ -91,7 +91,7 @@ class AuthenticationClientTests: XCTestCase {
         
         if delegateVerifyer.transactionCancelledCalled {
             XCTAssertTrue(delegateVerifyer.transactionCancelledCalled, "transactionCancelled delegate method has been successfully called")
-            XCTAssertEqual(.unauthenticated, client.state)
+            XCTAssertEqual(.unauthenticated, client.status)
             XCTAssertNil(client.stateToken)
             XCTAssertNil(client.sessionToken)
             XCTAssertNil(client.factorResult)
@@ -165,7 +165,7 @@ class AuthenticationClientTests: XCTestCase {
             // Check that data has not been reset by Auth engine
             XCTAssertTrue(delegateVerifyer.handleErrorCalled, "handleError delegate method has been successfully called")
             XCTAssertEqual("session_token", client.sessionToken)
-            XCTAssertEqual(.unauthenticated, client.state)
+            XCTAssertEqual(.unauthenticated, client.status)
             XCTAssertNotNil(client.stateToken)
             XCTAssertEqual("state_token", client.stateToken)
             XCTAssertEqual(.waiting, client.factorResult)
@@ -480,7 +480,7 @@ class AuthenticationClientTests: XCTestCase {
         client.resetStatus()
 
         XCTAssertNil(client.sessionToken)
-        XCTAssertEqual(.unauthenticated, client.state)
+        XCTAssertEqual(.unauthenticated, client.status)
         XCTAssertNil(client.stateToken)
         XCTAssertNil(client.factorResult)
         XCTAssertNil(client.links)
@@ -493,7 +493,7 @@ class AuthenticationClientTests: XCTestCase {
         if delegateVerifyer.handleSuccessCalled {
             XCTAssertTrue(delegateVerifyer.handleSuccessCalled, "handleSuccess delegate method has been successfully called")
             XCTAssertEqual("test_session_token", delegateVerifyer.sessionToken)
-            XCTAssertEqual(.success, client.state)
+            XCTAssertEqual(.success, client.status)
             XCTAssertNil(client.stateToken)
             XCTAssertEqual("test_session_token", client.sessionToken)
             XCTAssertNil(client.factorResult)

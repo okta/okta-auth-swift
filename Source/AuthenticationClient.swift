@@ -34,8 +34,8 @@ public protocol AuthenticationClientMFAHandler: class {
 /// `AuthenticationClientStateHandler` protocol. If `statusHandler` property set,
 /// `AuthenticationClient.handleStateChange()` will not be called.
 
-public protocol AuthenticationClientStateHandler: class {
-    func handleStateChange(state: AuthStatus)
+public protocol AuthenticationClientStatusHandler: class {
+    func handleStatusChange(status: AuthStatus)
 }
 
 /// AuthenticationClient class is main entry point for developer
@@ -50,7 +50,7 @@ public class AuthenticationClient {
 
     public weak var delegate: AuthenticationClientDelegate?
     public weak var mfaHandler: AuthenticationClientMFAHandler? = nil
-    public weak var stateHandler: AuthenticationClientStateHandler? = nil
+    public weak var statusHandler: AuthenticationClientStatusHandler? = nil
     
     public var factorResultPollRate: TimeInterval = 3
 
@@ -60,7 +60,7 @@ public class AuthenticationClient {
     public internal(set) weak var currentRequest: OktaAPIRequest?
     
     /// Current status of the authentication transaction.
-    public internal(set) var state: AuthStatus = .unauthenticated
+    public internal(set) var status: AuthStatus = .unauthenticated
     
     /// Ephemeral token that encodes the current state of an authentication or recovery transaction.
     public internal(set) var stateToken: String?
@@ -87,7 +87,7 @@ public class AuthenticationClient {
             delegate?.handleError(.alreadyInProgress)
             return
         }
-        guard case .unauthenticated = state else {
+        guard case .unauthenticated = status else {
             delegate?.handleError(.wrongState("'unauthenticated' state expected"))
             return
         }
@@ -147,7 +147,7 @@ public class AuthenticationClient {
             delegate?.handleError(.wrongState("No state token"))
             return
         }
-        switch state {
+        switch status {
             case .passwordExpired, .passwordWarning:
                 break
             default:
@@ -200,14 +200,14 @@ public class AuthenticationClient {
     }
 
     public func resetStatus() {
-        state = .unauthenticated
+        status = .unauthenticated
         stateToken = nil
         sessionToken = nil
         factorResult = nil
         links = nil
         embedded = nil
         factorType = nil
-        performStateChangeHandling()
+        performStatusChangeHandling()
     }
 
     public func cancelCurrentRequest() {
@@ -217,8 +217,8 @@ public class AuthenticationClient {
         currentRequest.cancel()
     }
 
-    public func handleStateChange() {
-        switch state {
+    public func handleStatusChange() {
+        switch status {
             
         case .passwordWarning:
             delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
@@ -240,7 +240,7 @@ public class AuthenticationClient {
 
         case .MFARequired:
             guard let mfaHandler = mfaHandler else {
-                delegate?.handleError(.authenicationStateNotSupported(state))
+                delegate?.handleError(.authenicationStateNotSupported(status))
                 return
             }
             guard let factors = embedded?.factors else {
@@ -313,7 +313,7 @@ public class AuthenticationClient {
             break
             
         default:
-            delegate?.handleError(.authenicationStateNotSupported(state))
+            delegate?.handleError(.authenicationStateNotSupported(status))
         }
     }
 
@@ -321,11 +321,11 @@ public class AuthenticationClient {
     
     private var factorResultPollTimer: Timer? = nil
     
-    private func performStateChangeHandling() {
-        if let stateHandler = stateHandler {
-            stateHandler.handleStateChange(state: state)
+    private func performStatusChangeHandling() {
+        if let stateHandler = statusHandler {
+            stateHandler.handleStatusChange(status: status)
         } else {
-            handleStateChange()
+            handleStatusChange()
         }
     }
 
@@ -340,13 +340,13 @@ public class AuthenticationClient {
     }
     
     private func updateStatus(response: OktaAPISuccessResponse) {
-        state = response.status ?? .unauthenticated
+        status = response.status ?? .unauthenticated
         stateToken = response.stateToken
         sessionToken = response.sessionToken
         factorResult = response.factorResult
         links = response.links
         embedded = response.embedded
         factorType = response.factorType
-        performStateChangeHandling()
+        performStatusChangeHandling()
     }
 }

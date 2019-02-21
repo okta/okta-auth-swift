@@ -46,10 +46,10 @@ class ViewController: UIViewController {
     }
 
     private func updateStatus() {
-        if client.state == .MFAChallenge {
-            stateLabel.text = "\(client.state.description) (\(client.factorResult?.rawValue ?? "?"))"
+        if client.status == .MFAChallenge {
+            stateLabel.text = "\(client.status.description) (\(client.factorResult?.rawValue ?? "?"))"
         } else {
-            stateLabel.text = client.state.description
+            stateLabel.text = client.status.description
         }
     }
 }
