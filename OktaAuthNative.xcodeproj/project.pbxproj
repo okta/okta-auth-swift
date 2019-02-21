@@ -16,7 +16,10 @@
 		2FF5C86721D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF5C86621D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift */; };
 		2FF5C86921D3BA1900EECA75 /* OktaAuthNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */; };
 		A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */; };
-		A1C06F0A2214E1CA005E8369 /* SendSMSChallenge in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F092214E1C9005E8369 /* SendSMSChallenge */; };
+		A1C06F0A2214E1CA005E8369 /* MFAWaitSmsChallenge in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */; };
+		A1C06F14221DFFD8005E8369 /* PrimaryAuthExpiredPassword in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */; };
+		A1C06F16221E0037005E8369 /* PrimaryAuthWarnPassword in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F15221E0037005E8369 /* PrimaryAuthWarnPassword */; };
+		A1C06F18221E2DD7005E8369 /* MFAWaitPushChallenge in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F17221E2DD7005E8369 /* MFAWaitPushChallenge */; };
 		A1FCB128220908B70026F522 /* AuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB127220908B70026F522 /* AuthenticationClientTests.swift */; };
 		A1FCB12D220A43040026F522 /* AuthenticationClientDelegateVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12A220A419A0026F522 /* AuthenticationClientDelegateVerifyer.swift */; };
 		A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */; };
@@ -71,7 +74,10 @@
 		2FF5C86621D3BA1900EECA75 /* OktaAuthiOSIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthiOSIntegrationTests.swift; sourceTree = "<group>"; };
 		2FF5C86821D3BA1900EECA75 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientMFAHandlerVerifyer.swift; sourceTree = "<group>"; };
-		A1C06F092214E1C9005E8369 /* SendSMSChallenge */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SendSMSChallenge; sourceTree = "<group>"; };
+		A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MFAWaitSmsChallenge; sourceTree = "<group>"; };
+		A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PrimaryAuthExpiredPassword; sourceTree = "<group>"; };
+		A1C06F15221E0037005E8369 /* PrimaryAuthWarnPassword */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PrimaryAuthWarnPassword; sourceTree = "<group>"; };
+		A1C06F17221E2DD7005E8369 /* MFAWaitPushChallenge */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MFAWaitPushChallenge; sourceTree = "<group>"; };
 		A1FCB127220908B70026F522 /* AuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientTests.swift; sourceTree = "<group>"; };
 		A1FCB12A220A419A0026F522 /* AuthenticationClientDelegateVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientDelegateVerifyer.swift; sourceTree = "<group>"; };
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
@@ -133,7 +139,10 @@
 		2FF5C85021D1076100EECA75 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A1C06F092214E1C9005E8369 /* SendSMSChallenge */,
+				A1C06F17221E2DD7005E8369 /* MFAWaitPushChallenge */,
+				A1C06F15221E0037005E8369 /* PrimaryAuthWarnPassword */,
+				A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */,
+				A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */,
 				A1FCB130220B93410026F522 /* TransactionCancellationSuccess */,
 				2FF5C85121D1078E00EECA75 /* PrimaryAuthResponse */,
 				2FF5C85A21D3AEEC00EECA75 /* PrimaryAuthFactorsResponse */,
@@ -383,11 +392,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1C06F16221E0037005E8369 /* PrimaryAuthWarnPassword in Resources */,
+				A1C06F14221DFFD8005E8369 /* PrimaryAuthExpiredPassword in Resources */,
 				A1FCB131220B93410026F522 /* TransactionCancellationSuccess in Resources */,
 				2FF5C85C21D3B04D00EECA75 /* PrimaryAuthFactorsResponse in Resources */,
+				A1C06F18221E2DD7005E8369 /* MFAWaitPushChallenge in Resources */,
 				2FF5C85E21D3B15000EECA75 /* AuthenticationFailedError in Resources */,
 				2FF5C85921D3A9E700EECA75 /* OperationNotAllowedError in Resources */,
-				A1C06F0A2214E1CA005E8369 /* SendSMSChallenge in Resources */,
+				A1C06F0A2214E1CA005E8369 /* MFAWaitSmsChallenge in Resources */,
 				2FF5C85221D1078E00EECA75 /* PrimaryAuthResponse in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

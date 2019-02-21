@@ -47,8 +47,8 @@ public extension OktaError {
             return "MFA factor not supported (\(factor))"
         case .unexpectedResponse:
             return "Unexpected response"
-        case .wrongState:
-            return "Wrong state"
+        case .wrongState(error: let error):
+            return error
         case .alreadyInProgress:
             return "Another request is in progress"
         }

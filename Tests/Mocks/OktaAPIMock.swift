@@ -41,7 +41,7 @@ class OktaAPIMock: OktaAPI {
             let response: OktaAPISuccessResponse
             do {
                 response = try decoder.decode(OktaAPISuccessResponse.self, from: jsonData!)
-            } catch {
+            } catch let error {
                 return nil
             }
             
@@ -85,6 +85,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.primaryAuthenticationCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -99,6 +100,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.cancelTransactionCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -115,6 +117,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.changePasswordCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -129,6 +132,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.getTransactionStateCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -148,6 +152,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.verifyFactorCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -163,6 +168,7 @@ class OktaAPIMock: OktaAPI {
             completion?(self.result)
         }
         
+        self.performCalled = true
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -171,4 +177,11 @@ class OktaAPIMock: OktaAPI {
     }
 
     private let result: OktaAPIRequest.Result
+    
+    var primaryAuthenticationCalled: Bool = false
+    var cancelTransactionCalled: Bool = false
+    var changePasswordCalled: Bool = false
+    var getTransactionStateCalled: Bool = false
+    var verifyFactorCalled: Bool = false
+    var performCalled: Bool = false
 }

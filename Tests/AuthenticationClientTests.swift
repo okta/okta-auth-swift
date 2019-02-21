@@ -46,9 +46,28 @@ class AuthenticationClientTests: XCTestCase {
         self.checkSuccessStateResults()
     }
     
-    func testChangePasswordBasicSuccessFlow() {
+    func testAuthenticateErrorFlows() {
         
-        let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        let request = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                     urlSession: URLSession(configuration: .default),
+                                     completion: { _ = $0; _ = $1})
+        client.currentRequest = request
+        client.authenticate(username: "username", password: "password")
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
+        
+        client.currentRequest = nil
+        client.status = .success
+        client.authenticate(username: "username", password: "password")
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("'unauthenticated' state expected").description)
+    }
+    
+    func testPasswordExpiredSuccessFlow() {
+        
+        var oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthExpiredPassword")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
@@ -56,19 +75,143 @@ class AuthenticationClientTests: XCTestCase {
             return
         }
         
-        client.stateToken = "state_token"
-        client.status = .passwordExpired
-        client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertEqual(.passwordExpired, client.status)
+        XCTAssertNotNil(client.stateToken)
+        XCTAssertNotNil(delegateVerifyer.handleChangePasswordCompletion)
+        XCTAssertTrue(delegateVerifyer.handleChangePasswordCalled, "Expected delegate method handleChangePasswordCalled to be called")
+
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        delegateVerifyer.asyncExpectation = XCTestExpectation()
+        delegateVerifyer.handleChangePasswordCompletion?("old_password", "new_password", false)
+        XCTAssertTrue(oktaApiMock!.changePasswordCalled)
+        XCTAssertTrue(!delegateVerifyer.canSkipChangePassword)
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
         checkSuccessStateResults()
+    }
+    
+    func testPasswordChangeErrorFlows() {
+        
+        let request = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                     urlSession: URLSession(configuration: .default),
+                                     completion: { _ = $0; _ = $1})
+        client.currentRequest = request
+        client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
+        
+        client.currentRequest = nil
+        client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("No state token").description)
         
         client.stateToken = "state_token"
-        client.status = .passwordWarning
         client.changePassword(oldPassword: "old_password", newPassword: "new_password")
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("'passwordExpired' or 'passwordWarning' state expected").description)
+        
+        let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthWarnPassword")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
         
         delegateVerifyer.asyncExpectation = XCTestExpectation()
+        client.status = .unauthenticated
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        client.links = nil
+        delegateVerifyer.handleChangePasswordCompletion?(nil, nil, true)
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("Can't find 'next' link in response").description)
+    }
+    
+    func testPasswordWarningWithNoPasswordChangeSuccessFlow() {
+        
+        var oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthWarnPassword")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertEqual(.passwordWarning, client.status)
+        XCTAssertNotNil(client.stateToken)
+        XCTAssertNotNil(delegateVerifyer.handleChangePasswordCompletion)
+        XCTAssertTrue(delegateVerifyer.handleChangePasswordCalled, "Expected delegate method handleChangePasswordCalled to be called")
+        XCTAssertTrue(delegateVerifyer.canSkipChangePassword)
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        delegateVerifyer.asyncExpectation = XCTestExpectation()
+        delegateVerifyer.handleChangePasswordCompletion?(nil, nil, true)
+        XCTAssertTrue(oktaApiMock!.performCalled)
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        checkSuccessStateResults()
+    }
+    
+    func testPasswordWarningWithPasswordChangeSuccessFlow() {
+        
+        var oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthWarnPassword")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        
+        client.authenticate(username: "username", password: "password")
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertEqual(.passwordWarning, client.status)
+        XCTAssertNotNil(client.stateToken)
+        XCTAssertNotNil(delegateVerifyer.handleChangePasswordCompletion)
+        XCTAssertTrue(delegateVerifyer.handleChangePasswordCalled, "Expected delegate method handleChangePasswordCalled to be called")
+        XCTAssertTrue(delegateVerifyer.canSkipChangePassword)
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+            return
+        }
+        delegateVerifyer.asyncExpectation = XCTestExpectation()
+        delegateVerifyer.handleChangePasswordCompletion?(nil, nil, false)
+        XCTAssertTrue(oktaApiMock!.changePasswordCalled)
+        
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
         checkSuccessStateResults()
@@ -195,14 +338,29 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
         
-        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "MFAWaitPushChallenge")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![0])
+        client.factorResultPollRate = 0.1
+        mfaHandlerVerifyer.asyncExpectation = XCTestExpectation()
+        mfaHandlerVerifyer.selectFactorCompletion?(mfaHandlerVerifyer.factors![0])
+
+        wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
+
+        XCTAssertTrue(mfaHandlerVerifyer.pushStateUpdatedCalled)
+        XCTAssertEqual(mfaHandlerVerifyer.state?.rawValue, "WAITING")
+        XCTAssertTrue(client.factorResultPollTimer!.isValid)
+        
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
+        if let oktaApiMock = oktaApiMock {
+            client.api = oktaApiMock
+        } else {
+            XCTFail("Incorrect OktaApiMock usage")
+        }
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -239,7 +397,7 @@ class AuthenticationClientTests: XCTestCase {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.requestTOTPCodeCompletion!("1234")
+        mfaHandlerVerifyer.requestTOTPCodeCompletion?("1234")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -264,14 +422,14 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
         
-        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "SendSMSChallenge")
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "MFAWaitSmsChallenge")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.selectFactorCompletion!(mfaHandlerVerifyer.factors![2])
+        mfaHandlerVerifyer.selectFactorCompletion?(mfaHandlerVerifyer.factors![2])
         
         mfaHandlerVerifyer.asyncExpectation = XCTestExpectation()
         wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
@@ -287,7 +445,7 @@ class AuthenticationClientTests: XCTestCase {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.requestSMSCodeCompletion!("1234")
+        mfaHandlerVerifyer.requestSMSCodeCompletion?("1234")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -312,7 +470,7 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
         
-        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "SendSMSChallenge")
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "MFAWaitSmsChallenge")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {
@@ -374,7 +532,7 @@ class AuthenticationClientTests: XCTestCase {
             XCTFail("Incorrect OktaApiMock usage")
         }
         
-        mfaHandlerVerifyer.securityQuestionCompletion!("answer")
+        mfaHandlerVerifyer.securityQuestionCompletion?("answer")
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -427,7 +585,7 @@ class AuthenticationClientTests: XCTestCase {
         
         wait(for: [mfaHandlerVerifyer.asyncExpectation!], timeout: 1.0)
 
-        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "SendSMSChallenge")
+        oktaApiMock = OktaAPIMock(successCase: true, resourceName: "MFAWaitSmsChallenge")
         if let oktaApiMock = oktaApiMock {
             client.api = oktaApiMock
         } else {

@@ -33,6 +33,8 @@ class AuthenticationClientDelegateVerifyer: AuthenticationClientDelegate {
     func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
         
         handleChangePasswordCalled = true
+        self.handleChangePasswordCompletion = callback
+        self.canSkipChangePassword = canSkip
         
         if let expectation = asyncExpectation {
             expectation.fulfill()
@@ -73,8 +75,11 @@ class AuthenticationClientDelegateVerifyer: AuthenticationClientDelegate {
     var handleRecoveryChallengeCalled: Bool = false
     var handleAccountLockedOutCalled: Bool = false
     
+    var handleChangePasswordCompletion: ((_ old: String?, _ new: String?, _ skip: Bool) -> Void)?
+    
     var sessionToken: String?
     var error: OktaError?
+    var canSkipChangePassword: Bool = false
     
     var asyncExpectation: XCTestExpectation?
 }
