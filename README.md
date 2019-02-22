@@ -8,10 +8,10 @@
 * [Usage guide](#usage-guide)
 * [API Reference](#api-reference)
     * [authenticate](#authenticate)
-    * [cancel](#cancel)
+    * [cancelTransaction](#cancelTransaction)
     * [fetchTransactionState](#fetchTransactionState)
     * [changePassword](#changePassword)
-    * [unlockAccount](#unlockAccount)
+    * [verifyFactor](#verifyFactor)
     * [performLink](#performLink)
     * [resetStatus](#resetStatus)
     * [handleStatusChange](#handleStatusChange)
@@ -108,40 +108,44 @@ extension ViewController: AuthenticationClientDelegate {
         )
     }
     
-    func handleAccountLockedOut(callback: @escaping (_ username: String, _ factor: FactorType) -> Void) {
-        let factor = ... // Factor implemented by the app 
-        presentUnlockForm() { username in
-            callback(username, factor)
-        }
-    }
-    
-    func handleRecoveryChallenge(factorType: FactorType?, factorResult: FactorResult?) {
-        guard factorType == expected else {
-            // Error
-            return
-        } 
-        
-        switch factorResult {
-            // Update UI accordingly
-        }
-    }
-
-    func handleMultifactorAuthenication(callback: @escaping (String) -> Void) {
-        // Ask user to perform factor auth, enter auth code, and resume flow by calling callback
-        presentMFAForm(){ code in
-            guard let code = code else {
-                self.client.cancel()
-                return
-            }
-            
-            callback(code)
-        }
-    }
-    
     func transactionCancelled() {
         // Update UI accordingly
     }
 }
+```
+
+### AuthenticationClientMFAHandler
+
+This protocol is designed to implement user interaction during MFA authorization. Implement `selectFactor(factors:callback:)` to select which factor user wants to use to fulfill authorization. Other method are called depending on which factor is selected. Client code has to provide info needed for factor verification (e.g. answer to a security question, or code sent via SMS, etc).  
+
+```swift
+    func selectFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
+        presentFactorSelectionForm(factors: factors) { selectedFactor in
+            callback(selectedFactor)
+        }
+    }
+
+    func FpushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
+        // Update UI accordingly
+    }
+
+    func requestTOTP(callback: @escaping (_ code: String) -> Void) {
+        presentTOTPCodeForm { totpCodeFromUser in
+            callback(totpCodeFromUser)
+        }
+    }
+
+    func requestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void) {
+        presentSMSCodeForm { smsCodeFromUser in
+            callback(smsCodeFromUser)
+        }
+    }
+
+    func securityQuestion(question: String, callback: @escaping (_ answer: String) -> Void) {
+        presentSecurityQuestionForm { userAnswer in
+            callback(userAnswer)
+        }
+    }
 ```
 
 ## API Reference
@@ -154,11 +158,11 @@ Start the authentication flow by simply calling `authenticate` with user credent
     client.authenticate(username: username, password: password)
 ```
 
-### cancel
-Call `cancel` to cancel active authentication flow. SDK will send cancel request and reset internal states upon completion. Use the  `transactionCancelled` delegate method to handle cancellation event. 
+### cancelTransaction
+Call `cancelTransaction` to cancel active authentication flow. SDK will send cancel request and reset internal states upon completion. Use the  `transactionCancelled` delegate method to handle cancellation event. 
 
 ```swift
-    client.cancel()
+    client.cancelTransaction()
 ```
 
 ### fetchTransactionState
@@ -177,12 +181,16 @@ When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the passw
     client.changePassword(oldPassword: old, newPassword: new)
 ```
 
-### unlockAccount
+### verifyFactor 
 
-When auth state is `LOCKED_OUT` user should be prompted to unlock their account. To complete this operation call `unlockAccount`. Use the  `handleRecoveryChallenge` delegate method to handle further processing of transaction. 
+When auth state is `MFA_REQUIRED`  or  `MFA_CHALLENGE` user should be prompted to verify MFA factor. To complete this operation call `verify(factor:, passCode:, rememberDevice:, autoPush:)`. Also user can specify option to remember device or send push automatically (in case of `push` factor).
 
 ```swift
-    client.unlockAccount(username, factorType)
+    client.verify(factor: factor,
+        answer: "security question answer")
+
+    client.verify(factor: factor,
+        passCode: "user_passcode")
 ```
 
 ### performLink
