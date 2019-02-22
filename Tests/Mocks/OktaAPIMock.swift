@@ -41,7 +41,7 @@ class OktaAPIMock: OktaAPI {
             let response: OktaAPISuccessResponse
             do {
                 response = try decoder.decode(OktaAPISuccessResponse.self, from: jsonData!)
-            } catch let error {
+            } catch {
                 return nil
             }
             

@@ -94,7 +94,7 @@ class AuthenticationClientTests: XCTestCase {
         delegateVerifyer.asyncExpectation = XCTestExpectation()
         delegateVerifyer.handleChangePasswordCompletion?("old_password", "new_password", false)
         XCTAssertTrue(oktaApiMock!.changePasswordCalled)
-        XCTAssertTrue(!delegateVerifyer.canSkipChangePassword)
+        XCTAssertFalse(delegateVerifyer.canSkipChangePassword)
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
@@ -244,6 +244,41 @@ class AuthenticationClientTests: XCTestCase {
         } else {
             XCTFail("Expected delegate method transactionCancelled to be called")
         }
+        
+        client.stateToken = "state_token"
+        delegateVerifyer.asyncExpectation = XCTestExpectation()
+        client.factorResultPollTimer = Timer(timeInterval: 0.1, repeats: false) { _ in
+        }
+        XCTAssertTrue(client.factorResultPollTimer!.isValid)
+        
+        DispatchQueue.global().async {
+            self.client.cancelTransaction()
+        }
+        
+        wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
+        
+        XCTAssertFalse(client.factorResultPollTimer!.isValid)
+        
+        if delegateVerifyer.transactionCancelledCalled {
+            XCTAssertTrue(delegateVerifyer.transactionCancelledCalled, "transactionCancelled delegate method has been successfully called")
+            XCTAssertEqual(.unauthenticated, client.status)
+            XCTAssertNil(client.stateToken)
+            XCTAssertNil(client.sessionToken)
+            XCTAssertNil(client.factorResult)
+            XCTAssertNil(client.links)
+            XCTAssertNil(client.recoveryToken)
+            XCTAssertNil(client.embedded)
+        } else {
+            XCTFail("Expected delegate method transactionCancelled to be called")
+        }
+    }
+    
+    func testCancellationErrorFlows() {
+        
+        client.cancelTransaction()
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("No state token").description)
     }
     
     func testFetchTransactionStatusSuccessFlow() {
@@ -264,6 +299,24 @@ class AuthenticationClientTests: XCTestCase {
         self.checkSuccessStateResults()
     }
     
+    func testFetchTransactionStatusErrorFlows() {
+        
+        let request = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                     urlSession: URLSession(configuration: .default),
+                                     completion: { _ = $0; _ = $1})
+        client.currentRequest = request
+        client.fetchTransactionState()
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
+        
+        client.currentRequest = nil
+        client.fetchTransactionState()
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("No state token").description)
+    }
+    
     func testVerifyFactorSuccessFlow() {
         
         let oktaApiMock = OktaAPIMock(successCase: true, resourceName: "PrimaryAuthResponse")
@@ -281,6 +334,26 @@ class AuthenticationClientTests: XCTestCase {
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         
         self.checkSuccessStateResults()
+    }
+    
+    func testVerifyFactorErrorFlows() {
+        
+        let request = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                     urlSession: URLSession(configuration: .default),
+                                     completion: { _ = $0; _ = $1})
+        client.currentRequest = request
+        var factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil)
+        client.verify(factor: factor)
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
+        
+        client.currentRequest = nil
+        factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil)
+        client.verify(factor: factor)
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("No state token").description)
     }
     
     func testCheckAPIResultErrorBasicAuthFlow() {
@@ -617,6 +690,26 @@ class AuthenticationClientTests: XCTestCase {
         XCTAssertNotNil(mfaHandlerVerifyer.factors)
         XCTAssertTrue(mfaHandlerVerifyer.selectFactorCalled, "Expected delegate method selectFactorCalled to be called")
         XCTAssertNotNil(mfaHandlerVerifyer.selectFactorCompletion)
+    }
+    
+    func testPerformLinkErrorFlows() {
+        
+        let request = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                     urlSession: URLSession(configuration: .default),
+                                     completion: { _ = $0; _ = $1})
+        client.currentRequest = request
+        
+        let link = LinksResponse.Link(href: URL(string: "https://dummy.url")!, hints: [:])
+        client.perform(link: link)
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
+        
+        client.currentRequest = nil
+        client.perform(link: link)
+        XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
+        XCTAssertNotNil(delegateVerifyer.error)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("No state token").description)
     }
     
     func testResetStatusFlow() {
