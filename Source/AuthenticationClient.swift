@@ -295,14 +295,6 @@ public class AuthenticationClient {
                 mfaHandler?.requestSMSCode(phoneNumber: phoneNumber) { code in
                     self.verify(factor: factor, passCode: code)
                 }
-            } else if factorType == .question {
-                guard let question = factor.profile?.questionText else {
-                    delegate?.handleError(.wrongState("Can't find 'question' object in response"))
-                    return
-                }
-                mfaHandler?.securityQuestion(question: question) { answer in
-                    self.verify(factor: factor, answer: answer)
-                }
             } else {
                 delegate?.handleError(.factorNotSupported(factor))
             }
@@ -324,7 +316,7 @@ public class AuthenticationClient {
 
     // MARK: - Private
     
-    private var factorResultPollTimer: Timer? = nil
+    internal var factorResultPollTimer: Timer? = nil
     
     private func performStatusChangeHandling() {
         if let stateHandler = statusHandler {

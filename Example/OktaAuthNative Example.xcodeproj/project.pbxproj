@@ -12,8 +12,6 @@
 		FAC5AEED21C7F9A600C3DC91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC5AEEB21C7F9A600C3DC91 /* Main.storyboard */; };
 		FAC5AEEF21C7F9A700C3DC91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FAC5AEEE21C7F9A700C3DC91 /* Assets.xcassets */; };
 		FAC5AEF221C7F9A700C3DC91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC5AEF021C7F9A700C3DC91 /* LaunchScreen.storyboard */; };
-		FAC5AF0021C7FAAF00C3DC91 /* OktaAuthNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAC5AEFF21C7FAAF00C3DC91 /* OktaAuthNative.framework */; };
-		FAC5AF0121C7FAAF00C3DC91 /* OktaAuthNative.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FAC5AEFF21C7FAAF00C3DC91 /* OktaAuthNative.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,7 +21,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				FAC5AF0121C7FAAF00C3DC91 /* OktaAuthNative.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -38,7 +35,6 @@
 		FAC5AEEE21C7F9A700C3DC91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FAC5AEF121C7F9A700C3DC91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FAC5AEF321C7F9A700C3DC91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FAC5AEFF21C7FAAF00C3DC91 /* OktaAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OktaAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +42,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC5AF0021C7FAAF00C3DC91 /* OktaAuthNative.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,7 +51,6 @@
 		FAC5AEDB21C7F9A600C3DC91 = {
 			isa = PBXGroup;
 			children = (
-				FAC5AEFF21C7FAAF00C3DC91 /* OktaAuthNative.framework */,
 				FAC5AEE621C7F9A600C3DC91 /* Source */,
 				FAC5AEE521C7F9A600C3DC91 /* Products */,
 			);
