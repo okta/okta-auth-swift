@@ -11,7 +11,7 @@
     * [cancelTransaction](#cancelTransaction)
     * [fetchTransactionState](#fetchTransactionState)
     * [changePassword](#changePassword)
-    * [verifyFactor](#verifyFactor)
+    * [verify](#verify)
     * [performLink](#performLink)
     * [resetStatus](#resetStatus)
     * [handleStatusChange](#handleStatusChange)
@@ -125,7 +125,7 @@ This protocol is designed to implement user interaction during MFA authorization
         }
     }
 
-    func FpushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
+    func pushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
         // Update UI accordingly
     }
 
@@ -181,7 +181,7 @@ When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the passw
     client.changePassword(oldPassword: old, newPassword: new)
 ```
 
-### verifyFactor 
+### verify 
 
 When auth state is `MFA_REQUIRED`  or  `MFA_CHALLENGE` user should be prompted to verify MFA factor. To complete this operation call `verify(factor:, passCode:, rememberDevice:, autoPush:)`. Also user can specify option to remember device or send push automatically (in case of `push` factor).
 
