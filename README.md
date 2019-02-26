@@ -54,7 +54,7 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod "OktaAuth"
 ```
- 
+
 Construct a client instance by passing it your Okta domain name and API token:
  
 [//]: # (method: createClient)
@@ -63,7 +63,7 @@ let client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDoma
 ```
 [//]: # (end: createClient)
 
-The client must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
+You must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
 
 ## Usage guide
 
