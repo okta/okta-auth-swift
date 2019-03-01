@@ -52,7 +52,7 @@ Okta is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "OktaAuth"
+pod "OktaAuthSdk"
 ```
 
 Construct a client instance by passing it your Okta domain name and API token:
