@@ -17,8 +17,42 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDomain}")!, delegate: self, mfaHandler: self)
-        updateStatus()
+        //client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDomain}")!, delegate: self, mfaHandler: self)
+        //updateStatus()
+    
+        OktaAuthSdk.authenticate(with: URL(string: "https://dev-842506.oktapreview.com")!,
+                                 username: "ildar.abdullin@okta.com",
+                                 password: "aSd98300"
+            ,onSuccess: { sessionToken in
+                
+                let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+        }
+            ,onPasswordWarning: { passwordWarningStatus in
+                
+                //passwordWarningStatus.skipPasswordChange()
+        }
+            ,onPasswordExpired: { passwordExpiredStatus in
+                
+                //passwordExpiredStatus.changePassword()
+        }
+            ,onMFAEnroll: { mfaEnrollStatus in
+                
+                //mfaEnrollStatus.enrollFactor()
+        }
+            ,onMFARequired: { mfaRequiredStatus in
+            
+                // mfaRequiredStatus.selectFactor()
+        }
+            ,onLockedOut: { lockedOutStatus in
+            
+                // lockedOutStatus.unlockAccount()
+        }
+            ,onError: { error in
+            
+                // handleError(error)
+        })
     }
 
     private var client: AuthenticationClient!
