@@ -147,7 +147,7 @@ class AuthenticationClientTests: XCTestCase {
         delegateVerifyer.handleChangePasswordCompletion?(nil, nil, true)
         XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
         XCTAssertNotNil(delegateVerifyer.error)
-        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("Can't find 'next' link in response").description)
+        XCTAssertEqual(delegateVerifyer.error?.description, OktaError.wrongState("Can't find 'skip' link in response").description)
     }
     
     func testPasswordWarningWithNoPasswordChangeSuccessFlow() {
@@ -180,6 +180,8 @@ class AuthenticationClientTests: XCTestCase {
         delegateVerifyer.asyncExpectation = XCTestExpectation()
         delegateVerifyer.handleChangePasswordCompletion?(nil, nil, true)
         XCTAssertTrue(oktaApiMock!.performCalled)
+        XCTAssertNotNil(oktaApiMock!.performedLink)
+        XCTAssertEqual(client.links?.skip?.href, oktaApiMock!.performedLink?.href)
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
         

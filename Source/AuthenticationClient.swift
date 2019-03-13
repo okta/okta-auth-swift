@@ -228,11 +228,11 @@ public class AuthenticationClient {
         case .passwordWarning:
             delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
                 if skip {
-                    guard let next = self?.links?.next else {
-                        self?.delegate?.handleError(.wrongState("Can't find 'next' link in response"))
+                    guard let skipLink = self?.links?.skip else {
+                        self?.delegate?.handleError(.wrongState("Can't find 'skip' link in response"))
                         return
                     }
-                    self?.perform(link: next)
+                    self?.perform(link: skipLink)
                 } else {
                     self?.changePassword(oldPassword: old ?? "", newPassword: new ?? "")
                 }
