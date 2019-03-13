@@ -22,4 +22,9 @@ public class OktaAuthStatus {
         self.url = oktaDomain
         self.api = OktaAPI(oktaDomain: oktaDomain)
     }
+    
+    public func cancel(onSuccess: @escaping () -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void) {
+        // implement
+    }
 }
