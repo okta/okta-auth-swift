@@ -75,6 +75,18 @@ open class OktaAPI {
         return req
     }
 
+    @discardableResult open func changePassword(link: LinksResponse.Link,
+                                                stateToken: String,
+                                                oldPassword: String,
+                                                newPassword: String,
+                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.bodyParams = ["stateToken": stateToken, "oldPassword": oldPassword, "newPassword": newPassword]
+        req.run()
+        return req
+    }
+
     @discardableResult open func getTransactionState(stateToken: String,
                                                      completion: ((OktaAPIRequest.Result) -> Void)? =  nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)

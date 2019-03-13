@@ -18,8 +18,8 @@ public class OktaAuthSdk {
                                    onMFAEnroll: @escaping (_ mfaEnrollStatus: OktaAuthStatusMFAEnroll) -> Void,
                                    onMFARequired: @escaping (_ mfaRequiredStatus: OktaAuthStatusMFARequired) -> Void,
                                    onLockedOut: @escaping (_ lockedOutStatus: OktaAuthStatusLockedOut) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void)
-    {
+                                   onError: @escaping (_ error: OktaError) -> Void) {
+
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.authenticate(username: username,
                                            password: password,

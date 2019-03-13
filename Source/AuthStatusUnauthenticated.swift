@@ -24,9 +24,9 @@ public class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                              onLockedOut: @escaping (_ lockedOutStatus: OktaAuthStatusLockedOut) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void)
     {
-        _ = api.primaryAuthentication(username: username,
-                                      password: password,
-                                      deviceFingerprint: nil) { result in
+        api.primaryAuthentication(username: username,
+                                  password: password,
+                                  deviceFingerprint: nil) { result in
                                         
             var authResponse : OktaAPISuccessResponse
                                     

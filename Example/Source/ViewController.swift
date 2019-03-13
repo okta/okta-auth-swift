@@ -31,11 +31,19 @@ class ViewController: UIViewController {
         }
             ,onPasswordWarning: { passwordWarningStatus in
                 
-                //passwordWarningStatus.skipPasswordChange()
+                passwordWarningStatus.skipPasswordChange(onSuccess: { sessionToken in
+                    // handle
+                }, onError: { error in
+                    // handle
+                })
         }
             ,onPasswordExpired: { passwordExpiredStatus in
                 
-                //passwordExpiredStatus.changePassword()
+                passwordExpiredStatus.changePassword(oldPassword: "", newPassword: "", onSuccess: { sessionToken in
+                    // handle
+                }, onError: { error in
+                    // handle
+                })
         }
             ,onMFAEnroll: { mfaEnrollStatus in
                 

@@ -184,12 +184,41 @@
 			name = StatusObjects;
 			sourceTree = "<group>";
 		};
-		A12F4FF7223830F500DB9147 /* API */ = {
+		A12F4FF7223830F500DB9147 /* New API */ = {
 			isa = PBXGroup;
 			children = (
 				A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */,
 			);
-			name = API;
+			name = "New API";
+			sourceTree = "<group>";
+		};
+		A12F4FFD22386C6E00DB9147 /* Current API */ = {
+			isa = PBXGroup;
+			children = (
+				FA4ED9A521C14A3E00A065A1 /* AuthenticationClient.swift */,
+				FA4ED9A921C2895B00A065A1 /* OktaError.swift */,
+			);
+			name = "Current API";
+			sourceTree = "<group>";
+		};
+		A12F4FFE22386C9C00DB9147 /* DomainObjects */ = {
+			isa = PBXGroup;
+			children = (
+				FAD6FC5021C2B4E4009729B6 /* OktaModels.swift */,
+				FA42E2E721C9270400325723 /* AuthState.swift */,
+				F5A9BAD621F9C255002DB437 /* Types.swift */,
+			);
+			name = DomainObjects;
+			sourceTree = "<group>";
+		};
+		A12F4FFF22386CCF00DB9147 /* RestAPI */ = {
+			isa = PBXGroup;
+			children = (
+				FA4ED9A721C27F7000A065A1 /* OktaAPI.swift */,
+				FAD6FC4E21C29784009729B6 /* OktaAPIRequest.swift */,
+				FA42E2EA21C94C1C00325723 /* Utils.swift */,
+			);
+			name = RestAPI;
 			sourceTree = "<group>";
 		};
 		A1FCB129220A416F0026F522 /* Mocks */ = {
@@ -226,16 +255,11 @@
 		FA4ED9A421C149FC00A065A1 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A12F4FF7223830F500DB9147 /* API */,
+				A12F4FFF22386CCF00DB9147 /* RestAPI */,
+				A12F4FFE22386C9C00DB9147 /* DomainObjects */,
+				A12F4FFD22386C6E00DB9147 /* Current API */,
+				A12F4FF7223830F500DB9147 /* New API */,
 				A12F4FD62238259600DB9147 /* StatusObjects */,
-				FA4ED9A521C14A3E00A065A1 /* AuthenticationClient.swift */,
-				FA4ED9A721C27F7000A065A1 /* OktaAPI.swift */,
-				FAD6FC4E21C29784009729B6 /* OktaAPIRequest.swift */,
-				FA4ED9A921C2895B00A065A1 /* OktaError.swift */,
-				FAD6FC5021C2B4E4009729B6 /* OktaModels.swift */,
-				FA42E2E721C9270400325723 /* AuthState.swift */,
-				F5A9BAD621F9C255002DB437 /* Types.swift */,
-				FA42E2EA21C94C1C00325723 /* Utils.swift */,
 				FAC5AEDA21C7F6F000C3DC91 /* Supporting Files */,
 			);
 			path = Source;
