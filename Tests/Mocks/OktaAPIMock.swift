@@ -174,6 +174,7 @@ class OktaAPIMock: OktaAPI {
         }
         
         self.performCalled = true
+        self.performedLink = link
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -189,4 +190,6 @@ class OktaAPIMock: OktaAPI {
     var getTransactionStateCalled: Bool = false
     var verifyFactorCalled: Bool = false
     var performCalled: Bool = false
+
+    var performedLink: LinksResponse.Link?
 }
