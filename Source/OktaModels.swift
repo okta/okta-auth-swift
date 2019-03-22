@@ -55,11 +55,11 @@ public struct OktaAPIErrorResponse: Codable {
         var errorSummary: String?
     }
 
-    var errorCode: String?
-    var errorSummary: String?
-    var errorLink: String?
-    var errorId: String?
-    var errorCauses: [ErrorCause]?
+    public var errorCode: String?
+    public var errorSummary: String?
+    public var errorLink: String?
+    public var errorId: String?
+    public var errorCauses: [ErrorCause]?
 }
 
 public struct LinksResponse: Codable {
@@ -68,11 +68,11 @@ public struct LinksResponse: Codable {
         let hints: [String:[String]]
     }
     
-    let next: Link?
-    let prev: Link?
-    let cancel: Link?
-    let skip: Link?
-    let resend: [Link]?
+    public let next: Link?
+    public let prev: Link?
+    public let cancel: Link?
+    public let skip: Link?
+    public let resend: [Link]?
 }
 
 public struct EmbeddedResponse: Codable {
