@@ -21,7 +21,7 @@ public class OktaAuthStatusPasswordExpired : OktaAuthStatus {
                                onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canChange() else {
-            onError(.wrongState("Can't find 'skip' link in response"))
+            onError(.wrongState("Can't find 'next' link in response"))
             return
         }
 
