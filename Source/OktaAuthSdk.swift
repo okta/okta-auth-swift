@@ -32,11 +32,70 @@ public class OktaAuthSdk {
                                            onError: onError)
     }
     
-    public class func unlockAccount(username: String) {
+    public class func authenticate(with url: URL,
+                                   username: String,
+                                   password: String,
+                                   onSuccess: @escaping (_ sessionToken: String) -> Void,
+                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                   onError: @escaping (_ error: OktaError) -> Void) {
         
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        unauthenticatedStatus.authenticate(username: username,
+                                           password: password,
+                                           onSuccess: onSuccess,
+                                           onStatusChange:onStatusChange,
+                                           onError:onError)
+    }
+    
+    public class func unlockAccount(with url: URL,
+                                    username: String,
+                                    factorType: FactorType,
+                                    onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
+                                    onError: @escaping (_ error: OktaError) -> Void) {
+
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        unauthenticatedStatus.unlockAccount(username: username,
+                                            factorType: factorType,
+                                            onRecoveryChallenge: onRecoveryChallenge,
+                                            onError: onError)
     }
 
-    public class func recoverPassword(username: String) {
+    public class func unlockAccount(with url: URL,
+                                    username: String,
+                                    factorType: FactorType,
+                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                    onError: @escaping (_ error: OktaError) -> Void) {
         
+        /*let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        unauthenticatedStatus.unlockAccount(username: username,
+                                            factorType: factorType,
+                                            onStatusChange:onStatusChange,
+                                            onError: onError)*/
+    }
+
+    public class func recoverPassword(with url: URL,
+                                      username: String,
+                                      factorType: FactorType,
+                                      onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
+                                      onError: @escaping (_ error: OktaError) -> Void) {
+
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        unauthenticatedStatus.recoverPassword(username: username,
+                                              factorType: factorType,
+                                              onRecoveryChallenge: onRecoveryChallenge,
+                                              onError: onError)
+    }
+
+    public class func recoverPassword(with url: URL,
+                                      username: String,
+                                      factorType: FactorType,
+                                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                      onError: @escaping (_ error: OktaError) -> Void) {
+        
+        /*let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        unauthenticatedStatus.recoverPassword(username: username,
+                                              factorType: factorType,
+                                              onStatusChange:onStatusChange,
+                                              onError: onError)*/
     }
 }

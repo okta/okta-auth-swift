@@ -16,6 +16,7 @@ public enum OktaError: Error {
     case errorBuildingURLRequest
     case connectionError(Error)
     case emptyServerResponse
+    case invalidResponse
     case responseSerializationError(Error)
     case serverRespondedWithError(OktaAPIErrorResponse)
     case authenicationStateNotSupported(AuthStatus)
@@ -35,6 +36,8 @@ public extension OktaError {
             return "Connection error (\(error.localizedDescription))"
         case .emptyServerResponse:
             return "Empty server response"
+        case .invalidResponse:
+            return "Invalid server response"
         case .responseSerializationError(let error):
             return "Response serialization error (\(error.localizedDescription))"
         case .serverRespondedWithError(let error):
