@@ -148,7 +148,31 @@ open class OktaAPI {
         req.bodyParams?["passCode"] = passCode
         req.run()
         return req
-    }                       
+    }
+
+    @discardableResult open func verifyFactor(with link: LinksResponse.Link,
+                                              stateToken: String,
+                                              answer: String? = nil,
+                                              passCode: String? = nil,
+                                              rememberDevice: Bool? = nil,
+                                              autoPush: Bool? = nil,
+                                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.urlParams = [:]
+        if let rememberDevice = rememberDevice {
+            req.urlParams?["rememberDevice"] = rememberDevice ? "true" : "false"
+        }
+        if let autoPush = autoPush {
+            req.urlParams?["autoPush"] = autoPush ? "true" : "false"
+        }
+        req.bodyParams = ["stateToken": stateToken]
+        req.bodyParams?["answer"] = answer
+        req.bodyParams?["passCode"] = passCode
+        req.run()
+        return req
+    }
 
     // MARK: - Private
 

@@ -73,6 +73,8 @@ public struct LinksResponse: Codable {
     let cancel: Link?
     let skip: Link?
     let resend: [Link]?
+    let enroll: Link?
+    let verify: Link?
 }
 
 public struct EmbeddedResponse: Codable {
@@ -89,11 +91,21 @@ public struct EmbeddedResponse: Codable {
         public let provider: FactorProvider?
         public let vendorName: String?
         public let profile: Profile?
+        public let links: LinksResponse?
         
         public struct Profile: Codable {
             public let phoneNumber: String?
             public let question: String?
             public let questionText: String?
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case factorType
+            case provider
+            case vendorName
+            case profile
+            case links = "_links"
         }
     }
 

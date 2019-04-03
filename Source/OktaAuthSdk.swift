@@ -1,63 +1,30 @@
-//
-//  OktaAuthSdk.swift
-//  OktaAuthNative
-//
-//  Created by Ildar Abdullin on 3/12/19.
-//
+/*
+ * Copyright (c) 2019, Okta, Inc. and/or its affiliates. All rights reserved.
+ * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
+ *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
 
 import Foundation
 
 public class OktaAuthSdk {
-    
-    public class func authenticate(with url: URL,
-                                   username: String,
-                                   password: String,
-                                   onSuccess: @escaping (_ sessionToken: String) -> Void,
-                                   onPasswordWarning: @escaping (_ passwordWarningStatus: OktaAuthStatusPasswordWarning) -> Void,
-                                   onPasswordExpired: @escaping (_ passwordExpiredStatus: OktaAuthStatusPasswordExpired) -> Void,
-                                   onMFAEnroll: @escaping (_ mfaEnrollStatus: OktaAuthStatusMFAEnroll) -> Void,
-                                   onMFARequired: @escaping (_ mfaRequiredStatus: OktaAuthStatusMFARequired) -> Void,
-                                   onLockedOut: @escaping (_ lockedOutStatus: OktaAuthStatusLockedOut) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void) {
 
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
-        unauthenticatedStatus.authenticate(username: username,
-                                           password: password,
-                                           onSuccess: onSuccess,
-                                           onPasswordWarning: onPasswordWarning,
-                                           onPasswordExpired: onPasswordExpired,
-                                           onMFAEnroll: onMFAEnroll,
-                                           onMFARequired: onMFARequired,
-                                           onLockedOut: onLockedOut,
-                                           onError: onError)
-    }
-    
     public class func authenticate(with url: URL,
                                    username: String,
-                                   password: String,
-                                   onSuccess: @escaping (_ sessionToken: String) -> Void,
+                                   password: String?,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
         
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.authenticate(username: username,
-                                           password: password,
-                                           onSuccess: onSuccess,
+                                           password: password ?? "",
                                            onStatusChange:onStatusChange,
                                            onError:onError)
-    }
-    
-    public class func unlockAccount(with url: URL,
-                                    username: String,
-                                    factorType: FactorType,
-                                    onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void) {
-
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
-        unauthenticatedStatus.unlockAccount(username: username,
-                                            factorType: factorType,
-                                            onRecoveryChallenge: onRecoveryChallenge,
-                                            onError: onError)
     }
 
     public class func unlockAccount(with url: URL,
@@ -76,19 +43,6 @@ public class OktaAuthSdk {
     public class func recoverPassword(with url: URL,
                                       username: String,
                                       factorType: FactorType,
-                                      onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
-                                      onError: @escaping (_ error: OktaError) -> Void) {
-
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
-        unauthenticatedStatus.recoverPassword(username: username,
-                                              factorType: factorType,
-                                              onRecoveryChallenge: onRecoveryChallenge,
-                                              onError: onError)
-    }
-
-    public class func recoverPassword(with url: URL,
-                                      username: String,
-                                      factorType: FactorType,
                                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                       onError: @escaping (_ error: OktaError) -> Void) {
         
@@ -97,5 +51,12 @@ public class OktaAuthSdk {
                                               factorType: factorType,
                                               onStatusChange:onStatusChange,
                                               onError: onError)*/
+    }
+
+    public class func fetchStatus(using stateToken: String,
+                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                  onError: @escaping (_ error: OktaError) -> Void) {
+        
+        
     }
 }

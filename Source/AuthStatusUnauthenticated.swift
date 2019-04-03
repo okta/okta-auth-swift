@@ -1,76 +1,26 @@
-//
-//  AuthStatusUnauthenticated.swift
-//  OktaAuthNative
-//
-//  Created by Ildar Abdullin on 3/12/19.
-//
+/*
+ * Copyright (c) 2019, Okta, Inc. and/or its affiliates. All rights reserved.
+ * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
+ *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
 
 import Foundation
 
 public class OktaAuthStatusUnauthenticated : OktaAuthStatus {
     
-    override init(oktaDomain: URL) {
+    init(oktaDomain: URL) {
         super.init(oktaDomain: oktaDomain)
         statusType = .unauthenticated
     }
 
     public func authenticate(username: String,
                              password: String,
-                             onSuccess: @escaping (_ sessionToken: String) -> Void,
-                             onPasswordWarning: @escaping (_ passwordWarningStatus: OktaAuthStatusPasswordWarning) -> Void,
-                             onPasswordExpired: @escaping (_ passwordExpiredStatus: OktaAuthStatusPasswordExpired) -> Void,
-                             onMFAEnroll: @escaping (_ mfaEnrollStatus: OktaAuthStatusMFAEnroll) -> Void,
-                             onMFARequired: @escaping (_ mfaRequiredStatus: OktaAuthStatusMFARequired) -> Void,
-                             onLockedOut: @escaping (_ lockedOutStatus: OktaAuthStatusLockedOut) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void)
-    {
-        api.primaryAuthentication(username: username,
-                                  password: password,
-                                  deviceFingerprint: nil)
-        { result in
-                                        
-            var authResponse : OktaAPISuccessResponse
-                                    
-            switch result {
-                case .error(let error):
-                    onError(error)
-                    return
-                case .success(let success):
-                    authResponse = success
-            }
-                    
-            switch authResponse.status! {
-                                            
-                case .success:
-                    onSuccess(authResponse.sessionToken!)
-
-                case .passwordWarning:
-                    onPasswordWarning(OktaAuthStatusPasswordWarning(oktaDomain: self.url, model:authResponse))
-                                            
-                case .passwordExpired:
-                    onPasswordExpired(OktaAuthStatusPasswordExpired(oktaDomain: self.url, model:authResponse))
-
-                case .MFAEnroll:
-                    onMFAEnroll(OktaAuthStatusMFAEnroll(oktaDomain: self.url, model:authResponse))
-                                            
-                case .MFARequired:
-                    onMFARequired(OktaAuthStatusMFARequired(oktaDomain: self.url, model:authResponse))
-                                            
-                case .lockedOut:
-                    onLockedOut(OktaAuthStatusLockedOut(oktaDomain: self.url, model:authResponse))
-
-                case .unauthenticated:
-                    onError(OktaError.wrongState("Wrong state"))
-                                            
-                default:
-                    onError(OktaError.unknownState(authResponse))
-            }
-        }
-    }
-
-    public func authenticate(username: String,
-                             password: String,
-                             onSuccess: @escaping (_ sessionToken: String) -> Void,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
 
@@ -80,7 +30,6 @@ public class OktaAuthStatusUnauthenticated : OktaAuthStatus {
         { result in
             
             self.handleServerResponse(result,
-                                      onSuccess: onSuccess,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
