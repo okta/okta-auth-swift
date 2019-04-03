@@ -12,11 +12,16 @@
 
 import Foundation
 
-public class OktaAuthStatusLockedOut : OktaAuthStatus {
+public class OktaAuthStatusSuccess : OktaAuthStatus {
     
+    public var sessionToken: String? {
+        get {
+            return self.model?.sessionToken
+        }
+    }
+
     init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
-        statusType = .lockedOut
+        super.init(oktaDomain: oktaDomain, model: model)
+        statusType = .success
     }
 }

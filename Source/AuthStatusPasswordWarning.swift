@@ -1,9 +1,14 @@
-//
-//  AuthStatusPasswordWarning.swift
-//  OktaAuthNative
-//
-//  Created by Ildar Abdullin on 3/12/19.
-//
+/*
+ * Copyright (c) 2019, Okta, Inc. and/or its affiliates. All rights reserved.
+ * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
+ *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
 
 import Foundation
 
@@ -17,17 +22,17 @@ public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
 
     public func changePassword(oldPassword: String,
                                newPassword: String,
-                               onSuccess: @escaping (_ sessionToken: String) -> Void,
+                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                onError: @escaping (_ error: OktaError) -> Void) {
 
         let changePasswordStatus = OktaAuthStatusPasswordExpired(oktaDomain: self.url, model: self.model!)
         changePasswordStatus.changePassword(oldPassword: oldPassword,
                                             newPassword: newPassword,
-                                            onSuccess: onSuccess,
+                                            onStatusChange: onStatusChange,
                                             onError: onError)
     }
 
-    public func skipPasswordChange(onSuccess: @escaping (_ sessionToken: String) -> Void,
+    public func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canSkip() else {
@@ -37,24 +42,9 @@ public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
 
         api.perform(link: model!.links!.skip!, stateToken: model!.stateToken!) { result in
 
-            var authResponse : OktaAPISuccessResponse
-            
-            switch result {
-            case .error(let error):
-                onError(error)
-                return
-            case .success(let success):
-                authResponse = success
-            }
-            
-            switch authResponse.status! {
-
-            case .success:
-                onSuccess(authResponse.sessionToken!)
-                
-            default:
-                onError(OktaError.unknownState(authResponse))
-            }
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
         }
     }
 

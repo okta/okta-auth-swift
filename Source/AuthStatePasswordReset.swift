@@ -12,11 +12,11 @@
 
 import Foundation
 
-public class OktaAuthStatusLockedOut : OktaAuthStatus {
+public class OktaAuthStatusPasswordReset : OktaAuthStatus {
     
     init(oktaDomain: URL, model: OktaAPISuccessResponse) {
         super.init(oktaDomain: oktaDomain)
         self.model = model
-        statusType = .lockedOut
+        statusType = .passwordReset
     }
 }

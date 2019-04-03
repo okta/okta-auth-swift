@@ -24,6 +24,7 @@ public enum OktaError: Error {
     case unexpectedResponse
     case wrongState(String)
     case alreadyInProgress
+    case factorNotAvailable(OktaAPISuccessResponse)
     case unknownState(OktaAPISuccessResponse)
 }
 
@@ -60,6 +61,8 @@ public extension OktaError {
             return error
         case .alreadyInProgress:
             return "Another request is in progress"
+        case .factorNotAvailable:
+            return "Requested factor is not available"
         case .unknownState:
             return "Received state is unknown"
         }
