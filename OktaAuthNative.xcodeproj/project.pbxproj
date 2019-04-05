@@ -215,15 +215,15 @@
 			children = (
 				A12F4FD7223825DF00DB9147 /* AuthStatus.swift */,
 				A12F4FDB2238264C00DB9147 /* AuthStatusUnauthenticated.swift */,
+				A18335DC22541B5F007C6175 /* AuthStatusSuccess.swift */,
 				A12F4FDF2238267300DB9147 /* AuthStatusFactorEnroll.swift */,
+				A18335E422542645007C6175 /* AuthStatusFactorEnrollActivate.swift */,
 				A12F4FE32238269C00DB9147 /* AuthStatusFactorRequired.swift */,
 				A12F4FE7223826B200DB9147 /* AuthStatusFactorChallenge.swift */,
 				A12F4FEB223826CF00DB9147 /* AuthStatusLockedOut.swift */,
 				A12F4FEF2238276800DB9147 /* AuthStatusPasswordWarning.swift */,
 				A12F4FF32238277900DB9147 /* AuthStatusPasswordExpired.swift */,
 				A18335A82239A9D5007C6175 /* AuthStatusRecoveryChallenge.swift */,
-				A18335DC22541B5F007C6175 /* AuthStatusSuccess.swift */,
-				A18335E422542645007C6175 /* AuthStatusFactorEnrollActivate.swift */,
 				A18335E8225426AC007C6175 /* AuthStatusRecovery.swift */,
 				A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */,
 			);

@@ -33,7 +33,6 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
     }
 
     public func canResend() -> Bool {
-        
         guard factor?.links?.resend?.first != nil else {
             return false
         }
@@ -42,7 +41,6 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
     }
 
     public func canReturn() -> Bool {
-        
         guard factor?.links?.prev != nil else {
             return false
         }
@@ -195,19 +193,19 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
     func verifyFactor(answer: String?,
                       passCode: String?,
                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
-        if let link = factor!.links?.verify {
+        if let link = factor!.links?.next {
             self.api.verifyFactor(with: link,
                                   stateToken: model!.stateToken!,
-                                  answer: nil,
-                                  passCode: nil,
+                                  answer: answer,
+                                  passCode: passCode,
                                   rememberDevice: nil,
                                   autoPush: nil,
                                   completion: completion)
         } else {
             self.api.verifyFactor(factorId: factor!.id!,
                                   stateToken: model!.stateToken!,
-                                  answer: nil,
-                                  passCode: nil,
+                                  answer: answer,
+                                  passCode: passCode,
                                   rememberDevice: nil,
                                   autoPush: nil,
                                   completion: completion)

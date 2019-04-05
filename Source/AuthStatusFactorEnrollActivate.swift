@@ -12,7 +12,7 @@
 
 import Foundation
 
-public class OktaAuthStatusMFAEnrollActivate : OktaAuthStatus {
+public class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     
     init(oktaDomain: URL, model: OktaAPISuccessResponse) {
         super.init(oktaDomain: oktaDomain)

@@ -18,6 +18,7 @@ public struct OktaAPISuccessResponse: Codable {
 
     // Provides additional context for the last factor verification attempt.
     public enum FactorResult: String, Codable {
+        case active = "ACTIVE"
         case waiting = "WAITING"
         case cancelled = "CANCELLED"
         case timeout = "TIMEOUT"
@@ -75,6 +76,7 @@ public struct LinksResponse: Codable {
     let resend: [Link]?
     let enroll: Link?
     let verify: Link?
+    let questions: Link?
 }
 
 public struct EmbeddedResponse: Codable {

@@ -40,83 +40,13 @@ public class OktaAuthStatusFactorRequired : OktaAuthStatus {
                                                       onError: onError)
         })
     }
-/*
-    public func verifySecurityQuestionAnswer(answer: String,
-                                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                             onError: @escaping (_ error: OktaError) -> Void) {
-        guard let factors :[EmbeddedResponse.Factor] = model?.embedded?.factors else {
-            onError(OktaError.invalidResponse)
-            return
-        }
 
-        var foundFactor: EmbeddedResponse.Factor?
-        for factor in factors {
-            if (factor.factorType == .question) {
-                foundFactor = factor
-                break
-            }
-        }
-
-        guard foundFactor != nil else {
-            onError(OktaError.factorNotAvailable(model!))
-            return
-        }
-
-        let completion = { result in
-            
-            self.handleServerResponse(result,
-                                      onStatusChanged: onStatusChange,
-                                      onError: onError)
-        }
-
-        self.verifyFactor(factor: foundFactor!,
-                          stateToken: model!.stateToken!,
-                          answer: answer,
-                          passCode: nil,
-                          completion: completion)
-    }
-
-    public func verifyTotpCode(totpCode: String,
-                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                               onError: @escaping (_ error: OktaError) -> Void) {
-        guard let factors :[EmbeddedResponse.Factor] = model?.embedded?.factors else {
-            onError(OktaError.invalidResponse)
-            return
-        }
-        
-        var foundFactor: EmbeddedResponse.Factor?
-        for factor in factors {
-            if (factor.factorType == .TOTP) {
-                foundFactor = factor
-                break
-            }
-        }
-        
-        guard foundFactor != nil else {
-            onError(OktaError.factorNotAvailable(model!))
-            return
-        }
-        
-        let completion = { result in
-            
-            self.handleServerResponse(result,
-                                      onStatusChanged: onStatusChange,
-                                      onError: onError)
-        }
-        
-        self.verifyFactor(factor: foundFactor!,
-                          stateToken: model!.stateToken!,
-                          answer: nil,
-                          passCode: totpCode,
-                          completion: completion)
-    }
-*/
     func triggerFactor(factor: EmbeddedResponse.Factor,
                        stateToken: String,
                        answer: String?,
                        passCode: String?,
                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
-        if let link = factor.links?.verify {
+        if let link = factor.links?.next {
             self.api.verifyFactor(with: link,
                                   stateToken: model!.stateToken!,
                                   answer: nil,
