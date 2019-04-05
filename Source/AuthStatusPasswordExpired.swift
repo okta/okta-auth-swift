@@ -31,7 +31,7 @@ public class OktaAuthStatusPasswordExpired : OktaAuthStatus {
         }
 
         api.changePassword(link: model!.links!.next!,
-                           stateToken: model!.sessionToken!,
+                           stateToken: model!.stateToken!,
                            oldPassword: oldPassword,
                            newPassword: newPassword) { result in
     

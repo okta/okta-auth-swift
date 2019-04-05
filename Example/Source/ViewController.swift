@@ -18,92 +18,103 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        OktaAuthSdk.authenticate(with: URL(string: "https://dev-842506.oktapreview.com")!,
+        OktaAuthSdk.authenticate(with: URL(string: "http://rain-admin.okta1.com:1802")!,
                                  username: "ildar.abdullin@okta.com",
-                                 password: "aSd98300",
+                                 password: "password",
                                  onStatusChange: { authStatus in
-                                    switch authStatus.statusType {
-                                    case .success:
-                                        let successState = authStatus as! OktaAuthStatusSuccess
-                                        let alert = UIAlertController(title: "Hooray!", message: "We are logged in \(successState.sessionToken!)", preferredStyle: .alert)
-                                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                                        self.present(alert, animated: true, completion: nil)
-                                    case .unauthenticated:
-                                        print("Unknown state")
-                                    case .passwordWarning:
-                                        print("Unknown state")
-                                    case .passwordExpired:
-                                        print("Unknown state")
-                                    case .recovery:
-                                        print("Unknown state")
-                                    case .recoveryChallenge:
-                                        print("Unknown state")
-                                    case .passwordReset:
-                                        print("Unknown state")
-                                    case .lockedOut:
-                                        print("Unknown state")
-                                    case .MFAEnroll:
-                                        print("Unknown state")
-                                    case .MFAEnrollActivate:
-                                        print("Unknown state")
-                                    case .MFARequired:
-                                        print("Unknown state")
-                                    case .MFAChallenge:
-                                        print("Unknown state")
-                                    case .unknown(_):
-                                        print("Unknown state")
-                                    }
+                                    self.handleStatus(status: authStatus)
         },
                                  onError: { error in
             
         })
-        /*OktaAuthSdk.authenticate(with: URL(string: "https://dev-123456.oktapreview.com")!,
-                                 username: "john.doe@okta.com",
-                                 password: "password",
-                                 onSuccess:
-            { sessionToken in
-                
-                let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-            },
-                                 onPasswordWarning:
-            { passwordWarningStatus in
-                
-                passwordWarningStatus.skipPasswordChange(onSuccess: { sessionToken in
-                    // handle
-                }, onError: { error in
-                    // handle
-                })
-            },
-                                 onPasswordExpired:
-            { passwordExpiredStatus in
-                
-                passwordExpiredStatus.changePassword(oldPassword: "oldPassword", newPassword: "newPassword", onSuccess: { sessionToken in
-                    // handle
-                }, onError: { error in
-                    // handle
-                })
-            },
-                                 onMFAEnroll:
-            { mfaEnrollStatus in
-                
-                //mfaEnrollStatus.enrollFactor()
-            },
-                                 onMFARequired:
-            { mfaRequiredStatus in
+    }
+
+    func handleStatus(status: OktaAuthStatus) {
+        switch status.statusType {
             
-                // mfaRequiredStatus.selectFactor()
-            },
-                                 onLockedOut:
-            { lockedOutStatus in
+        case .success:
+            let successState: OktaAuthStatusSuccess = status as! OktaAuthStatusSuccess
+            let alert = UIAlertController(title: "Hooray!", message: "We are logged in \(successState.sessionToken!)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+
+        case .unauthenticated:
+            print("Unknown state")
             
-                // lockedOutStatus.unlockAccount()
-            },
-                                 onError:
-            { error in
+        case .passwordWarning:
+            print("Unknown state")
+        
+        case .passwordExpired:
+            let expiredState: OktaAuthStatusPasswordExpired = status as! OktaAuthStatusPasswordExpired
+            expiredState.changePassword(oldPassword: "aSd98300", newPassword: "I love my family 98300!", onStatusChange: { status in
+                self.handleStatus(status: status)
+            }, onError: { error in
+                
+            })
+        
+        case .recovery:
+            print("Unknown state")
+        
+        case .recoveryChallenge:
+            print("Unknown state")
+        
+        case .passwordReset:
+            print("Unknown state")
+        
+        case .lockedOut:
+            print("Unknown state")
+        
+        case .MFAEnroll:
+            let mfaEnroll: OktaAuthStatusFactorEnroll = status as! OktaAuthStatusFactorEnroll
             
-                // handleError(error)
-            })*/
+            if mfaEnroll.canSkipEnrollment() {
+                mfaEnroll.skipEnrollment(onStatusChange: { status in
+                    self.handleStatus(status: status)
+                }) { error in
+                    
+                }
+                return
+            }
+            
+            let factors = mfaEnroll.availableFactors
+            for factor in factors! {
+                if factor.factorType! == .question {
+                    mfaEnroll.enrollSecurityQuestionFactor(factor, questionId: "disliked_food", answer: "kasha", onStatusChange: { status in
+                        self.handleStatus(status: status)
+                    }) { error in
+                        
+                    }
+                    return
+                }
+            }
+        
+        case .MFAEnrollActivate:
+            print("Unknown state")
+        
+        case .MFARequired:
+            let mfaRequired: OktaAuthStatusFactorRequired = status as! OktaAuthStatusFactorRequired
+            let factors = mfaRequired.availableFactors
+            for factor in factors! {
+                if factor.factorType! == .question {
+                    mfaRequired.selectFactor(factor: factor, onStatusChange: { status in
+                        self.handleStatus(status: status)
+                    }) { error in
+                        
+                    }
+                    return
+                }
+            }
+        
+        case .MFAChallenge:
+            let mfaChallenge: OktaAuthStatusFactorChallenge = status as! OktaAuthStatusFactorChallenge
+            mfaChallenge.verifySecurityQuestionAnswer(answer: "kasha", onStatusChange: { status in
+                self.handleStatus(status: status)
+            }) { error in
+                
+            }
+        
+        case .unknown(_):
+            print("Unknown state")
+        }
     }
 }

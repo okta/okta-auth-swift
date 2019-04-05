@@ -114,6 +114,16 @@ open class OktaAPI {
         req.run()
         return req
     }
+
+    @discardableResult open func cancelTransaction(with link: LinksResponse.Link,
+                                                   stateToken: String,
+                                                   completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.bodyParams = ["stateToken": stateToken]
+        req.run()
+        return req
+    }
     
     @discardableResult open func perform(link: LinksResponse.Link,
                                          stateToken: String,
@@ -170,6 +180,32 @@ open class OktaAPI {
         req.bodyParams = ["stateToken": stateToken]
         req.bodyParams?["answer"] = answer
         req.bodyParams?["passCode"] = passCode
+        req.run()
+        return req
+    }
+
+    @discardableResult open func enrollFactor(_ factor: EmbeddedResponse.Factor,
+                                              with link: LinksResponse.Link,
+                                              stateToken: String,
+                                              phoneNumber: String?,
+                                              questionId: String?,
+                                              answer: String?,
+                                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.urlParams = [:]
+        req.bodyParams = ["stateToken": stateToken]
+        req.bodyParams?["factorType"] = factor.factorType?.rawValue
+        req.bodyParams?["provider"] = factor.provider?.rawValue
+        var profile: [String: String] = [:]
+        if factor.factorType == .question {
+            profile["question"] = questionId!
+            profile["answer"] = answer!
+        } else if factor.factorType == .sms {
+            profile["phoneNumber"] = phoneNumber
+        }
+        req.bodyParams?["profile"] = profile
         req.run()
         return req
     }
