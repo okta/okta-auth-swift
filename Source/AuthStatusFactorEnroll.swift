@@ -12,17 +12,21 @@
 
 import Foundation
 
-public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
+open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
 
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .MFAEnroll
+    }
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .MFAEnroll
     }
 
     public var availableFactors: [EmbeddedResponse.Factor]? {
         get {
-            return model?.embedded?.factors
+            return model.embedded?.factors
         }
     }
 
@@ -35,7 +39,7 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
     }
 
     public func canSkipEnrollment() -> Bool {
-        guard model?.links?.skip?.href != nil else {
+        guard model.links?.skip?.href != nil else {
             return false
         }
         
@@ -49,11 +53,22 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
         
-        api.perform(link: model!.links!.skip!, stateToken: model!.stateToken!) { result in
+        api.perform(link: model.links!.skip!, stateToken: model.stateToken!) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
+    }
+
+    public func downloadSecurityQuestionsForFactor(_ factor: EmbeddedResponse.Factor,
+                                                   onDownloadComplete: @escaping ([SecurityQuestion]) -> Void,
+                                                   onError: @escaping (_ error: OktaError) -> Void) {
+        guard factor.links?.questions?.href != nil else {
+            onError(.wrongState("Can't find 'questions' link in response"))
+            return
+        }
+
+        api.downloadSecurityQuestions(with: factor.links!.questions!, onCompletion: onDownloadComplete, onError: onError)
     }
 
     public func enrollSecurityQuestionFactor(_ factor: EmbeddedResponse.Factor,
@@ -66,16 +81,18 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
 
-        self.api.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: model!.stateToken!,
-                              phoneNumber: nil,
-                              questionId: questionId,
-                              answer: answer,
-                              completion: { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError)
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: nil,
+                         questionId: questionId,
+                         answer: answer,
+                         credentialId: nil,
+                         passCode: nil,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
         })
     }
 
@@ -88,16 +105,18 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
         
-        self.api.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: model!.stateToken!,
-                              phoneNumber: phoneNumber,
-                              questionId: nil,
-                              answer: nil,
-                              completion: { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError)
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: phoneNumber,
+                         questionId: nil,
+                         answer: nil,
+                         credentialId: nil,
+                         passCode: nil,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
         })
     }
 
@@ -110,16 +129,18 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
         
-        self.api.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: model!.stateToken!,
-                              phoneNumber: phoneNumber,
-                              questionId: nil,
-                              answer: nil,
-                              completion: { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError)
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: phoneNumber,
+                         questionId: nil,
+                         answer: nil,
+                         credentialId: nil,
+                         passCode: nil,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
         })
     }
 
@@ -131,16 +152,18 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
         
-        self.api.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: model!.stateToken!,
-                              phoneNumber: nil,
-                              questionId: nil,
-                              answer: nil,
-                              completion: { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError)
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: nil,
+                         questionId: nil,
+                         answer: nil,
+                         credentialId: nil,
+                         passCode: nil,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
         })
     }
 
@@ -152,16 +175,43 @@ public class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             return
         }
         
-        self.api.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: model!.stateToken!,
-                              phoneNumber: nil,
-                              questionId: nil,
-                              answer: nil,
-                              completion: { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError)
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: nil,
+                         questionId: nil,
+                         answer: nil,
+                         credentialId: nil,
+                         passCode: nil,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
+        })
+    }
+
+    public func enrollSecureIDFactor(factor: EmbeddedResponse.Factor,
+                                     credentialId: String,
+                                     passCode: String,
+                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                     onError: @escaping (_ error: OktaError) -> Void) {
+        guard canEnrollFactor(factor: factor) else {
+            onError(.wrongState("Can't find 'enroll' link in response"))
+            return
+        }
+        
+        api.enrollFactor(factor,
+                         with: factor.links!.enroll!,
+                         stateToken: model.stateToken!,
+                         phoneNumber: nil,
+                         questionId: nil,
+                         answer: nil,
+                         credentialId: credentialId,
+                         passCode: passCode,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
         })
     }
 }

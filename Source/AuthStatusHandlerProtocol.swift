@@ -12,21 +12,6 @@
 
 import Foundation
 
-open class OktaAuthStatusSuccess : OktaAuthStatus {
-    
-    public var sessionToken: String? {
-        get {
-            return self.model.sessionToken
-        }
-    }
-
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .success
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
-        statusType = .success
-    }
+public protocol AuthStatusCustomHandlerProtocol: class {
+    func handleServerStatusResponse(currentStatus: OktaAuthStatus, response: OktaAPIRequest.Result)
 }

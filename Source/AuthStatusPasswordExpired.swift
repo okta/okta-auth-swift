@@ -12,11 +12,15 @@
 
 import Foundation
 
-public class OktaAuthStatusPasswordExpired : OktaAuthStatus {
+open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
 
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .passwordExpired
+    }
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .passwordExpired
     }
 
@@ -30,8 +34,8 @@ public class OktaAuthStatusPasswordExpired : OktaAuthStatus {
             return
         }
 
-        api.changePassword(link: model!.links!.next!,
-                           stateToken: model!.stateToken!,
+        api.changePassword(link: model.links!.next!,
+                           stateToken: model.stateToken!,
                            oldPassword: oldPassword,
                            newPassword: newPassword) { result in
     
@@ -43,7 +47,7 @@ public class OktaAuthStatusPasswordExpired : OktaAuthStatus {
 
     public func canChange() -> Bool {
         
-        guard (model?.links?.next?.href) != nil else {
+        guard (model.links?.next?.href) != nil else {
             return false
         }
 

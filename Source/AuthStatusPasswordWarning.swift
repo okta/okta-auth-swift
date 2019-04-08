@@ -12,11 +12,15 @@
 
 import Foundation
 
-public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
+open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
 
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .passwordWarning
+    }
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .passwordWarning
     }
 
@@ -25,7 +29,7 @@ public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                onError: @escaping (_ error: OktaError) -> Void) {
 
-        let changePasswordStatus = OktaAuthStatusPasswordExpired(oktaDomain: self.url, model: self.model!)
+        let changePasswordStatus = OktaAuthStatusPasswordExpired(currentState: self, model: self.model)
         changePasswordStatus.changePassword(oldPassword: oldPassword,
                                             newPassword: newPassword,
                                             onStatusChange: onStatusChange,
@@ -40,7 +44,7 @@ public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
             return
         }
 
-        api.perform(link: model!.links!.skip!, stateToken: model!.stateToken!) { result in
+        api.perform(link: model.links!.skip!, stateToken: model.stateToken!) { result in
 
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
@@ -50,7 +54,7 @@ public class OktaAuthStatusPasswordWarning : OktaAuthStatus {
 
     public func canSkip() -> Bool {
         
-        guard (model?.links?.skip?.href) != nil else {
+        guard (model.links?.skip?.href) != nil else {
             return false
         }
 

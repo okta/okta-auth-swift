@@ -12,10 +12,15 @@
 
 import Foundation
 
-public class OktaAuthStatusUnauthenticated : OktaAuthStatus {
+open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
+
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .unauthenticated
+    }
     
-    init(oktaDomain: URL) {
-        super.init(oktaDomain: oktaDomain)
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .unauthenticated
     }
 

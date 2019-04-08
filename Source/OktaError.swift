@@ -17,7 +17,7 @@ public enum OktaError: Error {
     case connectionError(Error)
     case emptyServerResponse
     case invalidResponse
-    case responseSerializationError(Error)
+    case responseSerializationError(Error, Data)
     case serverRespondedWithError(OktaAPIErrorResponse)
     case authenicationStateNotSupported(AuthStatus)
     case factorNotSupported(EmbeddedResponse.Factor)
@@ -26,6 +26,7 @@ public enum OktaError: Error {
     case alreadyInProgress
     case factorNotAvailable(OktaAPISuccessResponse)
     case unknownState(OktaAPISuccessResponse)
+    case internalError(String)
 }
 
 public extension OktaError {
@@ -39,7 +40,7 @@ public extension OktaError {
             return "Empty server response"
         case .invalidResponse:
             return "Invalid server response"
-        case .responseSerializationError(let error):
+        case .responseSerializationError(let error, _):
             return "Response serialization error (\(error.localizedDescription))"
         case .serverRespondedWithError(let error):
             let description: String
@@ -65,6 +66,8 @@ public extension OktaError {
             return "Requested factor is not available"
         case .unknownState:
             return "Received state is unknown"
+        case .internalError:
+            return "Internal error"
         }
     }
 }

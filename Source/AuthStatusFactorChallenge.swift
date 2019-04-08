@@ -12,23 +12,27 @@
 
 import Foundation
 
-public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
+open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
 
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .MFAChallenge
+    }
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .MFAChallenge
     }
 
     public var factor: EmbeddedResponse.Factor? {
         get {
-            return model?.embedded?.factor
+            return model.embedded?.factor
         }
     }
 
     public var factorType: FactorType? {
         get {
-            return model?.embedded?.factor?.factorType
+            return model.embedded?.factor?.factorType
         }
     }
 
@@ -48,11 +52,12 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         return true
     }
 
-    public func verifySmsChallenge(with code: String,
+    public func verifySmsOrCallChallenge(with code: String,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
-        guard factor?.factorType != nil && factor!.factorType! == .sms else {
-            onError(OktaError.factorNotAvailable(model!))
+        guard factor?.factorType != nil && factor!.factorType! == .sms ||
+              factor?.factorType != nil && factor!.factorType! == .call else {
+            onError(OktaError.factorNotAvailable(model))
             return
         }
 
@@ -70,11 +75,11 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void) {
         guard factor?.factorType != nil && factor!.factorType! == .push else {
-            onError(OktaError.factorNotAvailable(model!))
+            onError(OktaError.factorNotAvailable(model))
             return
         }
 
-        guard let factorResult = model?.factorResult else {
+        guard let factorResult = model.factorResult else {
             onError(.wrongState("Can't find 'factorResult' object in response"))
             return
         }
@@ -120,7 +125,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
                                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                              onError: @escaping (_ error: OktaError) -> Void) {
         guard factor?.factorType != nil && factor!.factorType! == .question else {
-            onError(OktaError.factorNotAvailable(model!))
+            onError(OktaError.factorNotAvailable(model))
             return
         }
         
@@ -137,7 +142,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                onError: @escaping (_ error: OktaError) -> Void) {
         guard factor?.factorType != nil && factor!.factorType! == .TOTP else {
-            onError(OktaError.factorNotAvailable(model!))
+            onError(OktaError.factorNotAvailable(model))
             return
         }
 
@@ -158,7 +163,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         }
 
         self.api.perform(link: factor!.links!.resend!.first!,
-                         stateToken: model!.stateToken!,
+                         stateToken: model.stateToken!,
                          completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
@@ -174,7 +179,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         }
         
         self.api.perform(link: factor!.links!.prev!,
-                         stateToken: model!.stateToken!,
+                         stateToken: model.stateToken!,
                          completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
@@ -184,6 +189,13 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
 
     public override func cancel(onSuccess: @escaping () -> Void,
                                 onError: @escaping (OktaError) -> Void) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.cancel(onSuccess: onSuccess, onError: onError)
+            }
+            return
+        }
+
         factorResultPollTimer?.invalidate()
         super.cancel(onSuccess: onSuccess, onError: onError)
     }
@@ -195,7 +207,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
         if let link = factor!.links?.next {
             self.api.verifyFactor(with: link,
-                                  stateToken: model!.stateToken!,
+                                  stateToken: model.stateToken!,
                                   answer: answer,
                                   passCode: passCode,
                                   rememberDevice: nil,
@@ -203,7 +215,7 @@ public class OktaAuthStatusFactorChallenge : OktaAuthStatus {
                                   completion: completion)
         } else {
             self.api.verifyFactor(factorId: factor!.id!,
-                                  stateToken: model!.stateToken!,
+                                  stateToken: model.stateToken!,
                                   answer: answer,
                                   passCode: passCode,
                                   rememberDevice: nil,

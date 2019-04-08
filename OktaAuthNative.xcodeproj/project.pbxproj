@@ -76,6 +76,9 @@
 		A18335ED22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
 		A18335EE22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
 		A18335EF22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
+		A1BEAFDB225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
+		A1BEAFDC225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
+		A1BEAFDD225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
 		A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */; };
 		A1C06F0A2214E1CA005E8369 /* MFAWaitSmsChallenge in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */; };
 		A1C06F14221DFFD8005E8369 /* PrimaryAuthExpiredPassword in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */; };
@@ -140,6 +143,7 @@
 		A18335E422542645007C6175 /* AuthStatusFactorEnrollActivate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusFactorEnrollActivate.swift; sourceTree = "<group>"; };
 		A18335E8225426AC007C6175 /* AuthStatusRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusRecovery.swift; sourceTree = "<group>"; };
 		A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatePasswordReset.swift; sourceTree = "<group>"; };
+		A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusHandlerProtocol.swift; sourceTree = "<group>"; };
 		A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientMFAHandlerVerifyer.swift; sourceTree = "<group>"; };
 		A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MFAWaitSmsChallenge; sourceTree = "<group>"; };
 		A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PrimaryAuthExpiredPassword; sourceTree = "<group>"; };
@@ -213,6 +217,7 @@
 		A12F4FD62238259600DB9147 /* StatusObjects */ = {
 			isa = PBXGroup;
 			children = (
+				A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */,
 				A12F4FD7223825DF00DB9147 /* AuthStatus.swift */,
 				A12F4FDB2238264C00DB9147 /* AuthStatusUnauthenticated.swift */,
 				A18335DC22541B5F007C6175 /* AuthStatusSuccess.swift */,
@@ -495,6 +500,7 @@
 				A18335A32239A883007C6175 /* OktaAPIRequest.swift in Sources */,
 				A18335DF22541B5F007C6175 /* AuthStatusSuccess.swift in Sources */,
 				A183359D2239A876007C6175 /* Types.swift in Sources */,
+				A1BEAFDD225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
 				A12F4FDE2238264C00DB9147 /* AuthStatusUnauthenticated.swift in Sources */,
 				A18335E722542645007C6175 /* AuthStatusFactorEnrollActivate.swift in Sources */,
 				A12F4FE62238269C00DB9147 /* AuthStatusFactorRequired.swift in Sources */,
@@ -524,6 +530,7 @@
 				A12F4FF42238277900DB9147 /* AuthStatusPasswordExpired.swift in Sources */,
 				A18335DD22541B5F007C6175 /* AuthStatusSuccess.swift in Sources */,
 				A12F4FF02238276800DB9147 /* AuthStatusPasswordWarning.swift in Sources */,
+				A1BEAFDB225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
 				F5A9BAD721F9C255002DB437 /* Types.swift in Sources */,
 				A18335E522542645007C6175 /* AuthStatusFactorEnrollActivate.swift in Sources */,
 				FA42E2EB21C94C1C00325723 /* Utils.swift in Sources */,
@@ -565,6 +572,7 @@
 				A12F4FED223826CF00DB9147 /* AuthStatusLockedOut.swift in Sources */,
 				A18335A22239A882007C6175 /* OktaAPIRequest.swift in Sources */,
 				A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */,
+				A1BEAFDC225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
 				F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */,
 				A18335A02239A87C007C6175 /* OktaModels.swift in Sources */,
 				A18335EE22542753007C6175 /* AuthStatePasswordReset.swift in Sources */,
