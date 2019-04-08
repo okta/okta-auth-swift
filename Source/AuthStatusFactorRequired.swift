@@ -12,17 +12,21 @@
 
 import Foundation
 
-public class OktaAuthStatusFactorRequired : OktaAuthStatus {
+open class OktaAuthStatusFactorRequired : OktaAuthStatus {
+
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .MFARequired
+    }
     
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .MFARequired
     }
 
     public var availableFactors: [EmbeddedResponse.Factor]? {
         get {
-            return model?.embedded?.factors
+            return model.embedded?.factors
         }
     }
 
@@ -30,7 +34,7 @@ public class OktaAuthStatusFactorRequired : OktaAuthStatus {
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
         self.triggerFactor(factor: factor,
-                           stateToken: model!.stateToken!,
+                           stateToken: model.stateToken!,
                            answer: nil,
                            passCode: nil,
                            completion: { result in
@@ -48,7 +52,7 @@ public class OktaAuthStatusFactorRequired : OktaAuthStatus {
                        completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
         if let link = factor.links?.next {
             self.api.verifyFactor(with: link,
-                                  stateToken: model!.stateToken!,
+                                  stateToken: model.stateToken!,
                                   answer: nil,
                                   passCode: nil,
                                   rememberDevice: nil,
@@ -56,7 +60,7 @@ public class OktaAuthStatusFactorRequired : OktaAuthStatus {
                                   completion: completion)
         } else {
             self.api.verifyFactor(factorId: factor.id!,
-                                  stateToken: model!.stateToken!,
+                                  stateToken: model.stateToken!,
                                   answer: nil,
                                   passCode: nil,
                                   rememberDevice: nil,

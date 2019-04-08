@@ -190,6 +190,8 @@ open class OktaAPI {
                                               phoneNumber: String?,
                                               questionId: String?,
                                               answer: String?,
+                                              credentialId: String?,
+                                              passCode: String?,
                                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
@@ -199,13 +201,66 @@ open class OktaAPI {
         req.bodyParams?["factorType"] = factor.factorType?.rawValue
         req.bodyParams?["provider"] = factor.provider?.rawValue
         var profile: [String: String] = [:]
-        if factor.factorType == .question {
-            profile["question"] = questionId!
-            profile["answer"] = answer!
-        } else if factor.factorType == .sms {
+        if let answer = answer, let questionId = questionId {
+            profile["question"] = questionId
+            profile["answer"] = answer
+        }
+        if let phoneNumber = phoneNumber {
             profile["phoneNumber"] = phoneNumber
         }
+        if let credentialId = credentialId, let passCode = passCode {
+            profile["credentialId"] = credentialId
+            req.bodyParams?["passCode"] = passCode
+        }
         req.bodyParams?["profile"] = profile
+        req.run()
+        return req
+    }
+
+    @discardableResult open func downloadSecurityQuestions(with link: LinksResponse.Link,
+                                                           onCompletion: (([SecurityQuestion]) -> Void)? = nil,
+                                                           onError: ((OktaError) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: nil)
+        req.baseURL = link.href
+        req.method = .get
+        req.customSuccessHandler = { request, data, decoder, error in
+            guard error == nil else {
+                onError?(error!)
+                return
+            }
+            guard let dataUnwrapped = data else {
+                onError?(.internalError("Required parameters are nil"))
+                return
+            }
+            do {
+                let questions = try decoder.decode([SecurityQuestion].self, from: dataUnwrapped)
+                onCompletion?(questions)
+            } catch let e {
+                onError?(.responseSerializationError(e, dataUnwrapped))
+            }
+        }
+        req.run()
+        return req
+    }
+
+    @discardableResult open func sendHttpRequest(with url: URL,
+                                                 method: OktaAPIRequest.Method,
+                                                 onCompletion: @escaping ((Data) -> Void),
+                                                 onError: @escaping ((OktaError) -> Void)) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: nil)
+        req.baseURL = url
+        req.method = method
+        req.customSuccessHandler = { request, data, decoder, error in
+            guard error == nil else {
+                onError(error!)
+                return
+            }
+            guard let dataUnwrapped = data else {
+                onError(.internalError("Required parameters are nil"))
+                return
+            }
+            onCompletion(dataUnwrapped)
+        }
         req.run()
         return req
     }

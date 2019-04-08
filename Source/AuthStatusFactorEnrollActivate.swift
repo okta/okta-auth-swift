@@ -12,11 +12,15 @@
 
 import Foundation
 
-public class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
+open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     
-    init(oktaDomain: URL, model: OktaAPISuccessResponse) {
-        super.init(oktaDomain: oktaDomain)
-        self.model = model
+    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
+        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
+        statusType = .MFAEnrollActivate
+    }
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
+        super.init(currentState: currentState, model: model)
         statusType = .MFAEnrollActivate
     }
 }

@@ -49,6 +49,8 @@ public struct OktaAPISuccessResponse: Codable {
         case embedded = "_embedded"
         case links = "_links"
     }
+
+    public var rawData: Data?
 }
 
 public struct OktaAPIErrorResponse: Codable {
@@ -77,6 +79,12 @@ public struct LinksResponse: Codable {
     let enroll: Link?
     let verify: Link?
     let questions: Link?
+}
+
+// Represents the security question for the Security Question factor.
+public struct SecurityQuestion: Codable {
+    public let question: String?
+    public let questionText: String?
 }
 
 public struct EmbeddedResponse: Codable {
