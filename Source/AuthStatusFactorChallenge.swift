@@ -36,16 +36,16 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         }
     }
 
-    public func canResend() -> Bool {
-        guard factor?.links?.resend?.first != nil else {
+    public func canVerify() -> Bool {
+        guard model.links?.next != nil else {
             return false
         }
         
         return true
     }
 
-    public func canReturn() -> Bool {
-        guard factor?.links?.prev != nil else {
+    public func canResend() -> Bool {
+        guard model.links?.resend?.first != nil else {
             return false
         }
         
@@ -61,7 +61,13 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
 
-        self.verifyFactor(answer: nil,
+        guard canVerify() else {
+            onError(.wrongState("Can't find 'send' link in response"))
+            return
+        }
+
+        self.verifyFactor(with: model.links!.next!,
+                          answer: nil,
                           passCode: code,
                           completion: { result in
                 self.handleServerResponse(result,
@@ -79,46 +85,11 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
 
-        guard let factorResult = model.factorResult else {
-            onError(.wrongState("Can't find 'factorResult' object in response"))
-            return
-        }
-
-        onPushStateUpdate(factorResult)
-        
-        switch factorResult {
-        case .waiting:
-            let timer = Timer(timeInterval: pollRate, repeats: false) { [weak self] _ in
-                self?.verifyFactor(answer: nil,
-                                   passCode: nil,
-                                   completion:
-                    { [weak self] result in
-                        var authResponse : OktaAPISuccessResponse
-                        
-                        switch result {
-                        case .error(let error):
-                            onError(error)
-                            return
-                        case .success(let success):
-                            authResponse = success
-                        }
-                        
-                        if authResponse.embedded?.factor?.factorType == .push {
-                            self?.verifyPushChallenge(onPushStateUpdate: onPushStateUpdate,
-                                                      onStatusChange: onStatusChange,
-                                                      onError: onError)
-                        } else {
-                            self?.handleServerResponse(result,
-                                                       onStatusChanged: onStatusChange,
-                                                       onError: onError)
-                        }
-                })
-            }
-            RunLoop.main.add(timer, forMode: .common)
-            factorResultPollTimer = timer
-        default:
-            break
-        }
+        self.pollPushFactor(with: pollRate,
+                            link: model.links!.next!,
+                            onPushStateUpdate: onPushStateUpdate,
+                            onStatusChange: onStatusChange,
+                            onError: onError)
     }
 
     public func verifySecurityQuestionAnswer(answer: String,
@@ -129,7 +100,8 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
         
-        self.verifyFactor(answer: answer,
+        self.verifyFactor(with: model.links!.next!,
+                          answer: answer,
                           passCode: nil,
                           completion: { result in
                             self.handleServerResponse(result,
@@ -146,8 +118,27 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
 
-        self.verifyFactor(answer: nil,
+        self.verifyFactor(with: model.links!.next!,
+                          answer: nil,
                           passCode: totpCode,
+                          completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
+        })
+    }
+
+    public func verifySecureIDToken(token: String,
+                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                    onError: @escaping (_ error: OktaError) -> Void) {
+        guard factor?.factorType != nil && factor!.factorType! == .token else {
+            onError(OktaError.factorNotAvailable(model))
+            return
+        }
+        
+        self.verifyFactor(with: model.links!.next!,
+                          answer: nil,
+                          passCode: token,
                           completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
@@ -162,65 +153,12 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
 
-        self.api.perform(link: factor!.links!.resend!.first!,
+        self.api.perform(link: model.links!.resend!.first!,
                          stateToken: model.stateToken!,
                          completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
         })
-    }
-
-    public func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                       onError: @escaping (_ error: OktaError) -> Void) {
-        guard canReturn() else {
-            onError(.wrongState("Can't find 'prev' link in response"))
-            return
-        }
-        
-        self.api.perform(link: factor!.links!.prev!,
-                         stateToken: model.stateToken!,
-                         completion: { result in
-                            self.handleServerResponse(result,
-                                                      onStatusChanged: onStatusChange,
-                                                      onError: onError)
-        })
-    }
-
-    public override func cancel(onSuccess: @escaping () -> Void,
-                                onError: @escaping (OktaError) -> Void) {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.cancel(onSuccess: onSuccess, onError: onError)
-            }
-            return
-        }
-
-        factorResultPollTimer?.invalidate()
-        super.cancel(onSuccess: onSuccess, onError: onError)
-    }
-
-    internal var factorResultPollTimer: Timer? = nil
-
-    func verifyFactor(answer: String?,
-                      passCode: String?,
-                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
-        if let link = factor!.links?.next {
-            self.api.verifyFactor(with: link,
-                                  stateToken: model.stateToken!,
-                                  answer: answer,
-                                  passCode: passCode,
-                                  rememberDevice: nil,
-                                  autoPush: nil,
-                                  completion: completion)
-        } else {
-            self.api.verifyFactor(factorId: factor!.id!,
-                                  stateToken: model.stateToken!,
-                                  answer: answer,
-                                  passCode: passCode,
-                                  rememberDevice: nil,
-                                  autoPush: nil,
-                                  completion: completion)
-        }
     }
 }

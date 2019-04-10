@@ -30,42 +30,29 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus {
         }
     }
 
+    public func canVerifyFactor(_ factor: EmbeddedResponse.Factor) -> Bool {
+        guard factor.links?.verify?.href != nil else {
+            return false
+        }
+        
+        return true
+    }
+
     public func selectFactor(factor: EmbeddedResponse.Factor,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
-        self.triggerFactor(factor: factor,
-                           stateToken: model.stateToken!,
-                           answer: nil,
-                           passCode: nil,
-                           completion: { result in
-                            
+        guard canVerifyFactor(factor) else {
+            onError(.wrongState("Can't find 'next' link in response"))
+            return
+        }
+
+        self.verifyFactor(with: factor.links!.verify!,
+                          answer: nil,
+                          passCode: nil,
+                          completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
         })
-    }
-
-    func triggerFactor(factor: EmbeddedResponse.Factor,
-                       stateToken: String,
-                       answer: String?,
-                       passCode: String?,
-                       completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
-        if let link = factor.links?.next {
-            self.api.verifyFactor(with: link,
-                                  stateToken: model.stateToken!,
-                                  answer: nil,
-                                  passCode: nil,
-                                  rememberDevice: nil,
-                                  autoPush: nil,
-                                  completion: completion)
-        } else {
-            self.api.verifyFactor(factorId: factor.id!,
-                                  stateToken: model.stateToken!,
-                                  answer: nil,
-                                  passCode: nil,
-                                  rememberDevice: nil,
-                                  autoPush: nil,
-                                  completion: completion)
-        }
     }
 }
