@@ -217,6 +217,24 @@ open class OktaAPI {
         return req
     }
 
+    @discardableResult open func sendActivationLink(link: LinksResponse.Link,
+                                                    stateToken: String,
+                                                    phoneNumber: String? = nil,
+                                                    completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.urlParams = [:]
+        req.bodyParams = ["stateToken": stateToken]
+        var profile: [String: String] = [:]
+        if let phoneNumber = phoneNumber {
+            profile["phoneNumber"] = phoneNumber
+        }
+        req.bodyParams?["profile"] = profile
+        req.run()
+        return req
+    }
+
     @discardableResult open func downloadSecurityQuestions(with link: LinksResponse.Link,
                                                            onCompletion: (([SecurityQuestion]) -> Void)? = nil,
                                                            onError: ((OktaError) -> Void)? = nil) -> OktaAPIRequest {

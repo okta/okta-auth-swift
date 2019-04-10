@@ -45,6 +45,36 @@ open class OktaAuthStatus {
             return model.links
         }
     }
+
+    public var stateToken: String? {
+        get {
+            return model.stateToken
+        }
+    }
+
+    public func canReturn() -> Bool {
+        guard model.links?.prev != nil else {
+            return false
+        }
+        
+        return true
+    }
+
+    public func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                       onError: @escaping (_ error: OktaError) -> Void) {
+        guard canReturn() else {
+            onError(.wrongState("Can't find 'prev' link in response"))
+            return
+        }
+        
+        self.api.perform(link: model.links!.prev!,
+                         stateToken: model.stateToken!,
+                         completion: { result in
+                            self.handleServerResponse(result,
+                                                      onStatusChanged: onStatusChange,
+                                                      onError: onError)
+        })
+    }
     
     public func canCancel() -> Bool {
         guard model.links?.cancel?.href != nil else {
@@ -56,6 +86,18 @@ open class OktaAuthStatus {
 
     public func cancel(onSuccess: @escaping () -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
+        guard statusType != .unauthenticated else {
+            return
+        }
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.cancel(onSuccess: onSuccess, onError: onError)
+            }
+            return
+        }
+        
+        self.factorResultPollTimer?.invalidate()
+
         let completion: ((OktaAPIRequest.Result) -> Void) = { result in
             switch result {
             case .error(let error):
@@ -73,19 +115,23 @@ open class OktaAuthStatus {
         }
     }
 
-    public func handleServerResponse(_ response: OktaAPIRequest.Result,
-                                     onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                                     onError: @escaping (_ error: OktaError) -> Void)
+    // MARK: Internal
+    internal var cancelled = false
+    internal var factorResultPollTimer: Timer? = nil
+
+    func handleServerResponse(_ response: OktaAPIRequest.Result,
+                              onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
+                              onError: @escaping (_ error: OktaError) -> Void)
     {
         if let responseHandler = self.responseHandler {
             responseHandler.handleServerStatusResponse(currentStatus: self, response: response)
             return
         }
-
+        
         if cancelled {
             return
         }
-
+        
         var authResponse : OktaAPISuccessResponse
         
         switch response {
@@ -105,13 +151,13 @@ open class OktaAuthStatus {
             onError(OktaError.unexpectedResponse)
         }
     }
-
-    public func createAuthStatus(basedOn response: OktaAPISuccessResponse) throws -> OktaAuthStatus {
+    
+    func createAuthStatus(basedOn response: OktaAPISuccessResponse) throws -> OktaAuthStatus {
         // perform basic checks
         guard let status = response.status else {
             throw OktaError.invalidResponse
         }
-
+        
         if case .success = status {
             guard response.sessionToken != nil else {
                 throw OktaError.invalidResponse
@@ -166,5 +212,67 @@ open class OktaAuthStatus {
         }
     }
 
-    private var cancelled = false
+    func pollPushFactor(with pollRate: TimeInterval = 3,
+                        link: LinksResponse.Link,
+                        onPushStateUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                        onError: @escaping (_ error: OktaError) -> Void) {
+        guard let factorResult = model.factorResult else {
+            onError(.wrongState("Can't find 'factorResult' object in response"))
+            return
+        }
+
+        onPushStateUpdate(factorResult)
+        
+        switch factorResult {
+        case .waiting:
+            let timer = Timer(timeInterval: pollRate, repeats: false) { [weak self] _ in
+                self?.verifyFactor(with: link,
+                                   answer: nil,
+                                   passCode: nil,
+                                   completion:
+                    { [weak self] result in
+                        var authResponse : OktaAPISuccessResponse
+                        
+                        switch result {
+                        case .error(let error):
+                            onError(error)
+                            return
+                        case .success(let success):
+                            authResponse = success
+                        }
+                        
+                        if authResponse.embedded?.factor?.factorType == .push {
+                            self?.pollPushFactor(with: pollRate,
+                                                 link: link,
+                                                 onPushStateUpdate: onPushStateUpdate,
+                                                 onStatusChange: onStatusChange,
+                                                 onError: onError)
+                        } else {
+                            self?.handleServerResponse(result,
+                                                       onStatusChanged: onStatusChange,
+                                                       onError: onError)
+                        }
+                })
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            factorResultPollTimer = timer
+        
+        default:
+            break
+        }
+    }
+
+    func verifyFactor(with link: LinksResponse.Link,
+                      answer: String?,
+                      passCode: String?,
+                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> Void {
+        self.api.verifyFactor(with: link,
+                              stateToken: model.stateToken!,
+                              answer: answer,
+                              passCode: passCode,
+                              rememberDevice: nil,
+                              autoPush: nil,
+                              completion: completion)
+    }
 }

@@ -67,18 +67,26 @@ public struct OktaAPIErrorResponse: Codable {
 
 public struct LinksResponse: Codable {
     public struct Link: Codable {
+        let name: String?
         let href: URL
         let hints: [String:[String]]
+    }
+
+    public struct QRCode: Codable {
+        let href: URL
+        let type: String?
     }
 
     let next: Link?
     let prev: Link?
     let cancel: Link?
     let skip: Link?
+    let send: [Link]?
     let resend: [Link]?
     let enroll: Link?
     let verify: Link?
     let questions: Link?
+    let qrcode: QRCode?
 }
 
 // Represents the security question for the Security Question factor.
@@ -101,6 +109,7 @@ public struct EmbeddedResponse: Codable {
         public let provider: FactorProvider?
         public let vendorName: String?
         public let profile: Profile?
+        public let embedded: Embedded?
         public let links: LinksResponse?
         
         public struct Profile: Codable {
@@ -109,12 +118,32 @@ public struct EmbeddedResponse: Codable {
             public let questionText: String?
         }
 
+        public struct Embedded: Codable {
+            public struct Activation: Codable {
+                public let expiresAt: String?
+                public let timeStep: Int?
+                public let sharedSecret: String?
+                public let encoding: String?
+                public let keyLength: Int?
+                public let links: LinksResponse?
+                enum CodingKeys: String, CodingKey {
+                    case expiresAt
+                    case timeStep
+                    case sharedSecret
+                    case encoding
+                    case keyLength
+                    case links = "_links"
+                }
+            }
+        }
+
         enum CodingKeys: String, CodingKey {
             case id
             case factorType
             case provider
             case vendorName
             case profile
+            case embedded = "_embedded"
             case links = "_links"
         }
     }
