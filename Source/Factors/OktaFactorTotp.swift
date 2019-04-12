@@ -15,15 +15,47 @@ import Foundation
 open class OktaFactorTotp : OktaFactor {
 
     public func select(passCode: String?,
-                       onFactorStatusUpdate: @escaping (OktaAPISuccessResponse.FactorResult) -> Void,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                       onError: @escaping (OktaError) -> Void) {
+                       onError: @escaping (OktaError) -> Void,
+                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         self.verifyFactor(with: links!.verify!,
                           answer: nil,
                           passCode: passCode,
-                          onFactorStatusUpdate: onFactorStatusUpdate,
                           onStatusChange: onStatusChange,
-                          onError: onError)
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
+    }
+
+    override public func verify(passCode: String?,
+                                answerToSecurityQuestion: String?,
+                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                onError: @escaping (_ error: OktaError) -> Void,
+                                onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard canVerify() else {
+            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
+            return
+        }
+        
+        self.verify(passCode: passCode,
+                    onStatusChange: onStatusChange,
+                    onError: onError,
+                    onFactorStatusUpdate: onFactorStatusUpdate)
+    }
+    
+    public func verify(passCode: String?,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void,
+                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard canVerify() else {
+            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
+            return
+        }
+        self.verifyFactor(with: verifyLink!,
+                          answer: nil,
+                          passCode: passCode,
+                          onStatusChange: onStatusChange,
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     // MARK: - Internal

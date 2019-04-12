@@ -149,40 +149,51 @@ open class OktaFactorPush : OktaFactor {
         })
     }
 
+    override public func activate(with link: LinksResponse.Link,
+                                  passCode: String?,
+                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                  onError: @escaping (_ error: OktaError) -> Void,
+                                  onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+            self.activate(with: link,
+                          onStatusChange: onStatusChange,
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
+    }
+
+    public func activate(with link: LinksResponse.Link,
+                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                         onError: @escaping (_ error: OktaError) -> Void,
+                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        self.verifyOrActivateWithDelay(link: link,
+                                       onStatusChange: onStatusChange,
+                                       onError: onError,
+                                       onFactorStatusUpdate: onFactorStatusUpdate)
+    }
+
     override public func verify(passCode: String?,
                                 answerToSecurityQuestion: String?,
-                                onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                 onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                onError: @escaping (_ error: OktaError) -> Void) {
+                                onError: @escaping (_ error: OktaError) -> Void,
+                                onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         guard canVerify() else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
         }
         
-        self.verify(onFactorStatusUpdate: onFactorStatusUpdate, onStatusChange: onStatusChange, onError: onError)
+        self.verify(onStatusChange: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
-    public func verify(onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
-                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void) {
+    public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void,
+                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         guard canVerify() else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
         }
         self.verifyOrActivateWithDelay(link: verifyLink!,
-                                       onFactorStatusUpdate: onFactorStatusUpdate,
                                        onStatusChange: onStatusChange,
-                                       onError: onError)
-    }
-
-    override public func activate(with link: LinksResponse.Link,
-                                  onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
-                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                  onError: @escaping (_ error: OktaError) -> Void)  {
-        self.verifyOrActivateWithDelay(link: link,
-                                       onFactorStatusUpdate: onFactorStatusUpdate,
-                                       onStatusChange: onStatusChange,
-                                       onError: onError)
+                                       onError: onError,
+                                       onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     // MARK: - Internal
@@ -207,17 +218,17 @@ open class OktaFactorPush : OktaFactor {
 
     func verifyOrActivateWithDelay(_ delayInSeconds: TimeInterval = 3,
                                    link: LinksResponse.Link,
-                                   onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void) {
+                                   onError: @escaping (_ error: OktaError) -> Void,
+                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
 
         let timer = Timer(timeInterval: delayInSeconds, repeats: false) { [weak self] _ in
             self?.verifyFactor(with: link,
                                answer: nil,
                                passCode: nil,
-                               onFactorStatusUpdate: onFactorStatusUpdate,
                                onStatusChange: onStatusChange,
-                               onError: onError)
+                               onError: onError,
+                               onFactorStatusUpdate: onFactorStatusUpdate)
         }
         RunLoop.main.add(timer, forMode: .common)
         factorResultPollTimer = timer
