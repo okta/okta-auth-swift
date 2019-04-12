@@ -12,6 +12,10 @@
 
 import Foundation
 
-public protocol AuthStatusCustomHandlerProtocol: class {
-    func handleServerStatusResponse(currentStatus: OktaAuthStatus, response: OktaAPIRequest.Result)
+open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
+    
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
+        statusType = .recoveryChallenge
+    }
 }

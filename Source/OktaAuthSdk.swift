@@ -53,10 +53,11 @@ public class OktaAuthSdk {
                                               onError: onError)*/
     }
 
-    public class func fetchStatus(using stateToken: String,
+    public class func fetchStatus(with stateToken: String,
+                                  using url: URL,
                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                   onError: @escaping (_ error: OktaError) -> Void) {
-        
-        
+        let authState = OktaAuthStatus(oktaDomain: url)
+        authState.fetchStatus(with: stateToken, onStatusChange: onStatusChange, onError: onError)
     }
 }

@@ -14,9 +14,9 @@ import Foundation
 
 protocol OktaFactorResultProtocol: class {
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
-                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void)
+                                    onError: @escaping (_ error: OktaError) -> Void,
+                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?)
 }
 
 open class OktaFactor {
@@ -139,32 +139,33 @@ open class OktaFactor {
 
     public func verify(passCode: String?,
                        answerToSecurityQuestion: String?,
-                       onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void) {
+                       onError: @escaping (_ error: OktaError) -> Void,
+                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         guard canVerify() else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
         }
 
         self.verifyFactor(with: verifyLink!,
-                          answer: nil,
+                          answer: answerToSecurityQuestion,
                           passCode: passCode,
-                          onFactorStatusUpdate: onFactorStatusUpdate,
                           onStatusChange: onStatusChange,
-                          onError: onError)
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func activate(with link: LinksResponse.Link,
-                         onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+                         passCode: String?,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                         onError: @escaping (_ error: OktaError) -> Void) {
+                         onError: @escaping (_ error: OktaError) -> Void,
+                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         self.verifyFactor(with: link,
                           answer: nil,
-                          passCode: nil,
-                          onFactorStatusUpdate: onFactorStatusUpdate,
+                          passCode: passCode,
                           onStatusChange: onStatusChange,
-                          onError: onError)
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func enroll(questionId: String?,
@@ -172,7 +173,6 @@ open class OktaFactor {
                        credentialId: String?,
                        passCode: String?,
                        phoneNumber: String?,
-                       onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         guard canEnroll() else {
@@ -190,14 +190,13 @@ open class OktaFactor {
                               passCode: nil,
                               completion: { result in
                                 self.handleServerResponse(response: result,
-                                                          onFactorStatusUpdate:  onFactorStatusUpdate,
                                                           onStatusChange:  onStatusChange,
-                                                          onError: onError)
+                                                          onError: onError,
+                                                          onFactorStatusUpdate: nil)
         })
     }
 
-    public func select(onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
-                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         guard canSelect() else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
@@ -207,9 +206,9 @@ open class OktaFactor {
         self.verifyFactor(with: links!.verify!,
                           answer: nil,
                           passCode: nil,
-                          onFactorStatusUpdate: onFactorStatusUpdate,
                           onStatusChange: onStatusChange,
-                          onError: onError)
+                          onError: onError,
+                          onFactorStatusUpdate: nil)
     }
     
     weak var responseDelegate: OktaFactorResultProtocol?
@@ -236,9 +235,9 @@ open class OktaFactor {
     func verifyFactor(with link: LinksResponse.Link,
                       answer: String?,
                       passCode: String?,
-                      onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                      onError: @escaping (_ error: OktaError) -> Void) {
+                      onError: @escaping (_ error: OktaError) -> Void,
+                      onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
             restApi?.verifyFactor(with: link,
                                   stateToken: stateToken,
                                   answer: answer,
@@ -247,23 +246,23 @@ open class OktaFactor {
                                   autoPush: nil,
                                   completion:  { result in
                                     self.handleServerResponse(response: result,
-                                                              onFactorStatusUpdate: onFactorStatusUpdate,
                                                               onStatusChange: onStatusChange,
-                                                              onError: onError)
+                                                              onError: onError,
+                                                              onFactorStatusUpdate: onFactorStatusUpdate)
         })
     }
 
     func handleServerResponse(response: OktaAPIRequest.Result,
-                              onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                              onError: @escaping (_ error: OktaError) -> Void) {
+                              onError: @escaping (_ error: OktaError) -> Void,
+                              onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         if cancelled {
             return
         }
 
         self.responseDelegate?.handleFactorServerResponse(response: response,
-                                                          onFactorStatusUpdate: onFactorStatusUpdate,
                                                           onStatusChange: onStatusChange,
-                                                          onError: onError)
+                                                          onError: onError,
+                                                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 }

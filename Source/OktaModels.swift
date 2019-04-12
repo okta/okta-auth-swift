@@ -29,7 +29,7 @@ public struct OktaAPISuccessResponse: Codable {
         case rejected = "REJECTED"
     }
 
-    public private(set) var status: AuthStatus = .unknown("Unknown")
+    public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
     public private(set) var expirationDate: Date?
