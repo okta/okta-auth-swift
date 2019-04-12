@@ -22,32 +22,16 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
                                                         verifyLink: nil,
                                                         activationLink: model.links?.next)
         createdFactor.responseDelegate = self
-        createdFactor.restApi = self.api
+        createdFactor.restApi = self.restApi
         return createdFactor
     }()
+    
+    public let activateLink: LinksResponse.Link
 
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
+    public var factorResult: OktaAPISuccessResponse.FactorResult? {
+        get {
+            return model.factorResult
         }
-        guard let factor = model.embedded?.factor else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        self.internalFactor = factor
-
-        try super.init(currentState: currentState, model: model)
-
-        self.factor.restApi = self.api
-        statusType = .MFAEnrollActivate
-    }
-
-    public func canActivate() -> Bool {
-        guard model.links?.next != nil else {
-            return false
-        }
-        
-        return true
     }
 
     public func canResend() -> Bool {
@@ -58,18 +42,15 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
         return true
     }
 
-    public func activateFactor(onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+    public func activateFactor(passCode: String?,
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                               onError: @escaping (_ error: OktaError) -> Void) {
-        guard canActivate() else {
-            onError(.wrongStatus("Can't find 'next' link in response"))
-            return
-        }
-
-        self.factor.activate(with: model.links!.next!,
-                             onFactorStatusUpdate: onFactorStatusUpdate,
+                               onError: @escaping (_ error: OktaError) -> Void,
+                               onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        self.factor.activate(with: activateLink,
+                             passCode: passCode,
                              onStatusChange: onStatusChange,
-                             onError: onError)
+                             onError: onError,
+                             onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -79,9 +60,9 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
             return
         }
 
-        self.api.perform(link: model.links!.resend!.first!,
-                         stateToken: stateToken,
-                         completion: { result in
+        restApi.perform(link: model.links!.resend!.first!,
+                        stateToken: stateToken,
+                        completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
@@ -96,10 +77,29 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
 
     var internalFactor: EmbeddedResponse.Factor
 
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        guard let factor = model.embedded?.factor else {
+            throw OktaError.invalidResponse
+        }
+        guard let activateLink = model.links?.next else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        self.internalFactor = factor
+        self.activateLink = activateLink
+        
+        try super.init(currentState: currentState, model: model)
+        
+        statusType = .MFAEnrollActivate
+    }
+
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
-                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void) {
+                                    onError: @escaping (_ error: OktaError) -> Void,
+                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         var authResponse : OktaAPISuccessResponse
         
         switch response {
@@ -112,12 +112,18 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
         
         if authResponse.factorResult != nil &&
             authResponse.status == self.statusType {
-            onFactorStatusUpdate(authResponse.factorResult!)
+            onFactorStatusUpdate?(authResponse.factorResult!)
             
             if case .waiting = authResponse.factorResult! {
-                self.activateFactor(onFactorStatusUpdate: onFactorStatusUpdate,
-                                    onStatusChange: onStatusChange,
-                                    onError: onError)
+                guard let pollLink = authResponse.links?.next else {
+                    onError(OktaError.invalidResponse)
+                    return
+                }
+                self.factor.activate(with: pollLink,
+                                     passCode: nil,
+                                     onStatusChange: onStatusChange,
+                                     onError: onError,
+                                     onFactorStatusUpdate: onFactorStatusUpdate)
             }
         } else {
             self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)

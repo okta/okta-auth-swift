@@ -12,10 +12,9 @@
 
 import Foundation
 
-open class AuthStatusResponseHandler {
+open class OktaAuthStatusResponseHandler {
     
-    public init() {
-    }
+    public init() {}
     
     open func handleServerResponse(_ response: OktaAPIRequest.Result,
                                    currentStatus: OktaAuthStatus,
@@ -44,7 +43,11 @@ open class AuthStatusResponseHandler {
     
     open func createAuthStatus(basedOn response: OktaAPISuccessResponse,
                                and currentStatus: OktaAuthStatus) throws -> OktaAuthStatus {
-        if case .success = response.status {
+        guard let statusType = response.status else {
+            throw OktaError.invalidResponse
+        }
+        
+        if case .success = statusType {
             guard response.sessionToken != nil else {
                 throw OktaError.invalidResponse
             }
@@ -53,9 +56,9 @@ open class AuthStatusResponseHandler {
                 throw OktaError.invalidResponse
             }
         }
-        
+
         // create concrete status instance
-        switch response.status {
+        switch statusType {
             
         case .success:
             return try OktaAuthStatusSuccess(currentState: currentStatus, model: response)

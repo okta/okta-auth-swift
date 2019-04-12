@@ -22,23 +22,14 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
                                                         verifyLink: model.links?.next,
                                                         activationLink: nil)
         createdFactor.responseDelegate = self
-        createdFactor.restApi = self.api
+        createdFactor.restApi = self.restApi
         return createdFactor
     }()
 
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
+    public var factorResult: OktaAPISuccessResponse.FactorResult? {
+        get {
+            return model.factorResult
         }
-        guard let factor = model.embedded?.factor else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        internalFactor = factor
-
-        try super.init(currentState: currentState, model: model)
-
-        statusType = .MFAChallenge
     }
 
     public func canVerify() -> Bool {
@@ -55,13 +46,14 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
 
     public func verifyFactor(passCode: String?,
                              answerToSecurityQuestion: String?,
-                             onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void) {
+                             onError: @escaping (_ error: OktaError) -> Void,
+                             onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         self.factor.verify(passCode: passCode,
                            answerToSecurityQuestion: answerToSecurityQuestion,
-                           onFactorStatusUpdate: onFactorStatusUpdate,
-                           onStatusChange: onStatusChange, onError: onError)
+                           onStatusChange: onStatusChange,
+                           onError: onError,
+                           onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -71,7 +63,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
             return
         }
 
-        self.api.perform(link: model.links!.resend!.first!,
+        self.restApi.perform(link: model.links!.resend!.first!,
                          stateToken: stateToken,
                          completion: { result in
                             self.handleServerResponse(result,
@@ -88,10 +80,25 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
 
     var internalFactor: EmbeddedResponse.Factor
 
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        guard let factor = model.embedded?.factor else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        internalFactor = factor
+        
+        try super.init(currentState: currentState, model: model)
+        
+        statusType = .MFAChallenge
+    }
+
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
-                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void) {
+                                    onError: @escaping (_ error: OktaError) -> Void,
+                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
         var authResponse : OktaAPISuccessResponse
         
         switch response {
@@ -104,14 +111,14 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
 
         if authResponse.factorResult != nil &&
            authResponse.status == self.statusType {
-            onFactorStatusUpdate(authResponse.factorResult!)
+            onFactorStatusUpdate?(authResponse.factorResult!)
 
             if case .waiting = authResponse.factorResult! {
                 self.verifyFactor(passCode: nil,
                                   answerToSecurityQuestion: nil,
-                                  onFactorStatusUpdate: onFactorStatusUpdate,
                                   onStatusChange: onStatusChange,
-                                  onError: onError)
+                                  onError: onError,
+                                  onFactorStatusUpdate: onFactorStatusUpdate)
             }
         } else {
             self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
