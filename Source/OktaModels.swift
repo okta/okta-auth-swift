@@ -18,6 +18,7 @@ public struct OktaAPISuccessResponse: Codable {
 
     // Provides additional context for the last factor verification attempt.
     public enum FactorResult: String, Codable {
+        case success = "SUCCESS"
         case active = "ACTIVE"
         case waiting = "WAITING"
         case cancelled = "CANCELLED"
@@ -28,7 +29,7 @@ public struct OktaAPISuccessResponse: Codable {
         case rejected = "REJECTED"
     }
 
-    public private(set) var status: AuthStatus?
+    public private(set) var status: AuthStatus = .unknown("Unknown")
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
     public private(set) var expirationDate: Date?
@@ -104,12 +105,14 @@ public struct EmbeddedResponse: Codable {
     
     public struct Factor: Codable {
         public let id: String?
-        public let factorType: FactorType?
+        public let factorType: FactorType
         public let provider: FactorProvider?
         public let vendorName: String?
         public let profile: Profile?
         public let embedded: Embedded?
         public let links: LinksResponse?
+        public let enrollment: String?
+        public let status: String?
         
         public struct Profile: Codable {
             public let phoneNumber: String?
@@ -134,6 +137,7 @@ public struct EmbeddedResponse: Codable {
                     case links = "_links"
                 }
             }
+            public let activation: Activation?
         }
 
         enum CodingKeys: String, CodingKey {
@@ -144,6 +148,8 @@ public struct EmbeddedResponse: Codable {
             case profile
             case embedded = "_embedded"
             case links = "_links"
+            case enrollment
+            case status
         }
     }
 

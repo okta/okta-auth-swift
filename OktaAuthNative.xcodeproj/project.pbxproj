@@ -76,9 +76,33 @@
 		A18335ED22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
 		A18335EE22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
 		A18335EF22542753007C6175 /* AuthStatePasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */; };
-		A1BEAFDB225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
-		A1BEAFDC225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
-		A1BEAFDD225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */; };
+		A1920F78225E64D0007D50D2 /* OktaFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F77225E64D0007D50D2 /* OktaFactor.swift */; };
+		A1920F79225E64D0007D50D2 /* OktaFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F77225E64D0007D50D2 /* OktaFactor.swift */; };
+		A1920F7A225E64D0007D50D2 /* OktaFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F77225E64D0007D50D2 /* OktaFactor.swift */; };
+		A1920F7C225E67A1007D50D2 /* OktaFactorPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */; };
+		A1920F7D225E67A1007D50D2 /* OktaFactorPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */; };
+		A1920F7E225E67A1007D50D2 /* OktaFactorPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */; };
+		A1920F80225E81EE007D50D2 /* OktaFactorSms.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7F225E81EE007D50D2 /* OktaFactorSms.swift */; };
+		A1920F81225E81EE007D50D2 /* OktaFactorSms.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7F225E81EE007D50D2 /* OktaFactorSms.swift */; };
+		A1920F82225E81EE007D50D2 /* OktaFactorSms.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F7F225E81EE007D50D2 /* OktaFactorSms.swift */; };
+		A1920F84225E820C007D50D2 /* OktaFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F83225E820C007D50D2 /* OktaFactorCall.swift */; };
+		A1920F85225E820C007D50D2 /* OktaFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F83225E820C007D50D2 /* OktaFactorCall.swift */; };
+		A1920F86225E820C007D50D2 /* OktaFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F83225E820C007D50D2 /* OktaFactorCall.swift */; };
+		A1920F88225E8224007D50D2 /* OktaFactorTotp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F87225E8224007D50D2 /* OktaFactorTotp.swift */; };
+		A1920F89225E8224007D50D2 /* OktaFactorTotp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F87225E8224007D50D2 /* OktaFactorTotp.swift */; };
+		A1920F8A225E8224007D50D2 /* OktaFactorTotp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F87225E8224007D50D2 /* OktaFactorTotp.swift */; };
+		A1920F8C225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8B225E83E8007D50D2 /* OktaFactorQuestion.swift */; };
+		A1920F8D225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8B225E83E8007D50D2 /* OktaFactorQuestion.swift */; };
+		A1920F8E225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8B225E83E8007D50D2 /* OktaFactorQuestion.swift */; };
+		A1920F90225E8406007D50D2 /* OktaFactorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8F225E8406007D50D2 /* OktaFactorToken.swift */; };
+		A1920F91225E8406007D50D2 /* OktaFactorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8F225E8406007D50D2 /* OktaFactorToken.swift */; };
+		A1920F92225E8406007D50D2 /* OktaFactorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F8F225E8406007D50D2 /* OktaFactorToken.swift */; };
+		A1920F94225E8478007D50D2 /* OktaFactorOther.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F93225E8478007D50D2 /* OktaFactorOther.swift */; };
+		A1920F95225E8478007D50D2 /* OktaFactorOther.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F93225E8478007D50D2 /* OktaFactorOther.swift */; };
+		A1920F96225E8478007D50D2 /* OktaFactorOther.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F93225E8478007D50D2 /* OktaFactorOther.swift */; };
+		A1BEAFDB225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusResponseHandler.swift */; };
+		A1BEAFDC225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusResponseHandler.swift */; };
+		A1BEAFDD225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BEAFDA225BF34F009DE0D5 /* AuthStatusResponseHandler.swift */; };
 		A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */; };
 		A1C06F0A2214E1CA005E8369 /* MFAWaitSmsChallenge in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */; };
 		A1C06F14221DFFD8005E8369 /* PrimaryAuthExpiredPassword in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */; };
@@ -143,7 +167,15 @@
 		A18335E422542645007C6175 /* AuthStatusFactorEnrollActivate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusFactorEnrollActivate.swift; sourceTree = "<group>"; };
 		A18335E8225426AC007C6175 /* AuthStatusRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusRecovery.swift; sourceTree = "<group>"; };
 		A18335EC22542753007C6175 /* AuthStatePasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatePasswordReset.swift; sourceTree = "<group>"; };
-		A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusHandlerProtocol.swift; sourceTree = "<group>"; };
+		A1920F77225E64D0007D50D2 /* OktaFactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactor.swift; path = Factors/OktaFactor.swift; sourceTree = "<group>"; };
+		A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorPush.swift; path = Factors/OktaFactorPush.swift; sourceTree = "<group>"; };
+		A1920F7F225E81EE007D50D2 /* OktaFactorSms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorSms.swift; path = Factors/OktaFactorSms.swift; sourceTree = "<group>"; };
+		A1920F83225E820C007D50D2 /* OktaFactorCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaFactorCall.swift; sourceTree = "<group>"; };
+		A1920F87225E8224007D50D2 /* OktaFactorTotp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorTotp.swift; path = Factors/OktaFactorTotp.swift; sourceTree = "<group>"; };
+		A1920F8B225E83E8007D50D2 /* OktaFactorQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorQuestion.swift; path = Factors/OktaFactorQuestion.swift; sourceTree = "<group>"; };
+		A1920F8F225E8406007D50D2 /* OktaFactorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorToken.swift; path = Factors/OktaFactorToken.swift; sourceTree = "<group>"; };
+		A1920F93225E8478007D50D2 /* OktaFactorOther.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorOther.swift; path = Factors/OktaFactorOther.swift; sourceTree = "<group>"; };
+		A1BEAFDA225BF34F009DE0D5 /* AuthStatusResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStatusResponseHandler.swift; sourceTree = "<group>"; };
 		A1C06F0722120875005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationClientMFAHandlerVerifyer.swift; sourceTree = "<group>"; };
 		A1C06F092214E1C9005E8369 /* MFAWaitSmsChallenge */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MFAWaitSmsChallenge; sourceTree = "<group>"; };
 		A1C06F13221DFFD8005E8369 /* PrimaryAuthExpiredPassword */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PrimaryAuthExpiredPassword; sourceTree = "<group>"; };
@@ -217,7 +249,7 @@
 		A12F4FD62238259600DB9147 /* StatusObjects */ = {
 			isa = PBXGroup;
 			children = (
-				A1BEAFDA225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift */,
+				A1BEAFDA225BF34F009DE0D5 /* AuthStatusResponseHandler.swift */,
 				A12F4FD7223825DF00DB9147 /* AuthStatus.swift */,
 				A12F4FDB2238264C00DB9147 /* AuthStatusUnauthenticated.swift */,
 				A18335DC22541B5F007C6175 /* AuthStatusSuccess.swift */,
@@ -238,6 +270,7 @@
 		A12F4FF7223830F500DB9147 /* New API */ = {
 			isa = PBXGroup;
 			children = (
+				A1920F76225E6396007D50D2 /* Factors */,
 				A12F4FD62238259600DB9147 /* StatusObjects */,
 				A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */,
 				FA4ED9A921C2895B00A065A1 /* OktaError.swift */,
@@ -271,6 +304,21 @@
 				FA42E2EA21C94C1C00325723 /* Utils.swift */,
 			);
 			name = RestAPI;
+			sourceTree = "<group>";
+		};
+		A1920F76225E6396007D50D2 /* Factors */ = {
+			isa = PBXGroup;
+			children = (
+				A1920F77225E64D0007D50D2 /* OktaFactor.swift */,
+				A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */,
+				A1920F7F225E81EE007D50D2 /* OktaFactorSms.swift */,
+				A1920F83225E820C007D50D2 /* OktaFactorCall.swift */,
+				A1920F87225E8224007D50D2 /* OktaFactorTotp.swift */,
+				A1920F8B225E83E8007D50D2 /* OktaFactorQuestion.swift */,
+				A1920F8F225E8406007D50D2 /* OktaFactorToken.swift */,
+				A1920F93225E8478007D50D2 /* OktaFactorOther.swift */,
+			);
+			name = Factors;
 			sourceTree = "<group>";
 		};
 		A1FCB129220A416F0026F522 /* Mocks */ = {
@@ -492,7 +540,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1920F86225E820C007D50D2 /* OktaFactorCall.swift in Sources */,
 				A18335992239A86B007C6175 /* AuthenticationClient.swift in Sources */,
+				A1920F7A225E64D0007D50D2 /* OktaFactor.swift in Sources */,
 				A18335A52239A886007C6175 /* OktaAPI.swift in Sources */,
 				A12F4FEE223826CF00DB9147 /* AuthStatusLockedOut.swift in Sources */,
 				A12F4FEA223826B200DB9147 /* AuthStatusFactorChallenge.swift in Sources */,
@@ -500,21 +550,27 @@
 				A18335A32239A883007C6175 /* OktaAPIRequest.swift in Sources */,
 				A18335DF22541B5F007C6175 /* AuthStatusSuccess.swift in Sources */,
 				A183359D2239A876007C6175 /* Types.swift in Sources */,
-				A1BEAFDD225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
+				A1BEAFDD225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */,
 				A12F4FDE2238264C00DB9147 /* AuthStatusUnauthenticated.swift in Sources */,
 				A18335E722542645007C6175 /* AuthStatusFactorEnrollActivate.swift in Sources */,
 				A12F4FE62238269C00DB9147 /* AuthStatusFactorRequired.swift in Sources */,
+				A1920F8E225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */,
+				A1920F92225E8406007D50D2 /* OktaFactorToken.swift in Sources */,
 				A12F4FF62238277900DB9147 /* AuthStatusPasswordExpired.swift in Sources */,
 				A18335A72239A889007C6175 /* Utils.swift in Sources */,
+				A1920F8A225E8224007D50D2 /* OktaFactorTotp.swift in Sources */,
 				A12F4FDA223825DF00DB9147 /* AuthStatus.swift in Sources */,
 				A18335A12239A87C007C6175 /* OktaModels.swift in Sources */,
 				A183359B2239A86E007C6175 /* OktaError.swift in Sources */,
 				A18335EF22542753007C6175 /* AuthStatePasswordReset.swift in Sources */,
 				A12F4FFB2238311A00DB9147 /* OktaAuthSdk.swift in Sources */,
 				A183359F2239A87A007C6175 /* AuthState.swift in Sources */,
+				A1920F82225E81EE007D50D2 /* OktaFactorSms.swift in Sources */,
 				A18335EB225426AC007C6175 /* AuthStatusRecovery.swift in Sources */,
 				A12F4FE22238267300DB9147 /* AuthStatusFactorEnroll.swift in Sources */,
 				A12F4FF22238276800DB9147 /* AuthStatusPasswordWarning.swift in Sources */,
+				A1920F7E225E67A1007D50D2 /* OktaFactorPush.swift in Sources */,
+				A1920F96225E8478007D50D2 /* OktaFactorOther.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -522,7 +578,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1920F84225E820C007D50D2 /* OktaFactorCall.swift in Sources */,
 				FA4ED9AA21C2895B00A065A1 /* OktaError.swift in Sources */,
+				A1920F78225E64D0007D50D2 /* OktaFactor.swift in Sources */,
 				FA42E2E821C9270400325723 /* AuthState.swift in Sources */,
 				A12F4FEC223826CF00DB9147 /* AuthStatusLockedOut.swift in Sources */,
 				FAD6FC5121C2B4E4009729B6 /* OktaModels.swift in Sources */,
@@ -530,21 +588,27 @@
 				A12F4FF42238277900DB9147 /* AuthStatusPasswordExpired.swift in Sources */,
 				A18335DD22541B5F007C6175 /* AuthStatusSuccess.swift in Sources */,
 				A12F4FF02238276800DB9147 /* AuthStatusPasswordWarning.swift in Sources */,
-				A1BEAFDB225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
+				A1BEAFDB225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */,
 				F5A9BAD721F9C255002DB437 /* Types.swift in Sources */,
 				A18335E522542645007C6175 /* AuthStatusFactorEnrollActivate.swift in Sources */,
 				FA42E2EB21C94C1C00325723 /* Utils.swift in Sources */,
+				A1920F8C225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */,
+				A1920F90225E8406007D50D2 /* OktaFactorToken.swift in Sources */,
 				FAD6FC4F21C29784009729B6 /* OktaAPIRequest.swift in Sources */,
 				A12F4FDC2238264C00DB9147 /* AuthStatusUnauthenticated.swift in Sources */,
+				A1920F88225E8224007D50D2 /* OktaFactorTotp.swift in Sources */,
 				FA4ED9A621C14A3E00A065A1 /* AuthenticationClient.swift in Sources */,
 				A12F4FD8223825DF00DB9147 /* AuthStatus.swift in Sources */,
 				A12F4FE8223826B200DB9147 /* AuthStatusFactorChallenge.swift in Sources */,
 				A18335ED22542753007C6175 /* AuthStatePasswordReset.swift in Sources */,
 				A12F4FF92238311A00DB9147 /* OktaAuthSdk.swift in Sources */,
 				A12F4FE42238269C00DB9147 /* AuthStatusFactorRequired.swift in Sources */,
+				A1920F80225E81EE007D50D2 /* OktaFactorSms.swift in Sources */,
 				A18335E9225426AC007C6175 /* AuthStatusRecovery.swift in Sources */,
 				FA4ED9A821C27F7000A065A1 /* OktaAPI.swift in Sources */,
 				A12F4FE02238267300DB9147 /* AuthStatusFactorEnroll.swift in Sources */,
+				A1920F7C225E67A1007D50D2 /* OktaFactorPush.swift in Sources */,
+				A1920F94225E8478007D50D2 /* OktaFactorOther.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,28 +622,36 @@
 				A18335DE22541B5F007C6175 /* AuthStatusSuccess.swift in Sources */,
 				A18335EA225426AC007C6175 /* AuthStatusRecovery.swift in Sources */,
 				A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */,
+				A1920F79225E64D0007D50D2 /* OktaFactor.swift in Sources */,
 				A18335A42239A886007C6175 /* OktaAPI.swift in Sources */,
 				A18335AA2239A9D5007C6175 /* AuthStatusRecoveryChallenge.swift in Sources */,
 				A183359C2239A876007C6175 /* Types.swift in Sources */,
 				A12F4FE9223826B200DB9147 /* AuthStatusFactorChallenge.swift in Sources */,
 				A1FCB128220908B70026F522 /* AuthenticationClientTests.swift in Sources */,
 				2F8D79F821E5FAE300CFDF12 /* OktaModelsTests.swift in Sources */,
+				A1920F8D225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */,
 				A18335E622542645007C6175 /* AuthStatusFactorEnrollActivate.swift in Sources */,
 				F5CC2AD921D3C27700649C33 /* OktaAPIRequestTests.swift in Sources */,
+				A1920F85225E820C007D50D2 /* OktaFactorCall.swift in Sources */,
+				A1920F89225E8224007D50D2 /* OktaFactorTotp.swift in Sources */,
+				A1920F95225E8478007D50D2 /* OktaFactorOther.swift in Sources */,
 				A12F4FD9223825DF00DB9147 /* AuthStatus.swift in Sources */,
 				A183359A2239A86D007C6175 /* OktaError.swift in Sources */,
 				A18335982239A86A007C6175 /* AuthenticationClient.swift in Sources */,
 				A12F4FED223826CF00DB9147 /* AuthStatusLockedOut.swift in Sources */,
 				A18335A22239A882007C6175 /* OktaAPIRequest.swift in Sources */,
 				A1C06F0822120876005E8369 /* AuthenticationClientMFAHandlerVerifyer.swift in Sources */,
-				A1BEAFDC225BF34F009DE0D5 /* AuthStatusHandlerProtocol.swift in Sources */,
+				A1BEAFDC225BF34F009DE0D5 /* AuthStatusResponseHandler.swift in Sources */,
 				F5CC2ADB21D5056D00649C33 /* OktaAPITests.swift in Sources */,
 				A18335A02239A87C007C6175 /* OktaModels.swift in Sources */,
 				A18335EE22542753007C6175 /* AuthStatePasswordReset.swift in Sources */,
 				A12F4FF52238277900DB9147 /* AuthStatusPasswordExpired.swift in Sources */,
+				A1920F91225E8406007D50D2 /* OktaFactorToken.swift in Sources */,
 				A12F4FE52238269C00DB9147 /* AuthStatusFactorRequired.swift in Sources */,
 				A183359E2239A879007C6175 /* AuthState.swift in Sources */,
 				A12F4FF12238276800DB9147 /* AuthStatusPasswordWarning.swift in Sources */,
+				A1920F81225E81EE007D50D2 /* OktaFactorSms.swift in Sources */,
+				A1920F7D225E67A1007D50D2 /* OktaFactorPush.swift in Sources */,
 				A12F4FFA2238311A00DB9147 /* OktaAuthSdk.swift in Sources */,
 				A18335A62239A888007C6175 /* Utils.swift in Sources */,
 			);

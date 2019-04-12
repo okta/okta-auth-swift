@@ -12,28 +12,34 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
+open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResultProtocol {
     
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .MFAEnrollActivate
-    }
-    
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
-        statusType = .MFAEnrollActivate
-    }
+    public internal(set) var stateToken: String
 
-    public var factor: EmbeddedResponse.Factor? {
-        get {
-            return model.embedded?.factor
-        }
-    }
+    public lazy var factor: OktaFactor = {
+        var createdFactor = OktaFactor.createFactorWith(internalFactor,
+                                                        stateToken: stateToken,
+                                                        verifyLink: nil,
+                                                        activationLink: model.links?.next)
+        createdFactor.responseDelegate = self
+        createdFactor.restApi = self.api
+        return createdFactor
+    }()
 
-    public var pushFactorQRCode: LinksResponse.QRCode? {
-        get {
-            return model.embedded?.factor?.links?.qrcode
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
         }
+        guard let factor = model.embedded?.factor else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        self.internalFactor = factor
+
+        try super.init(currentState: currentState, model: model)
+
+        self.factor.restApi = self.api
+        statusType = .MFAEnrollActivate
     }
 
     public func canActivate() -> Bool {
@@ -52,136 +58,69 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
         return true
     }
 
-    public func canSendPushCodeViaSms() -> Bool {
-        guard let sendLinkArray = factor?.links?.send else {
-            return false
-        }
-
-        for link in sendLinkArray {
-            if link.name == "sms" {
-                return true
-            }
-        }
-        
-        return false
-    }
-
-    public func canSendPushCodeViaEmail() -> Bool {
-        guard let sendLinkArray = factor?.links?.send else {
-            return false
-        }
-        
-        for link in sendLinkArray {
-            if link.name == "email" {
-                return true
-            }
-        }
-        
-        return false
-    }
-
-    // passCode is used for SMS, Call and TOTP factors
-    public func activate(with passCode: String,
-                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                         onError: @escaping (_ error: OktaError) -> Void) {
+    public func activateFactor(onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                               onError: @escaping (_ error: OktaError) -> Void) {
         guard canActivate() else {
-            onError(.wrongState("Can't find 'next' link in response"))
+            onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
-        
-        self.verifyFactor(with: model.links!.next!,
-                          answer: nil,
-                          passCode: passCode,
-                          completion: { result in
-                            self.handleServerResponse(result,
-                                                      onStatusChanged: onStatusChange,
-                                                      onError: onError)
-        })
+
+        self.factor.activate(with: model.links!.next!,
+                             onFactorStatusUpdate: onFactorStatusUpdate,
+                             onStatusChange: onStatusChange,
+                             onError: onError)
     }
 
-    public func activatePush(with pollRate: TimeInterval = 3,
-                             onPushStateUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
-        guard canActivate() else {
-            onError(.wrongState("Can't find 'next' link in response"))
-            return
-        }
-
-        guard factor?.factorType != nil && factor!.factorType! == .push else {
-            onError(OktaError.factorNotAvailable(model))
-            return
-        }
-        
-        self.pollPushFactor(with: pollRate,
-                            link: model.links!.next!,
-                            onPushStateUpdate: onPushStateUpdate,
-                            onStatusChange: onStatusChange,
-                            onError: onError)
-    }
-
-    public func sendPushCodeViaSms(with phoneNumber:String,
-                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void) {
-        guard canSendPushCodeViaSms() else {
-            onError(.wrongState("Can't find 'send' link in response"))
-            return
-        }
-
-        let sendLinkArray = factor!.links!.send!
-        
-        for link in sendLinkArray {
-            if link.name == "sms" {
-                self.api.sendActivationLink(link: model.links!.next!,
-                                            stateToken: model.stateToken!,
-                                            phoneNumber: phoneNumber,
-                                            completion: { result in
-                                                self.handleServerResponse(result,
-                                                                          onStatusChanged: onStatusChange,
-                                                                          onError: onError)
-                })
-                break
-            }
-        }
-    }
-
-    public func sendPushCodeViaEmail(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                     onError: @escaping (_ error: OktaError) -> Void) {
-        guard canSendPushCodeViaEmail() else {
-            onError(.wrongState("Can't find 'send' link in response"))
-            return
-        }
-        
-        let sendLinkArray = factor!.links!.send!
-        
-        for link in sendLinkArray {
-            if link.name == "email" {
-                self.api.sendActivationLink(link: model.links!.next!,
-                                            stateToken: model.stateToken!,
-                                            phoneNumber: nil,
-                                            completion: { result in
-                                                self.handleServerResponse(result,
-                                                                          onStatusChanged: onStatusChange,
-                                                                          onError: onError)
-                })
-                break
-            }
-        }
-    }
-
-    public func resend(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void) {
-        guard canReturn() else {
-            onError(.wrongState("Can't find 'resend' link in response"))
+        guard canResend() else {
+            onError(.wrongStatus("Can't find 'resend' link in response"))
             return
         }
 
         self.api.perform(link: model.links!.resend!.first!,
-                         stateToken: model.stateToken!,
+                         stateToken: stateToken,
                          completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
         })
+    }
+
+    override public func cancel(onSuccess: @escaping () -> Void, onError: @escaping (OktaError) -> Void) {
+        self.factor.cancel()
+        self.factor.responseDelegate = nil
+        super.cancel(onSuccess: onSuccess, onError: onError)
+    }
+
+    var internalFactor: EmbeddedResponse.Factor
+
+    func handleFactorServerResponse(response: OktaAPIRequest.Result,
+                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                    onError: @escaping (_ error: OktaError) -> Void) {
+        var authResponse : OktaAPISuccessResponse
+        
+        switch response {
+        case .error(let error):
+            onError(error)
+            return
+        case .success(let success):
+            authResponse = success
+        }
+        
+        if authResponse.factorResult != nil &&
+            authResponse.status == self.statusType {
+            onFactorStatusUpdate(authResponse.factorResult!)
+            
+            if case .waiting = authResponse.factorResult! {
+                self.activateFactor(onFactorStatusUpdate: onFactorStatusUpdate,
+                                    onStatusChange: onStatusChange,
+                                    onError: onError)
+            }
+        } else {
+            self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
+        }
     }
 }

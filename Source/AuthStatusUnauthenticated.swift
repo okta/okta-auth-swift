@@ -14,13 +14,8 @@ import Foundation
 
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .unauthenticated
-    }
-    
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
+    override init(oktaDomain: URL, responseHandler: AuthStatusResponseHandler = AuthStatusResponseHandler()) {
+        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
         statusType = .unauthenticated
     }
 

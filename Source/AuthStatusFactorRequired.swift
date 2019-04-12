@@ -12,47 +12,59 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorRequired : OktaAuthStatus {
-
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .MFARequired
-    }
+open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtocol {
     
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
-        statusType = .MFARequired
-    }
+    public internal(set) var stateToken: String
 
-    public var availableFactors: [EmbeddedResponse.Factor]? {
-        get {
-            return model.embedded?.factors
-        }
-    }
-
-    public func canVerifyFactor(_ factor: EmbeddedResponse.Factor) -> Bool {
-        guard factor.links?.verify?.href != nil else {
-            return false
+    public lazy var availableFactors: [OktaFactor] = {
+        var oktaFactors = Array<OktaFactor>()
+        for factor in self.factors {
+            var createdFactor = OktaFactor.createFactorWith(factor,
+                                                            stateToken: stateToken,
+                                                            verifyLink: nil,
+                                                            activationLink: nil)
+            createdFactor.restApi = api
+            createdFactor.responseDelegate = self
+            oktaFactors.append(createdFactor)
         }
         
-        return true
-    }
+        return oktaFactors
+    }()
 
-    public func selectFactor(factor: EmbeddedResponse.Factor,
+    public func selectFactor(_ factor: OktaFactor,
+                             onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
-        guard canVerifyFactor(factor) else {
-            onError(.wrongState("Can't find 'next' link in response"))
-            return
-        }
+        selectedFactor = factor
+        factor.select(onFactorStatusUpdate: onFactorStatusUpdate, onStatusChange: onStatusChange, onError: onError)
+    }
 
-        self.verifyFactor(with: factor.links!.verify!,
-                          answer: nil,
-                          passCode: nil,
-                          completion: { result in
-                            self.handleServerResponse(result,
-                                                      onStatusChanged: onStatusChange,
-                                                      onError: onError)
-        })
+    override public func cancel(onSuccess: @escaping () -> Void, onError: @escaping (OktaError) -> Void) {
+        selectedFactor?.cancel()
+        selectedFactor?.responseDelegate = nil
+        super.cancel(onSuccess: onSuccess, onError: onError)
+    }
+
+    var factors: [EmbeddedResponse.Factor]
+    var selectedFactor: OktaFactor?
+
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        guard let factors = model.embedded?.factors else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        self.factors = factors
+        try super.init(currentState: currentState, model: model)
+        statusType = .MFARequired
+    }
+
+    func handleFactorServerResponse(response: OktaAPIRequest.Result,
+                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                    onError: @escaping (_ error: OktaError) -> Void) {
+        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
     }
 }

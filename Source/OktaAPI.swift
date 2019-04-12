@@ -198,7 +198,7 @@ open class OktaAPI {
         req.method = .post
         req.urlParams = [:]
         req.bodyParams = ["stateToken": stateToken]
-        req.bodyParams?["factorType"] = factor.factorType?.rawValue
+        req.bodyParams?["factorType"] = factor.factorType.rawValue
         req.bodyParams?["provider"] = factor.provider?.rawValue
         var profile: [String: String] = [:]
         if let answer = answer, let questionId = questionId {
@@ -257,6 +257,19 @@ open class OktaAPI {
                 onError?(.responseSerializationError(e, dataUnwrapped))
             }
         }
+        req.run()
+        return req
+    }
+
+    @discardableResult open func sendApiRequest(with link: LinksResponse.Link,
+                                                bodyParams: Dictionary<String, Any>?,
+                                                method: OktaAPIRequest.Method,
+                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.method = .post
+        req.urlParams = [:]
+        req.bodyParams = bodyParams
         req.run()
         return req
     }
