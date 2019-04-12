@@ -20,13 +20,8 @@ open class OktaAuthStatusSuccess : OktaAuthStatus {
         }
     }
 
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .success
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
         statusType = .success
     }
 }

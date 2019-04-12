@@ -13,38 +13,33 @@
 import Foundation
 
 open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
-
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .passwordWarning
-    }
     
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
-        statusType = .passwordWarning
-    }
+    public internal(set) var stateToken: String
 
     public func changePassword(oldPassword: String,
                                newPassword: String,
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                onError: @escaping (_ error: OktaError) -> Void) {
-
-        let changePasswordStatus = OktaAuthStatusPasswordExpired(currentState: self, model: self.model)
-        changePasswordStatus.changePassword(oldPassword: oldPassword,
-                                            newPassword: newPassword,
-                                            onStatusChange: onStatusChange,
-                                            onError: onError)
+        do {
+            let changePasswordStatus = try OktaAuthStatusPasswordExpired(currentState: self, model: self.model)
+            changePasswordStatus.changePassword(oldPassword: oldPassword,
+                                                newPassword: newPassword,
+                                                onStatusChange: onStatusChange,
+                                                onError: onError)
+        } catch let error {
+            onError(error as! OktaError)
+        }
     }
 
     public func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canSkip() else {
-            onError(.wrongState("Can't find 'skip' link in response"))
+            onError(.wrongStatus("Can't find 'skip' link in response"))
             return
         }
 
-        api.perform(link: model.links!.skip!, stateToken: model.stateToken!) { result in
+        api.perform(link: model.links!.skip!, stateToken: stateToken) { result in
 
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
@@ -59,5 +54,14 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
         }
 
         return true
+    }
+
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        try super.init(currentState: currentState, model: model)
+        statusType = .passwordWarning
     }
 }

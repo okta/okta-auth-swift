@@ -13,14 +13,9 @@
 import Foundation
 
 open class OktaAuthStatusRecovery : OktaAuthStatus {
-
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .recovery
-    }
     
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
         statusType = .recovery
     }
 }

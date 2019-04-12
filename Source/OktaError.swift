@@ -22,11 +22,12 @@ public enum OktaError: Error {
     case authenicationStateNotSupported(AuthStatus)
     case factorNotSupported(EmbeddedResponse.Factor)
     case unexpectedResponse
-    case wrongState(String)
+    case wrongStatus(String)
     case alreadyInProgress
     case factorNotAvailable(OktaAPISuccessResponse)
     case unknownState(OktaAPISuccessResponse)
     case internalError(String)
+    case invalidParameters(String)
 }
 
 public extension OktaError {
@@ -58,7 +59,7 @@ public extension OktaError {
             return "MFA factor not supported (\(factor))"
         case .unexpectedResponse:
             return "Unexpected response"
-        case .wrongState(error: let error):
+        case .wrongStatus(error: let error):
             return error
         case .alreadyInProgress:
             return "Another request is in progress"
@@ -68,6 +69,8 @@ public extension OktaError {
             return "Received state is unknown"
         case .internalError:
             return "Internal error"
+        case .invalidParameters:
+            return "Invalid parameters"
         }
     }
 }

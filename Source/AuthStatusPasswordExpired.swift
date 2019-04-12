@@ -13,16 +13,8 @@
 import Foundation
 
 open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
-
-    override init(oktaDomain: URL, model: OktaAPISuccessResponse, responseHandler: AuthStatusCustomHandlerProtocol? = nil) {
-        super.init(oktaDomain: oktaDomain, model: model, responseHandler: responseHandler)
-        statusType = .passwordExpired
-    }
     
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) {
-        super.init(currentState: currentState, model: model)
-        statusType = .passwordExpired
-    }
+    public internal(set) var stateToken: String
 
     public func changePassword(oldPassword: String,
                                newPassword: String,
@@ -30,12 +22,12 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
                                onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canChange() else {
-            onError(.wrongState("Can't find 'next' link in response"))
+            onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
 
         api.changePassword(link: model.links!.next!,
-                           stateToken: model.stateToken!,
+                           stateToken: stateToken,
                            oldPassword: oldPassword,
                            newPassword: newPassword) { result in
     
@@ -52,5 +44,14 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
         }
 
         return true
+    }
+
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        try super.init(currentState: currentState, model: model)
+        statusType = .passwordExpired
     }
 }

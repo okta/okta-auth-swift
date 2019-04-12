@@ -93,7 +93,7 @@ public class AuthenticationClient {
             return
         }
         guard case .unauthenticated = status else {
-            delegate?.handleError(.wrongState("'unauthenticated' state expected"))
+            delegate?.handleError(.wrongStatus("'unauthenticated' state expected"))
             return
         }
         currentRequest = api.primaryAuthentication(username: username,
@@ -115,7 +115,7 @@ public class AuthenticationClient {
         self.factorResultPollTimer?.invalidate()
 
         guard let stateToken = stateToken else {
-            delegate?.handleError(.wrongState("No state token"))
+            delegate?.handleError(.wrongStatus("No state token"))
             return
         }
 
@@ -134,7 +134,7 @@ public class AuthenticationClient {
         }
 
         guard let stateToken = stateToken else {
-            delegate?.handleError(.wrongState("No state token"))
+            delegate?.handleError(.wrongStatus("No state token"))
             return
         }
         currentRequest = api.getTransactionState(stateToken: stateToken) { [weak self] result in
@@ -149,14 +149,14 @@ public class AuthenticationClient {
             return
         }
         guard let stateToken = stateToken else {
-            delegate?.handleError(.wrongState("No state token"))
+            delegate?.handleError(.wrongStatus("No state token"))
             return
         }
         switch status {
             case .passwordExpired, .passwordWarning:
                 break
             default:
-                delegate?.handleError(.wrongState("'passwordExpired' or 'passwordWarning' state expected"))
+                delegate?.handleError(.wrongStatus("'passwordExpired' or 'passwordWarning' state expected"))
                 return
         }
         currentRequest = api.changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword) { [weak self] result in
@@ -175,7 +175,7 @@ public class AuthenticationClient {
             return
         }
         guard let stateToken = stateToken else {
-            delegate?.handleError(.wrongState("No state token"))
+            delegate?.handleError(.wrongStatus("No state token"))
             return
         }
         currentRequest = api.verifyFactor(factorId: factor.id!,
@@ -195,7 +195,7 @@ public class AuthenticationClient {
             return
         }
         guard let stateToken = stateToken else {
-            delegate?.handleError(.wrongState("No state token"))
+            delegate?.handleError(.wrongStatus("No state token"))
             return
         }
         currentRequest = api.perform(link: link, stateToken: stateToken) { [weak self] result in
@@ -229,7 +229,7 @@ public class AuthenticationClient {
             delegate?.handleChangePassword(canSkip: true, callback: { [weak self] old, new, skip in
                 if skip {
                     guard let skip = self?.links?.skip else {
-                        self?.delegate?.handleError(.wrongState("Can't find 'skip' link in response"))
+                        self?.delegate?.handleError(.wrongStatus("Can't find 'skip' link in response"))
                         return
                     }
                     self?.perform(link: skip)
@@ -249,7 +249,7 @@ public class AuthenticationClient {
                 return
             }
             guard let factors = embedded?.factors else {
-                delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
+                delegate?.handleError(.wrongStatus("Can't find 'factor' object in response"))
                 return
             }
             mfaHandler.selectFactor(factors: factors) { factor in
@@ -259,7 +259,7 @@ public class AuthenticationClient {
                     }
                 } else if factor.factorType == .question {
                     guard let question = factor.profile?.questionText else {
-                        self.delegate?.handleError(.wrongState("Can't find 'question' object in response"))
+                        self.delegate?.handleError(.wrongStatus("Can't find 'question' object in response"))
                         return
                     }
                     mfaHandler.securityQuestion(question: question) { answer in
@@ -271,11 +271,11 @@ public class AuthenticationClient {
             }
             
         case .MFAChallenge:
-            guard let factor = embedded?.factor, let factorType = factor.factorType else {
-                delegate?.handleError(.wrongState("Can't find 'factor' object in response"))
+            guard let factor = embedded?.factor else {
+                delegate?.handleError(.wrongStatus("Can't find 'factor' object in response"))
                 return
             }
-            if factorType == .push {
+            if factor.factorType == .push {
                 guard let factorResult = factorResult else {
                     return
                 }

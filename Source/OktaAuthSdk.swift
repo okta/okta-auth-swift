@@ -20,7 +20,7 @@ public class OktaAuthSdk {
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
         
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url, model: OktaAPISuccessResponse())
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.authenticate(username: username,
                                            password: password ?? "",
                                            onStatusChange:onStatusChange,
