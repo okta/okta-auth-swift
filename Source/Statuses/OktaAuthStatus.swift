@@ -14,24 +14,24 @@ import Foundation
 
 open class OktaAuthStatus {
 
-    public internal(set) var api: OktaAPI
+    public internal(set) var restApi: OktaAPI
 
     public internal(set) var statusType : AuthStatus = .unknown("Unknown status")
 
     public internal(set) var model: OktaAPISuccessResponse
 
-    public internal(set) var responseHandler: AuthStatusResponseHandler
+    public internal(set) var responseHandler: OktaAuthStatusResponseHandler
 
     public init(oktaDomain: URL,
-                responseHandler: AuthStatusResponseHandler = AuthStatusResponseHandler()) {
-        self.api = OktaAPI(oktaDomain: oktaDomain)
+                responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
+        self.restApi = OktaAPI(oktaDomain: oktaDomain)
         self.model = OktaAPISuccessResponse()
         self.responseHandler = responseHandler
     }
 
     public init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         self.model = model
-        self.api = currentState.api
+        self.restApi = currentState.restApi
         self.responseHandler = currentState.responseHandler
     }
 
@@ -61,10 +61,15 @@ open class OktaAuthStatus {
             onError(.wrongStatus("Can't find 'prev' link in response"))
             return
         }
+
+        guard let stateToken = model.stateToken else {
+            onError(.invalidResponse)
+            return
+        }
         
-        self.api.perform(link: model.links!.prev!,
-                         stateToken: model.stateToken!,
-                         completion: { result in
+        restApi.perform(link: model.links!.prev!,
+                        stateToken: stateToken,
+                        completion: { result in
                             self.handleServerResponse(result,
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
@@ -72,8 +77,7 @@ open class OktaAuthStatus {
     }
     
     public func canCancel() -> Bool {
-        guard model.links?.cancel?.href != nil &&
-              model.stateToken != nil else {
+        guard model.links?.cancel?.href != nil else {
             return false
         }
 
@@ -83,6 +87,14 @@ open class OktaAuthStatus {
     public func cancel(onSuccess: @escaping () -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         guard statusType != .unauthenticated else {
+            return
+        }
+        guard canCancel() else {
+            onError(.wrongStatus("Can't find 'cancel' link in response"))
+            return
+        }
+        guard let stateToken = model.stateToken else {
+            onError(.invalidResponse)
             return
         }
 
@@ -96,15 +108,22 @@ open class OktaAuthStatus {
             }
         }
 
-        if canCancel() {
-            api.cancelTransaction(with: model.links!.cancel!, stateToken: model.stateToken!, completion: completion)
-        } else {
-            api.cancelTransaction(stateToken: model.stateToken!, completion: completion)
-        }
+        restApi.cancelTransaction(with: model.links!.cancel!, stateToken: stateToken, completion: completion)
     }
 
     // MARK: Internal
     internal var cancelled = false
+
+    func fetchStatus(with stateToken: String,
+                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void) {
+        
+        restApi.getTransactionState(stateToken: stateToken, completion: { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        })
+    }
 
     func handleServerResponse(_ response: OktaAPIRequest.Result,
                               onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,

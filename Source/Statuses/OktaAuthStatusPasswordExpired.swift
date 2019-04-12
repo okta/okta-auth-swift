@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
+open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
@@ -20,36 +20,26 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
                                newPassword: String,
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                onError: @escaping (_ error: OktaError) -> Void) {
-        do {
-            let changePasswordStatus = try OktaAuthStatusPasswordExpired(currentState: self, model: self.model)
-            changePasswordStatus.changePassword(oldPassword: oldPassword,
-                                                newPassword: newPassword,
-                                                onStatusChange: onStatusChange,
-                                                onError: onError)
-        } catch let error {
-            onError(error as! OktaError)
-        }
-    }
 
-    public func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void) {
-
-        guard canSkip() else {
-            onError(.wrongStatus("Can't find 'skip' link in response"))
+        guard canChange() else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
 
-        api.perform(link: model.links!.skip!, stateToken: stateToken) { result in
-
+        restApi.changePassword(link: model.links!.next!,
+                           stateToken: stateToken,
+                           oldPassword: oldPassword,
+                           newPassword: newPassword) { result in
+    
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
     }
 
-    public func canSkip() -> Bool {
+    public func canChange() -> Bool {
         
-        guard (model.links?.skip?.href) != nil else {
+        guard (model.links?.next?.href) != nil else {
             return false
         }
 
@@ -62,6 +52,6 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
         }
         self.stateToken = stateToken
         try super.init(currentState: currentState, model: model)
-        statusType = .passwordWarning
+        statusType = .passwordExpired
     }
 }

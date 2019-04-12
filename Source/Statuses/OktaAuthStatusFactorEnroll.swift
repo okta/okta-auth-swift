@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtocol {
+open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol {
     
     public internal(set) var stateToken: String
 
@@ -23,7 +23,7 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtoc
                                                             stateToken: stateToken,
                                                             verifyLink: nil,
                                                             activationLink: nil)
-            createdFactor.restApi = api
+            createdFactor.restApi = restApi
             createdFactor.responseDelegate = self
             oktaFactors.append(createdFactor)
         }
@@ -31,12 +31,48 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtoc
         return oktaFactors
     }()
 
-    public func selectFactor(_ factor: OktaFactor,
-                             onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
+    public func canEnrollFactor(factor: OktaFactor) -> Bool {
+        return factor.canEnroll()
+    }
+
+    public func canSkipEnrollment() -> Bool {
+        guard model.links?.skip?.href != nil else {
+            return false
+        }
+        
+        return true
+    }
+
+    public func skipEnrollment(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                               onError: @escaping (_ error: OktaError) -> Void) {
+        guard canSkipEnrollment() else {
+            onError(.wrongStatus("Can't find 'skip' link in response"))
+            return
+        }
+        
+        restApi.perform(link: model.links!.skip!, stateToken: stateToken) { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        }
+    }
+
+    public func enrollFactor(factor: OktaFactor,
+                             questionId: String?,
+                             answer: String?,
+                             credentialId: String?,
+                             passCode: String?,
+                             phoneNumber: String?,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
         selectedFactor = factor
-        factor.select(onFactorStatusUpdate: onFactorStatusUpdate, onStatusChange: onStatusChange, onError: onError)
+        factor.enroll(questionId: questionId,
+                      answer: answer,
+                      credentialId: credentialId,
+                      passCode: passCode,
+                      phoneNumber: phoneNumber,
+                      onStatusChange: onStatusChange,
+                      onError: onError)
     }
 
     override public func cancel(onSuccess: @escaping () -> Void, onError: @escaping (OktaError) -> Void) {
@@ -58,13 +94,15 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtoc
         self.stateToken = stateToken
         self.factors = factors
         try super.init(currentState: currentState, model: model)
-        statusType = .MFARequired
+        statusType = .MFAEnroll
     }
 
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
-                                    onFactorStatusUpdate: @escaping (_ state: OktaAPISuccessResponse.FactorResult) -> Void,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void) {
-        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
+                                    onError: @escaping (_ error: OktaError) -> Void,
+                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
+        self.handleServerResponse(response,
+                                  onStatusChanged: onStatusChange,
+                                  onError: onError)
     }
 }

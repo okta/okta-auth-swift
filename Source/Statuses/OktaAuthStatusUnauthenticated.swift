@@ -14,7 +14,7 @@ import Foundation
 
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
-    override init(oktaDomain: URL, responseHandler: AuthStatusResponseHandler = AuthStatusResponseHandler()) {
+    override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
         super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
         statusType = .unauthenticated
     }
@@ -24,11 +24,10 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void) {
 
-        api.primaryAuthentication(username: username,
-                                  password: password,
-                                  deviceFingerprint: nil)
+        restApi.primaryAuthentication(username: username,
+                                      password: password,
+                                      deviceFingerprint: nil)
         { result in
-            
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
