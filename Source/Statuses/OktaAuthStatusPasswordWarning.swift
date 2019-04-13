@@ -16,6 +16,15 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
+    public func canSkip() -> Bool {
+        
+        guard (model.links?.skip?.href) != nil else {
+            return false
+        }
+        
+        return true
+    }
+
     public func changePassword(oldPassword: String,
                                newPassword: String,
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -45,15 +54,6 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-
-    public func canSkip() -> Bool {
-        
-        guard (model.links?.skip?.href) != nil else {
-            return false
-        }
-
-        return true
     }
 
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {

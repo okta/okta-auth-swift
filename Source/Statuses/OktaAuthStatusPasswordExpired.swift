@@ -16,6 +16,15 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
+    public func canChange() -> Bool {
+        
+        guard (model.links?.next?.href) != nil else {
+            return false
+        }
+        
+        return true
+    }
+
     public func changePassword(oldPassword: String,
                                newPassword: String,
                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -27,23 +36,14 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
         }
 
         restApi.changePassword(link: model.links!.next!,
-                           stateToken: stateToken,
-                           oldPassword: oldPassword,
-                           newPassword: newPassword) { result in
+                               stateToken: stateToken,
+                               oldPassword: oldPassword,
+                               newPassword: newPassword) { result in
     
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-
-    public func canChange() -> Bool {
-        
-        guard (model.links?.next?.href) != nil else {
-            return false
-        }
-
-        return true
     }
 
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
