@@ -106,6 +106,29 @@ open class OktaAPI {
         return req
     }
 
+    @discardableResult open func recoverPassword(username: String,
+                                                 factor: FactorType,
+                                                 completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.path = "/api/v1/authn/recovery/password"
+        req.bodyParams = ["username": username, "factorType": factor.rawValue]
+        req.run()
+        return req
+    }
+
+    @discardableResult open func recoverWith(answer: String?,
+                                             recoveryToken: String?,
+                                             link: LinksResponse.Link,
+                                             completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.bodyParams = [:]
+        req.bodyParams?["answer"] = answer
+        req.bodyParams?["recoveryToken"] = recoveryToken
+        req.run()
+        return req
+    }
+
     @discardableResult open func cancelTransaction(stateToken: String,
                                                    completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
@@ -164,6 +187,7 @@ open class OktaAPI {
                                               stateToken: String,
                                               answer: String? = nil,
                                               passCode: String? = nil,
+                                              recoveryToken: String? = nil,
                                               rememberDevice: Bool? = nil,
                                               autoPush: Bool? = nil,
                                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
@@ -180,6 +204,7 @@ open class OktaAPI {
         req.bodyParams = ["stateToken": stateToken]
         req.bodyParams?["answer"] = answer
         req.bodyParams?["passCode"] = passCode
+        req.bodyParams?["recoveryToken"] = recoveryToken
         req.run()
         return req
     }

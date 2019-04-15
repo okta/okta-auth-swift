@@ -127,6 +127,9 @@ public class OktaAPIRequest {
         print("\(json ?? "corrupted data")")
         guard 200 ..< 300 ~= response.statusCode else {
             do {
+                //decoder.dataDecodingStrategy = .custom({ decoder -> Data in
+                    //return decoder.data
+                //})
                 let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
                 callCompletion(.error(.serverRespondedWithError(errorResponse)))
             } catch let e {

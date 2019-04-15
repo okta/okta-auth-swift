@@ -14,6 +14,62 @@ import Foundation
 
 open class OktaAuthStatusRecovery : OktaAuthStatus {
     
+    open var recoveryQuestion: String? {
+        get {
+            return model.embedded?.user?.recoveryQuestion?.question
+        }
+    }
+
+    open var recoveryToken: String? {
+        get {
+            return model.recoveryToken
+        }
+    }
+
+    open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
+        get {
+            return model.recoveryType
+        }
+    }
+
+    open func canRecover() -> Bool {
+        guard model.links?.next != nil else {
+            return false
+        }
+        
+        return true
+    }
+
+    open func recoverWithAnswer(_ answer: String,
+                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                onError: @escaping (_ error: OktaError) -> Void) {
+        guard canRecover() else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
+            return
+        }
+        
+        restApi.recoverWith(answer: answer, recoveryToken: nil, link: model.links!.next!) { result in
+                self.handleServerResponse(result,
+                                          onStatusChanged: onStatusChange,
+                                          onError: onError)
+        }
+    }
+
+    open func recoverWithToken(_ recoveryToken: String,
+                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                               onError: @escaping (_ error: OktaError) -> Void) {
+        guard canRecover() else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
+            return
+        }
+        
+        restApi.recoverWith(answer: nil, recoveryToken: recoveryToken, link: model.links!.next!) { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        }
+    }
+    
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         try super.init(currentState: currentState, model: model)
         statusType = .recovery

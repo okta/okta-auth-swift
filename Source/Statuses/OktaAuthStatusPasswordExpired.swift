@@ -16,7 +16,7 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
-    public func canChange() -> Bool {
+    open func canChange() -> Bool {
         
         guard (model.links?.next?.href) != nil else {
             return false
@@ -25,10 +25,10 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
         return true
     }
 
-    public func changePassword(oldPassword: String,
-                               newPassword: String,
-                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                               onError: @escaping (_ error: OktaError) -> Void) {
+    open func changePassword(oldPassword: String,
+                             newPassword: String,
+                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                             onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canChange() else {
             onError(.wrongStatus("Can't find 'next' link in response"))

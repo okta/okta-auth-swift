@@ -42,15 +42,15 @@ public class OktaAuthSdk {
 
     public class func recoverPassword(with url: URL,
                                       username: String,
-                                      factorType: FactorType,
+                                      factorType: OktaRecoveryFactors,
                                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                       onError: @escaping (_ error: OktaError) -> Void) {
         
-        /*let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.recoverPassword(username: username,
                                               factorType: factorType,
-                                              onStatusChange:onStatusChange,
-                                              onError: onError)*/
+                                              onStatusChange: onStatusChange,
+                                              onError: onError)
     }
 
     public class func fetchStatus(with stateToken: String,
