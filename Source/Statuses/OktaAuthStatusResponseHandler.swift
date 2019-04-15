@@ -14,12 +14,28 @@ import Foundation
 
 open class OktaAuthStatusResponseHandler {
     
-    public init() {}
+    public var pollInterval: TimeInterval
+    
+    public init(pollInterval: TimeInterval = 3) {
+        self.pollInterval = pollInterval
+    }
+
+    open func cancel() {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.cancel()
+            }
+            return
+        }
+
+        self.factorResultPollTimer?.invalidate()
+    }
     
     open func handleServerResponse(_ response: OktaAPIRequest.Result,
                                    currentStatus: OktaAuthStatus,
                                    onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void)
+                                   onError: @escaping (_ error: OktaError) -> Void,
+                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
     {
         var authResponse : OktaAPISuccessResponse
         
@@ -30,7 +46,25 @@ open class OktaAuthStatusResponseHandler {
         case .success(let success):
             authResponse = success
         }
-        
+
+        if authResponse.factorResult != nil &&
+           authResponse.status == currentStatus.statusType {
+            onFactorStatusUpdate?(authResponse.factorResult!)
+            
+            if case .waiting = authResponse.factorResult! {
+                let timer = Timer(timeInterval: pollInterval, repeats: false) { _ in
+                    currentStatus.poll(onStatusChange: onStatusChanged, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                factorResultPollTimer = timer
+                return
+            }
+        }
+
+        if let factorResult = authResponse.factorResult {
+            onFactorStatusUpdate?(factorResult)
+        }
+
         do {
             let status = try self.createAuthStatus(basedOn: authResponse, and: currentStatus)
             onStatusChanged(status)
@@ -100,4 +134,6 @@ open class OktaAuthStatusResponseHandler {
             throw OktaError.unknownState(response)
         }
     }
+
+    var factorResultPollTimer: Timer? = nil
 }

@@ -72,7 +72,8 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
         })
     }
 
-    override public func cancel(onSuccess: @escaping () -> Void, onError: @escaping (OktaError) -> Void) {
+    override public func cancel(onSuccess: (() -> Void)? = nil,
+                                onError: ((OktaError) -> Void)? = nil) {
         self.factor.cancel()
         self.factor.responseDelegate = nil
         super.cancel(onSuccess: onSuccess, onError: onError)
@@ -99,30 +100,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void,
                                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
-        var authResponse : OktaAPISuccessResponse
-        
-        switch response {
-        case .error(let error):
-            onError(error)
-            return
-        case .success(let success):
-            authResponse = success
-        }
-
-        if authResponse.factorResult != nil &&
-           authResponse.status == self.statusType {
-            onFactorStatusUpdate?(authResponse.factorResult!)
-
-            if case .waiting = authResponse.factorResult! {
-                self.verifyFactor(passCode: nil,
-                                  answerToSecurityQuestion: nil,
-                                  onStatusChange: onStatusChange,
-                                  onError: onError,
-                                  onFactorStatusUpdate: onFactorStatusUpdate)
-            }
-        } else {
-            self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
-        }
+        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
     }
 }
 
