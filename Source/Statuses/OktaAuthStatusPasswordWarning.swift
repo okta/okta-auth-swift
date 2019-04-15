@@ -16,7 +16,7 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
-    public func canSkip() -> Bool {
+    open func canSkip() -> Bool {
         
         guard (model.links?.skip?.href) != nil else {
             return false
@@ -25,10 +25,10 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
         return true
     }
 
-    public func changePassword(oldPassword: String,
-                               newPassword: String,
-                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                               onError: @escaping (_ error: OktaError) -> Void) {
+    open func changePassword(oldPassword: String,
+                             newPassword: String,
+                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                             onError: @escaping (_ error: OktaError) -> Void) {
         do {
             let changePasswordStatus = try OktaAuthStatusPasswordExpired(currentState: self, model: self.model)
             changePasswordStatus.changePassword(oldPassword: oldPassword,
@@ -40,8 +40,8 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
         }
     }
 
-    public func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void) {
+    open func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                 onError: @escaping (_ error: OktaError) -> Void) {
 
         guard canSkip() else {
             onError(.wrongStatus("Can't find 'skip' link in response"))

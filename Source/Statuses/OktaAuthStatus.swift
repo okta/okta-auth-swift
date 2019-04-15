@@ -35,19 +35,19 @@ open class OktaAuthStatus {
         self.responseHandler = currentState.responseHandler
     }
 
-    public var user: EmbeddedResponse.User? {
+    open var user: EmbeddedResponse.User? {
         get {
             return model.embedded?.user
         }
     }
 
-    public var links: LinksResponse? {
+    open var links: LinksResponse? {
         get {
             return model.links
         }
     }
 
-    public func canReturn() -> Bool {
+    open func canReturn() -> Bool {
         guard model.links?.prev != nil else {
             return false
         }
@@ -55,8 +55,8 @@ open class OktaAuthStatus {
         return true
     }
 
-    public func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                       onError: @escaping (_ error: OktaError) -> Void) {
+    open func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                     onError: @escaping (_ error: OktaError) -> Void) {
         guard canReturn() else {
             onError(.wrongStatus("Can't find 'prev' link in response"))
             return
@@ -76,7 +76,7 @@ open class OktaAuthStatus {
         })
     }
     
-    public func canCancel() -> Bool {
+    open func canCancel() -> Bool {
         guard model.links?.cancel?.href != nil else {
             return false
         }
@@ -84,12 +84,13 @@ open class OktaAuthStatus {
         return true
     }
 
-    public func cancel(onSuccess: (() -> Void)? = nil,
-                       onError: ((_ error: OktaError) -> Void)? = nil) {
+    open func cancel(onSuccess: (() -> Void)? = nil,
+                     onError: ((_ error: OktaError) -> Void)? = nil) {
         
         self.responseHandler.cancel()
 
         guard statusType != .unauthenticated else {
+            onSuccess?()
             return
         }
         guard canCancel() else {

@@ -95,20 +95,21 @@ class ViewController: UIViewController {
         case .MFAChallenge:
             let mfaChallenge: OktaAuthStatusFactorChallenge = status as! OktaAuthStatusFactorChallenge
             let factor = mfaChallenge.factor
-            if factor.type == .sms {
+            switch factor.type {
+            case .sms:
                 let smsFactor = factor as! OktaFactorSms
                 self.handleSmsChallenge(factor: smsFactor)
-            } else if factor.type == .TOTP {
+            case .TOTP:
                 let totpFactor = factor as! OktaFactorTotp
                 self.handleTotpChallenge(factor: totpFactor)
-            } else if factor.type == .question {
+            case .question:
                 let questionFactor = factor as! OktaFactorQuestion
                 self.handleQuestionChallenge(factor: questionFactor)
-            } else {
-                let alert = UIAlertController(title: "Error", message: "Recieved challenge for unsupported factor", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-                self.cancelTransaction()
+            default:
+                    let alert = UIAlertController(title: "Error", message: "Recieved challenge for unsupported factor", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    present(alert, animated: true, completion: nil)
+                    self.cancelTransaction()
             }
             
         case .recovery,

@@ -12,9 +12,14 @@
 
 import Foundation
 
-// OktaAPISuceess and OktaAPIError are models for REST API json responses
+// OktaAPISuccess and OktaAPIError are models for REST API json responses
 
 public struct OktaAPISuccessResponse: Codable {
+
+    public enum RecoveryType: String, Codable {
+        case password = "PASSWORD"
+        case unlock = "UNLOCK"
+    }
 
     // Provides additional context for the last factor verification attempt.
     public enum FactorResult: String, Codable {
@@ -34,6 +39,8 @@ public struct OktaAPISuccessResponse: Codable {
     public private(set) var sessionToken: String?
     public private(set) var expirationDate: Date?
     public private(set) var relayState: String?
+    public private(set) var recoveryToken: String?
+    public private(set) var recoveryType: RecoveryType?
     public private(set) var factorResult: FactorResult?
     public private(set) var factorType: FactorType?
     public private(set) var embedded: EmbeddedResponse?
@@ -52,6 +59,36 @@ public struct OktaAPISuccessResponse: Codable {
     }
 
     public var rawData: Data?
+}
+
+public enum ResendLink: Codable {
+    
+    case resendArray([LinksResponse.Link])
+    case resend(LinksResponse.Link)
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let resendArray = try? container.decode([LinksResponse.Link].self) {
+            self = .resendArray(resendArray)
+        } else if let resend = try? container.decode(LinksResponse.Link.self) {
+            self = .resend(resend)
+        } else {
+            throw DecodingError.typeMismatch(
+                ResendLink.self,
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for Resend link")
+            )
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .resendArray(let resendArray):
+            try container.encode(resendArray)
+        case .resend(let resend):
+            try container.encode(resend)
+        }
+    }
 }
 
 public struct OktaAPIErrorResponse: Codable {
@@ -82,7 +119,7 @@ public struct LinksResponse: Codable {
     let cancel: Link?
     let skip: Link?
     let send: [Link]?
-    let resend: [Link]?
+    let resend: ResendLink?
     let enroll: Link?
     let verify: Link?
     let questions: Link?

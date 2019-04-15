@@ -16,7 +16,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
     
     public internal(set) var stateToken: String
 
-    public lazy var factor: OktaFactor = {
+    open lazy var factor: OktaFactor = {
         var createdFactor = OktaFactor.createFactorWith(internalFactor,
                                                         stateToken: stateToken,
                                                         verifyLink: model.links?.next,
@@ -26,29 +26,29 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
         return createdFactor
     }()
 
-    public var factorResult: OktaAPISuccessResponse.FactorResult? {
+    open var factorResult: OktaAPISuccessResponse.FactorResult? {
         get {
             return model.factorResult
         }
     }
 
-    public func canVerify() -> Bool {
+    open func canVerify() -> Bool {
         return factor.canVerify()
     }
 
-    public func canResend() -> Bool {
-        guard model.links?.resend?.first != nil else {
+    open func canResend() -> Bool {
+        guard model.links?.resend != nil else {
             return false
         }
         
         return true
     }
 
-    public func verifyFactor(passCode: String?,
-                             answerToSecurityQuestion: String?,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void,
-                             onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+    open func verifyFactor(passCode: String?,
+                           answerToSecurityQuestion: String?,
+                           onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                           onError: @escaping (_ error: OktaError) -> Void,
+                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         self.factor.verify(passCode: passCode,
                            answerToSecurityQuestion: answerToSecurityQuestion,
                            onStatusChange: onStatusChange,
@@ -56,14 +56,23 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
                            onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
-    public func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void) {
+    open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                           onError: @escaping (_ error: OktaError) -> Void) {
         guard canResend() else {
             onError(.wrongStatus("Can't find 'resend' link in response"))
             return
         }
 
-        self.restApi.perform(link: model.links!.resend!.first!,
+        let link :LinksResponse.Link
+        let resendLink = self.model.links!.resend!
+        switch resendLink {
+        case .resend(let rawLink):
+            link = rawLink
+        case .resendArray(let rawArray):
+            link = rawArray.first!
+        }
+
+        self.restApi.perform(link: link,
                          stateToken: stateToken,
                          completion: { result in
                             self.handleServerResponse(result,
@@ -72,8 +81,8 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
         })
     }
 
-    override public func cancel(onSuccess: (() -> Void)? = nil,
-                                onError: ((OktaError) -> Void)? = nil) {
+    override open func cancel(onSuccess: (() -> Void)? = nil,
+                              onError: ((OktaError) -> Void)? = nil) {
         self.factor.cancel()
         self.factor.responseDelegate = nil
         super.cancel(onSuccess: onSuccess, onError: onError)

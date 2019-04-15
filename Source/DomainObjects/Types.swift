@@ -12,27 +12,74 @@
 
 import Foundation
 
-public enum FactorType: String, Codable {
-    case question = "question"
-    case sms = "sms"
-    case call = "call"
-    case TOTP = "token:software:totp"
-    case push = "push"
-    case token = "token"
-    case tokenHardware = "token:hardware"
-    case web = "web"
-    case u2f = "u2f"
-    case email = "email"
+public enum FactorType {
+    case question
+    case sms
+    case call
+    case TOTP
+    case push
+    case token
+    case tokenHardware
+    case web
+    case u2f
+    case email
+    case unknown(String)
 }
 
-public enum FactorProvider: String, Codable {
-    case okta = "OKTA"
-    case google = "GOOGLE"
-    case rsa = "RSA"
-    case symantec = "SYMANTEC"
-    case yubico = "YUBICO"
-    case duo = "DUO"
-    case fido = "FIDO"
+public extension FactorType {
+    public init(raw: String) {
+        switch raw {
+        case "question":
+            self = .question
+        case "sms", "SMS":
+            self = .sms
+        case "token:software:totp":
+            self = .TOTP
+        case "push":
+            self = .push
+        case "token":
+            self = .token
+        case "token:hardware":
+            self = .tokenHardware
+        case "web":
+            self = .web
+        case "u2f":
+            self = .u2f
+        case "email", "EMAIL":
+            self = .email
+        default:
+            self = .unknown(raw)
+        }
+    }
+}
+
+public extension FactorType {
+    var rawValue: String {
+        switch self {
+        case .question:
+            return "question"
+        case .sms:
+            return "sms"
+        case .call:
+            return "call"
+        case .TOTP:
+            return "token:software:totp"
+        case .push:
+            return "push"
+        case .token:
+            return "token"
+        case .tokenHardware:
+            return "Htoken:hardware"
+        case .web:
+            return "Web"
+        case .u2f:
+            return "u2f"
+        case .email:
+            return "email"
+        case .unknown(_):
+            return "unknown"
+        }
+    }
 }
 
 public extension FactorType {
@@ -58,8 +105,35 @@ public extension FactorType {
             return "U2F"
         case .email:
             return "Email"
+        case .unknown(_):
+            return "unknown"
         }
     }
+}
+
+extension FactorType : Equatable {}
+
+extension FactorType : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        self = FactorType(raw: stringValue)
+    }
+}
+
+public enum FactorProvider: String, Codable {
+    case okta = "OKTA"
+    case google = "GOOGLE"
+    case rsa = "RSA"
+    case symantec = "SYMANTEC"
+    case yubico = "YUBICO"
+    case duo = "DUO"
+    case fido = "FIDO"
 }
 
 public extension FactorProvider {

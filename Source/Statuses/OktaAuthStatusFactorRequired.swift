@@ -16,7 +16,7 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtoc
     
     public internal(set) var stateToken: String
 
-    public lazy var availableFactors: [OktaFactor] = {
+    open lazy var availableFactors: [OktaFactor] = {
         var oktaFactors = Array<OktaFactor>()
         for factor in self.factors {
             var createdFactor = OktaFactor.createFactorWith(factor,
@@ -31,15 +31,15 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus, OktaFactorResultProtoc
         return oktaFactors
     }()
 
-    public func selectFactor(_ factor: OktaFactor,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void) {
+    open func selectFactor(_ factor: OktaFactor,
+                           onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                           onError: @escaping (_ error: OktaError) -> Void) {
         selectedFactor = factor
         factor.select(onStatusChange: onStatusChange, onError: onError)
     }
 
-    override public func cancel(onSuccess: (() -> Void)? = nil,
-                                onError: ((OktaError) -> Void)? = nil) {
+    override open func cancel(onSuccess: (() -> Void)? = nil,
+                              onError: ((OktaError) -> Void)? = nil) {
         selectedFactor?.cancel()
         selectedFactor?.responseDelegate = nil
         super.cancel(onSuccess: onSuccess, onError: onError)

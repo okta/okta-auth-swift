@@ -12,17 +12,18 @@
 
 import Foundation
 
+public enum OktaRecoveryFactors {
+    case email
+    case sms
+    case call
+}
+
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
-    override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
-        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
-        statusType = .unauthenticated
-    }
-
-    public func authenticate(username: String,
-                             password: String,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void) {
+    open func authenticate(username: String,
+                           password: String,
+                           onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                           onError: @escaping (_ error: OktaError) -> Void) {
 
         restApi.primaryAuthentication(username: username,
                                       password: password,
@@ -34,17 +35,33 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
         }
     }
 
-    public func unlockAccount(username: String,
-                              factorType: FactorType,
-                              onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
-                              onError: @escaping (_ error: OktaError) -> Void) {
+    open func unlockAccount(username: String,
+                            factorType: OktaRecoveryFactors,
+                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                            onError: @escaping (_ error: OktaError) -> Void) {
         // implement
     }
     
-    public func recoverPassword(username: String,
-                                factorType: FactorType,
-                                onRecoveryChallenge: @escaping (_ recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge) -> Void,
-                                onError: @escaping (_ error: OktaError) -> Void) {
-        // implement
+    open func recoverPassword(username: String,
+                              factorType: OktaRecoveryFactors,
+                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                              onError: @escaping (_ error: OktaError) -> Void) {
+        var internalFactorType: FactorType = .email
+        if factorType == .sms {
+            internalFactorType = .sms
+        } else if factorType == .call {
+            internalFactorType = .call
+        }
+
+        restApi.recoverPassword(username: username, factor: internalFactorType) { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        }
+    }
+
+    override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
+        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
+        statusType = .unauthenticated
     }
 }

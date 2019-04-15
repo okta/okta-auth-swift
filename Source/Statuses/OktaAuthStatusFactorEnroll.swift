@@ -16,7 +16,7 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
     
     public internal(set) var stateToken: String
 
-    public lazy var availableFactors: [OktaFactor] = {
+    open lazy var availableFactors: [OktaFactor] = {
         var oktaFactors = Array<OktaFactor>()
         for factor in self.factors {
             var createdFactor = OktaFactor.createFactorWith(factor,
@@ -31,11 +31,11 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
         return oktaFactors
     }()
 
-    public func canEnrollFactor(factor: OktaFactor) -> Bool {
+    open func canEnrollFactor(factor: OktaFactor) -> Bool {
         return factor.canEnroll()
     }
 
-    public func canSkipEnrollment() -> Bool {
+    open func canSkipEnrollment() -> Bool {
         guard model.links?.skip?.href != nil else {
             return false
         }
@@ -43,8 +43,8 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
         return true
     }
 
-    public func skipEnrollment(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                               onError: @escaping (_ error: OktaError) -> Void) {
+    open func skipEnrollment(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                             onError: @escaping (_ error: OktaError) -> Void) {
         guard canSkipEnrollment() else {
             onError(.wrongStatus("Can't find 'skip' link in response"))
             return
@@ -57,14 +57,14 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
         }
     }
 
-    public func enrollFactor(factor: OktaFactor,
-                             questionId: String?,
-                             answer: String?,
-                             credentialId: String?,
-                             passCode: String?,
-                             phoneNumber: String?,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void) {
+    open func enrollFactor(factor: OktaFactor,
+                           questionId: String?,
+                           answer: String?,
+                           credentialId: String?,
+                           passCode: String?,
+                           phoneNumber: String?,
+                           onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                           onError: @escaping (_ error: OktaError) -> Void) {
         selectedFactor = factor
         factor.enroll(questionId: questionId,
                       answer: answer,
@@ -75,8 +75,8 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
                       onError: onError)
     }
 
-    override public func cancel(onSuccess: (() -> Void)? = nil,
-                                onError: ((OktaError) -> Void)? = nil) {
+    override open func cancel(onSuccess: (() -> Void)? = nil,
+                              onError: ((OktaError) -> Void)? = nil) {
         selectedFactor?.cancel()
         selectedFactor?.responseDelegate = nil
         super.cancel(onSuccess: onSuccess, onError: onError)
