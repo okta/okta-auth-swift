@@ -245,20 +245,20 @@
 		A12F4FD62238259600DB9147 /* Statuses */ = {
 			isa = PBXGroup;
 			children = (
-				A1920F9822615A97007D50D2 /* OktaAuthStatePasswordReset.swift */,
+				A1920F9C22615A97007D50D2 /* OktaAuthStatusResponseHandler.swift */,
 				A1920FA122615A97007D50D2 /* OktaAuthStatus.swift */,
-				A1920FA222615A97007D50D2 /* OktaAuthStatusFactorChallenge.swift */,
+				A1920F9A22615A97007D50D2 /* OktaAuthStatusUnauthenticated.swift */,
+				A1920FA322615A97007D50D2 /* OktaAuthStatusSuccess.swift */,
 				A1920F9922615A97007D50D2 /* OktaAuthStatusFactorEnroll.swift */,
 				A1920F9E22615A97007D50D2 /* OktaAuthStatusFactorEnrollActivate.swift */,
 				A1920F9F22615A97007D50D2 /* OktaAuthStatusFactorRequired.swift */,
-				A1920F9D22615A97007D50D2 /* OktaAuthStatusLockedOut.swift */,
+				A1920FA222615A97007D50D2 /* OktaAuthStatusFactorChallenge.swift */,
 				A1920F9B22615A97007D50D2 /* OktaAuthStatusPasswordExpired.swift */,
 				A1920FA022615A97007D50D2 /* OktaAuthStatusPasswordWarning.swift */,
 				A1920FA422615A97007D50D2 /* OktaAuthStatusRecovery.swift */,
 				A1920F9722615A97007D50D2 /* OktaAuthStatusRecoveryChallenge.swift */,
-				A1920F9C22615A97007D50D2 /* OktaAuthStatusResponseHandler.swift */,
-				A1920FA322615A97007D50D2 /* OktaAuthStatusSuccess.swift */,
-				A1920F9A22615A97007D50D2 /* OktaAuthStatusUnauthenticated.swift */,
+				A1920F9822615A97007D50D2 /* OktaAuthStatePasswordReset.swift */,
+				A1920F9D22615A97007D50D2 /* OktaAuthStatusLockedOut.swift */,
 			);
 			name = Statuses;
 			sourceTree = "<group>";

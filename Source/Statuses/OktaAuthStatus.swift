@@ -84,27 +84,30 @@ open class OktaAuthStatus {
         return true
     }
 
-    public func cancel(onSuccess: @escaping () -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void) {
+    public func cancel(onSuccess: (() -> Void)? = nil,
+                       onError: ((_ error: OktaError) -> Void)? = nil) {
+        
+        self.responseHandler.cancel()
+
         guard statusType != .unauthenticated else {
             return
         }
         guard canCancel() else {
-            onError(.wrongStatus("Can't find 'cancel' link in response"))
+            onError?(.wrongStatus("Can't find 'cancel' link in response"))
             return
         }
         guard let stateToken = model.stateToken else {
-            onError(.invalidResponse)
+            onError?(.invalidResponse)
             return
         }
 
         let completion: ((OktaAPIRequest.Result) -> Void) = { result in
             switch result {
             case .error(let error):
-                onError(error)
+                onError?(error)
             case .success(_):
                 self.cancelled = true
-                onSuccess()
+                onSuccess?()
             }
         }
 
@@ -113,6 +116,33 @@ open class OktaAuthStatus {
 
     // MARK: Internal
     internal var cancelled = false
+
+    func poll(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+              onError: @escaping (_ error: OktaError) -> Void,
+              onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard let pollLink = model.links?.next else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
+            return
+        }
+
+        guard let stateToken = model.stateToken else {
+            onError(.wrongStatus("Empty state token in response"))
+            return
+        }
+
+        restApi.verifyFactor(with: pollLink,
+                             stateToken: stateToken,
+                             answer: nil,
+                             passCode: nil,
+                             rememberDevice: nil,
+                             autoPush: nil,
+                             completion:  { result in
+                                self.handleServerResponse(result,
+                                                          onStatusChanged: onStatusChange,
+                                                          onError: onError,
+                                                          onFactorStatusUpdate: onFactorStatusUpdate)
+        })
+    }
 
     func fetchStatus(with stateToken: String,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -127,7 +157,8 @@ open class OktaAuthStatus {
 
     func handleServerResponse(_ response: OktaAPIRequest.Result,
                               onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                              onError: @escaping (_ error: OktaError) -> Void) {
+                              onError: @escaping (_ error: OktaError) -> Void,
+                              onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
         if cancelled {
             return
         }
@@ -135,6 +166,7 @@ open class OktaAuthStatus {
         responseHandler.handleServerResponse(response,
                                              currentStatus: self,
                                              onStatusChanged: onStatusChanged,
-                                             onError: onError)
+                                             onError: onError,
+                                             onFactorStatusUpdate: onFactorStatusUpdate)
     }
 }

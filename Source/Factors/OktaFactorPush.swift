@@ -164,10 +164,12 @@ open class OktaFactorPush : OktaFactor {
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void,
                          onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        self.verifyOrActivateWithDelay(link: link,
-                                       onStatusChange: onStatusChange,
-                                       onError: onError,
-                                       onFactorStatusUpdate: onFactorStatusUpdate)
+        self.verifyFactor(with: verifyLink!,
+                          answer: nil,
+                          passCode: nil,
+                          onStatusChange: onStatusChange,
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     override public func verify(passCode: String?,
@@ -190,10 +192,12 @@ open class OktaFactorPush : OktaFactor {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
         }
-        self.verifyOrActivateWithDelay(link: verifyLink!,
-                                       onStatusChange: onStatusChange,
-                                       onError: onError,
-                                       onFactorStatusUpdate: onFactorStatusUpdate)
+        self.verifyFactor(with: verifyLink!,
+                          answer: nil,
+                          passCode: nil,
+                          onStatusChange: onStatusChange,
+                          onError: onError,
+                          onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     // MARK: - Internal
@@ -203,36 +207,4 @@ open class OktaFactorPush : OktaFactor {
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)
     }
-
-    override func cancel() {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.cancel()
-            }
-            return
-        }
-
-        super.cancel()
-        self.factorResultPollTimer?.invalidate()
-    }
-
-    func verifyOrActivateWithDelay(_ delayInSeconds: TimeInterval = 3,
-                                   link: LinksResponse.Link,
-                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void,
-                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-
-        let timer = Timer(timeInterval: delayInSeconds, repeats: false) { [weak self] _ in
-            self?.verifyFactor(with: link,
-                               answer: nil,
-                               passCode: nil,
-                               onStatusChange: onStatusChange,
-                               onError: onError,
-                               onFactorStatusUpdate: onFactorStatusUpdate)
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        factorResultPollTimer = timer
-    }
-
-    var factorResultPollTimer: Timer? = nil
 }
