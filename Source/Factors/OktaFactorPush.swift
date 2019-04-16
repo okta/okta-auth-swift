@@ -164,7 +164,7 @@ open class OktaFactorPush : OktaFactor {
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void,
                          onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        self.verifyFactor(with: verifyLink!,
+        self.verifyFactor(with: link,
                           answer: nil,
                           passCode: nil,
                           onStatusChange: onStatusChange,

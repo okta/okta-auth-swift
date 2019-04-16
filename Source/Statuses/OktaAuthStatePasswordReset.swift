@@ -14,7 +14,50 @@ import Foundation
 
 open class OktaAuthStatusPasswordReset : OktaAuthStatus {
 
+    public internal(set) var stateToken: String
+
+    open var passwordExpiration: EmbeddedResponse.Policy.Password.PasswordExpiration?
+
+    open var passwordComplexity: EmbeddedResponse.Policy.Password.PasswordComplexity?
+
+    open func canReset() -> Bool {
+        
+        guard model.links?.next?.href != nil else {
+            return false
+        }
+        
+        return true
+    }
+
+    open func resetPassword(newPassword: String,
+                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                            onError: @escaping (_ error: OktaError) -> Void) {
+        guard canReset() else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
+            return
+        }
+
+        restApi.resetPassword(newPassword: newPassword, link: model.links!.next!) { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        }
+    }
+
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        if let policy = model.embedded?.policy {
+            switch policy {
+            case .password(let password):
+                passwordExpiration = password.expiration
+                passwordComplexity = password.complexity
+            default:
+                break
+            }
+        }
         try super.init(currentState: currentState, model: model)
         statusType = .passwordReset
     }
