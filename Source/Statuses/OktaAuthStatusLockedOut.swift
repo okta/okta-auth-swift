@@ -14,6 +14,34 @@ import Foundation
 
 open class OktaAuthStatusLockedOut : OktaAuthStatus {
 
+    open func canUnlock() -> Bool {
+        guard model.links?.next?.href != nil else {
+            return false
+        }
+        
+        return true
+    }
+
+    open func unlock(username: String,
+                     factorType: OktaRecoveryFactors,
+                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void) {
+        guard canUnlock() else {
+            onError(.wrongStatus("Can't find 'next' link in response"))
+            return
+        }
+
+        do {
+            let unauthenticated = try OktaAuthStatusUnauthenticated(currentState: self, model: self.model)
+            unauthenticated.unlockAccount(username: username,
+                                          factorType: factorType,
+                                          onStatusChange: onStatusChange,
+                                          onError: onError)
+        } catch let error {
+            onError(error as! OktaError)
+        }
+    }
+
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         try super.init(currentState: currentState, model: model)
         statusType = .lockedOut

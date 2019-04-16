@@ -39,7 +39,18 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                             factorType: OktaRecoveryFactors,
                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                             onError: @escaping (_ error: OktaError) -> Void) {
-        // implement
+        var internalFactorType: FactorType = .email
+        if factorType == .sms {
+            internalFactorType = .sms
+        } else if factorType == .call {
+            internalFactorType = .call
+        }
+        
+        restApi.unlockAccount(username: username, factor: internalFactorType) { result in
+            self.handleServerResponse(result,
+                                      onStatusChanged: onStatusChange,
+                                      onError: onError)
+        }
     }
     
     open func recoverPassword(username: String,
@@ -62,6 +73,11 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
     override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
         super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
+        statusType = .unauthenticated
+    }
+
+    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
         statusType = .unauthenticated
     }
 }

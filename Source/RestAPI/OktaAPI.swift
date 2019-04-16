@@ -129,6 +129,16 @@ open class OktaAPI {
         return req
     }
 
+    @discardableResult open func resetPassword(newPassword: String,
+                                               link: LinksResponse.Link,
+                                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        let req = buildBaseRequest(completion: completion)
+        req.baseURL = link.href
+        req.bodyParams = ["newPassword": newPassword]
+        req.run()
+        return req
+    }
+
     @discardableResult open func cancelTransaction(stateToken: String,
                                                    completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)

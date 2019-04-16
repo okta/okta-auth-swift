@@ -29,15 +29,15 @@ public class OktaAuthSdk {
 
     public class func unlockAccount(with url: URL,
                                     username: String,
-                                    factorType: FactorType,
+                                    factorType: OktaRecoveryFactors,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void) {
         
-        /*let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.unlockAccount(username: username,
                                             factorType: factorType,
                                             onStatusChange:onStatusChange,
-                                            onError: onError)*/
+                                            onError: onError)
     }
 
     public class func recoverPassword(with url: URL,

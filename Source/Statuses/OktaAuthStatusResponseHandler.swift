@@ -16,19 +16,12 @@ open class OktaAuthStatusResponseHandler {
     
     public var pollInterval: TimeInterval
     
-    public init(pollInterval: TimeInterval = 3) {
+    public init(pollInterval: TimeInterval = 5) {
         self.pollInterval = pollInterval
     }
 
     open func cancel() {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.cancel()
-            }
-            return
-        }
-
-        self.factorResultPollTimer?.invalidate()
+        self.stopPollTimer(timer: self.factorResultPollTimer)
     }
     
     open func handleServerResponse(_ response: OktaAPIRequest.Result,
@@ -55,8 +48,7 @@ open class OktaAuthStatusResponseHandler {
                 let timer = Timer(timeInterval: pollInterval, repeats: false) { _ in
                     currentStatus.poll(onStatusChange: onStatusChanged, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
                 }
-                RunLoop.main.add(timer, forMode: .common)
-                factorResultPollTimer = timer
+                self.startPollTimer(timer: timer)
                 return
             }
         }
@@ -136,4 +128,28 @@ open class OktaAuthStatusResponseHandler {
     }
 
     var factorResultPollTimer: Timer? = nil
+
+    func startPollTimer(timer: Timer) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.stopPollTimer(timer: timer)
+            }
+            return
+        }
+        
+        RunLoop.current.add(timer, forMode: .common)
+        self.stopPollTimer(timer: self.factorResultPollTimer)
+        self.factorResultPollTimer = timer
+    }
+
+    func stopPollTimer(timer: Timer?) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async {
+                self.stopPollTimer(timer: timer)
+            }
+            return
+        }
+        
+        self.factorResultPollTimer?.invalidate()
+    }
 }

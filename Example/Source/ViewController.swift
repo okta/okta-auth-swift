@@ -240,6 +240,13 @@ class ViewController: UIViewController {
                         })
                     }))
                     self.present(alert, animated: true, completion: nil)
+                } else if factor.type == .push {
+                    let pushFactor = factor as! OktaFactorPush
+                    pushFactor.enroll(questionId: nil, answer: nil, credentialId: nil, passCode: nil, phoneNumber: nil, onStatusChange: { status in
+                        self.handleStatus(status: status)
+                    }, onError: { error in
+                        self.handleError(error)
+                    })
                 } else {
                     let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.description) factor", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -257,7 +264,8 @@ class ViewController: UIViewController {
 
     func handleActivateEnrollment(status: OktaAuthStatusFactorEnrollActivate) {
         let factor = status.factor
-        guard factor.type == .sms else {
+        guard factor.type == .sms ||
+              factor.type == .push else {
             let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.description) factor", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -265,27 +273,40 @@ class ViewController: UIViewController {
             return
         }
         
-        let smsFactor = factor as! OktaFactorSms
-        
-        let alert = UIAlertController(title: "MFA Activate", message: "Please enter code from SMS on \(smsFactor.phoneNumber ?? "?")", preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = "Code" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            guard let code = alert.textFields?[0].text else { return }
-            status.activateFactor(passCode: code,
-                                  onStatusChange: { status in
-                                    self.handleStatus(status: status)
-            },
-                                  onError: { error in
-                                    self.handleError(error)
-            },
-                                  onFactorStatusUpdate: { factorResult in
-                                    self.updateStatus(status: self.currentStatus, factorResult: factorResult)
-            })
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            self.cancelTransaction()
-        }))
-        present(alert, animated: true, completion: nil)
+        if factor.type == .sms {
+            let smsFactor = factor as! OktaFactorSms
+            
+            let alert = UIAlertController(title: "MFA Activate", message: "Please enter code from SMS on \(smsFactor.phoneNumber ?? "?")", preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = "Code" }
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+                guard let code = alert.textFields?[0].text else { return }
+                status.activateFactor(passCode: code,
+                                      onStatusChange: { status in
+                                        self.handleStatus(status: status)
+                },
+                                      onError: { error in
+                                        self.handleError(error)
+                },
+                                      onFactorStatusUpdate: { factorResult in
+                                        self.updateStatus(status: self.currentStatus, factorResult: factorResult)
+                })
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                self.cancelTransaction()
+            }))
+            present(alert, animated: true, completion: nil)
+        }
+        else {
+            if status.factorResult == nil || status.factorResult == .waiting {
+                status.activateFactor(passCode: nil, onStatusChange: { status in
+                    self.handleStatus(status: status)
+                }, onError: { error in
+                    self.handleError(error)
+                }) { factorResult in
+                    self.updateStatus(status: status, factorResult: factorResult)
+                }
+            }
+        }
     }
 
     func handleTotpChallenge(factor: OktaFactorTotp) {
