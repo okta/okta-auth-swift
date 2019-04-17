@@ -156,3 +156,22 @@ public extension FactorProvider {
         }
     }
 }
+
+public enum OktaRecoveryFactors {
+    case email
+    case sms
+    case call
+}
+
+public extension OktaRecoveryFactors {
+    func toFactorType() -> FactorType {
+        switch self {
+        case .email:
+            return .email
+        case .sms:
+            return .sms
+        case .call:
+            return .call
+        }
+    }
+}

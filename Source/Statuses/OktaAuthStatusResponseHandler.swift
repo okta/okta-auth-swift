@@ -40,21 +40,17 @@ open class OktaAuthStatusResponseHandler {
             authResponse = success
         }
 
-        if authResponse.factorResult != nil &&
-           authResponse.status == currentStatus.statusType {
-            onFactorStatusUpdate?(authResponse.factorResult!)
-            
-            if case .waiting = authResponse.factorResult! {
-                let timer = Timer(timeInterval: pollInterval, repeats: false) { _ in
-                    currentStatus.poll(onStatusChange: onStatusChanged, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
-                }
-                self.startPollTimer(timer: timer)
-                return
-            }
-        }
-
         if let factorResult = authResponse.factorResult {
             onFactorStatusUpdate?(factorResult)
+            if authResponse.status == currentStatus.statusType {
+                if case .waiting = factorResult {
+                    let timer = Timer(timeInterval: pollInterval, repeats: false) { _ in
+                        currentStatus.poll(onStatusChange: onStatusChanged, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                    }
+                    self.startPollTimer(timer: timer)
+                    return
+                }
+            }
         }
 
         do {
@@ -71,16 +67,6 @@ open class OktaAuthStatusResponseHandler {
                                and currentStatus: OktaAuthStatus) throws -> OktaAuthStatus {
         guard let statusType = response.status else {
             throw OktaError.invalidResponse
-        }
-        
-        if case .success = statusType {
-            guard response.sessionToken != nil else {
-                throw OktaError.invalidResponse
-            }
-        } else {
-            guard response.stateToken != nil else {
-                throw OktaError.invalidResponse
-            }
         }
 
         // create concrete status instance
@@ -123,7 +109,7 @@ open class OktaAuthStatusResponseHandler {
             throw OktaError.wrongStatus("Wrong state")
             
         default:
-            throw OktaError.unknownState(response)
+            throw OktaError.unknownStatus(response)
         }
     }
 

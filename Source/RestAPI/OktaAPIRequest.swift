@@ -123,13 +123,12 @@ public class OktaAPIRequest {
             callCompletion(.error(.emptyServerResponse))
             return
         }
+#if DEBUG
         let json = String(data: data, encoding: .utf8)
         print("\(json ?? "corrupted data")")
+#endif
         guard 200 ..< 300 ~= response.statusCode else {
             do {
-                //decoder.dataDecodingStrategy = .custom({ decoder -> Data in
-                    //return decoder.data
-                //})
                 let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
                 callCompletion(.error(.serverRespondedWithError(errorResponse)))
             } catch let e {
@@ -159,7 +158,6 @@ public class OktaAPIRequest {
             switch result {
             case .error(let error):
                 customSuccessHandler(self, nil, decoder, error)
-                return
             case .success(_):
                 customSuccessHandler(self, nil, decoder, .internalError("Internal error in OktaAPIRequest class"))
             }

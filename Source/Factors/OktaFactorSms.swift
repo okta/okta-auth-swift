@@ -42,6 +42,11 @@ open class OktaFactorSms : OktaFactor {
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void,
                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard canEnroll() else {
+            onError(OktaError.wrongStatus("Can't find 'enroll' link in response"))
+            return
+        }
+
         restApi?.enrollFactor(factor,
                               with: factor.links!.enroll!,
                               stateToken: stateToken,
