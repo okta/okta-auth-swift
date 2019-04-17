@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = 'OktaAuthNative'
+  s.name             = 'OktaAuthSdk'
   s.version          = '0.1.0'
   s.summary          = 'SDK for Okta native authentication.'
   s.description      = <<-DESC

@@ -40,7 +40,8 @@ public class OktaAPIRequest {
     public var urlParams: [String: String]?
     public var bodyParams: [String: Any]?
     public var additionalHeaders: [String: String]?
-    
+    public var customSuccessHandler: ((OktaAPIRequest, Data?, JSONDecoder, OktaError?) -> Void)?
+
     public private(set) weak var task: URLSessionDataTask?
     public private(set) var isCancelled: Bool = false
 
@@ -52,7 +53,6 @@ public class OktaAPIRequest {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
             return nil
         }
-        components.scheme = "https"
         if let path = path {
             components.path = path
         }
@@ -123,20 +123,29 @@ public class OktaAPIRequest {
             callCompletion(.error(.emptyServerResponse))
             return
         }
+#if DEBUG
+        let json = String(data: data, encoding: .utf8)
+        print("\(json ?? "corrupted data")")
+#endif
         guard 200 ..< 300 ~= response.statusCode else {
             do {
                 let errorResponse = try decoder.decode(OktaAPIErrorResponse.self, from: data)
                 callCompletion(.error(.serverRespondedWithError(errorResponse)))
             } catch let e {
-                callCompletion(.error(.responseSerializationError(e)))
+                callCompletion(.error(.responseSerializationError(e, data)))
             }
             return
         }
         do {
-            let successResponse = try decoder.decode(OktaAPISuccessResponse.self, from: data)
-            callCompletion(.success(successResponse))
+            if let customSuccessHandler = customSuccessHandler {
+                customSuccessHandler(self, data, decoder, nil)
+            } else {
+                var successResponse = try decoder.decode(OktaAPISuccessResponse.self, from: data)
+                successResponse.rawData = data
+                callCompletion(.success(successResponse))
+            }
         } catch let e {
-            callCompletion(.error(.responseSerializationError(e)))
+            callCompletion(.error(.responseSerializationError(e, data)))
         }
     }
 
@@ -145,6 +154,15 @@ public class OktaAPIRequest {
     }
 
     internal func callCompletion(_ result: Result) {
-        self.completion(self, result)
+        if let customSuccessHandler = customSuccessHandler {
+            switch result {
+            case .error(let error):
+                customSuccessHandler(self, nil, decoder, error)
+            case .success(_):
+                customSuccessHandler(self, nil, decoder, .internalError("Internal error in OktaAPIRequest class"))
+            }
+        } else {
+            self.completion(self, result)
+        }
     }
 }
