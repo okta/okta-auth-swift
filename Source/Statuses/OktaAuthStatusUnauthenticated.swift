@@ -12,12 +12,6 @@
 
 import Foundation
 
-public enum OktaRecoveryFactors {
-    case email
-    case sms
-    case call
-}
-
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
     open func authenticate(username: String,
@@ -39,14 +33,7 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                             factorType: OktaRecoveryFactors,
                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                             onError: @escaping (_ error: OktaError) -> Void) {
-        var internalFactorType: FactorType = .email
-        if factorType == .sms {
-            internalFactorType = .sms
-        } else if factorType == .call {
-            internalFactorType = .call
-        }
-        
-        restApi.unlockAccount(username: username, factor: internalFactorType) { result in
+        restApi.unlockAccount(username: username, factor: factorType.toFactorType()) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
@@ -57,14 +44,7 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                               factorType: OktaRecoveryFactors,
                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                               onError: @escaping (_ error: OktaError) -> Void) {
-        var internalFactorType: FactorType = .email
-        if factorType == .sms {
-            internalFactorType = .sms
-        } else if factorType == .call {
-            internalFactorType = .call
-        }
-
-        restApi.recoverPassword(username: username, factor: internalFactorType) { result in
+        restApi.recoverPassword(username: username, factor: factorType.toFactorType()) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)

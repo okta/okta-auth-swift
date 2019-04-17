@@ -50,13 +50,6 @@ class ViewController: UIViewController {
     @IBAction private func cancelTapped() {
         self.cancelTransaction()
     }
-    
-    @IBAction private func resetTapped() {
-        self.loginButton.isEnabled = true
-        self.cancelButton.isEnabled = true
-        self.currentStatus = nil
-        self.updateStatus(status: self.currentStatus)
-    }
 
     func handleStatus(status: OktaAuthStatus) {
         self.updateStatus(status: status)
@@ -312,16 +305,16 @@ class ViewController: UIViewController {
     func handleTotpChallenge(factor: OktaFactorTotp) {
         let alert = UIAlertController(title: "MFA", message: "Please enter TOTP code", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let code = alert.textFields?[0].text else { return }
-            factor.verify(passCode: code,
-                          onStatusChange: { status in
+            factor?.verify(passCode: code,
+                           onStatusChange: { status in
                             self.handleStatus(status: status)
             },
-                          onError: { error in
+                           onError: { error in
                             self.handleError(error)
             },
-                          onFactorStatusUpdate: { factorResult in
+                           onFactorStatusUpdate: { factorResult in
                             self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))
@@ -334,16 +327,16 @@ class ViewController: UIViewController {
     func handleSmsChallenge(factor: OktaFactorSms) {
         let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS on \(factor.phoneNumber ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let code = alert.textFields?[0].text else { return }
-            factor.verify(passCode: code,
-                          onStatusChange: { status in
+            factor?.verify(passCode: code,
+                           onStatusChange: { status in
                             self.handleStatus(status: status)
             },
-                          onError: { error in
+                           onError: { error in
                             self.handleError(error)
             },
-                          onFactorStatusUpdate: { factorResult in
+                           onFactorStatusUpdate: { factorResult in
                 self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))
@@ -356,16 +349,16 @@ class ViewController: UIViewController {
     func handleQuestionChallenge(factor: OktaFactorQuestion) {
         let alert = UIAlertController(title: "MFA", message: "Please answer security question: \(factor.factorQuestionText ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Answer" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let answer = alert.textFields?[0].text else { return }
-            factor.verify(answerToSecurityQuestion: answer,
-                          onStatusChange: { status in
+            factor?.verify(answerToSecurityQuestion: answer,
+                           onStatusChange: { status in
                             self.handleStatus(status: status)
             },
-                          onError: { error in
+                           onError: { error in
                             self.handleError(error)
             },
-                          onFactorStatusUpdate: { factorResult in
+                           onFactorStatusUpdate: { factorResult in
                             self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))

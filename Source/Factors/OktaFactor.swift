@@ -160,6 +160,11 @@ open class OktaFactor {
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void,
                          onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard canActivate() else {
+            onError(OktaError.wrongStatus("Can't find 'activate' link in response"))
+            return
+        }
+
         self.verifyFactor(with: link,
                           answer: nil,
                           passCode: passCode,
@@ -230,6 +235,7 @@ open class OktaFactor {
 
     func cancel() {
         cancelled = true
+        responseDelegate = nil
     }
 
     func verifyFactor(with link: LinksResponse.Link,

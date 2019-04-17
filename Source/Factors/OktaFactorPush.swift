@@ -43,10 +43,8 @@ open class OktaFactorPush : OktaFactor {
             return false
         }
         
-        for link in sendLinkArray {
-            if link.name == "sms" {
-                return true
-            }
+        guard let _ = sendLinkArray.first(where: { $0.name == "sms" }) else {
+            return false
         }
         
         return false
@@ -115,7 +113,6 @@ open class OktaFactorPush : OktaFactor {
 
                                         case .error(let error):
                                             onError(error)
-                                            return
                                         case .success(_):
                                             onSuccess()
                                         }
@@ -142,7 +139,6 @@ open class OktaFactorPush : OktaFactor {
                                         switch result {
                                         case .error(let error):
                                             onError(error)
-                                            return
                                         case .success(_):
                                             onSuccess()
                                         }
@@ -154,10 +150,15 @@ open class OktaFactorPush : OktaFactor {
                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                   onError: @escaping (_ error: OktaError) -> Void,
                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-            self.activate(with: link,
-                          onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: onFactorStatusUpdate)
+        guard canActivate() else {
+            onError(OktaError.wrongStatus("Can't find 'activate' link in response"))
+            return
+        }
+        
+        self.activate(with: link,
+                      onStatusChange: onStatusChange,
+                      onError: onError,
+                      onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func activate(with link: LinksResponse.Link,
