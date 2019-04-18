@@ -78,7 +78,6 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus, OktaFactorResultProtocol
     override open func cancel(onSuccess: (() -> Void)? = nil,
                               onError: ((OktaError) -> Void)? = nil) {
         selectedFactor?.cancel()
-        selectedFactor?.responseDelegate = nil
         super.cancel(onSuccess: onSuccess, onError: onError)
     }
 

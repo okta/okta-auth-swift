@@ -27,7 +27,6 @@ class ViewController: UIViewController {
     @IBOutlet private var passwordField: UITextField!
     @IBOutlet private var loginButton: UIButton!
     @IBOutlet private var cancelButton: UIButton!
-    @IBOutlet private var resetButton: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
 
     @IBAction private func loginTapped() {
