@@ -54,14 +54,12 @@ open class OktaFactorPush : OktaFactor {
         guard let sendLinkArray = factor.links?.send else {
             return nil
         }
-        
-        for link in sendLinkArray {
-            if link.name == "sms" {
-                return link
-            }
+
+        guard let link = sendLinkArray.first(where: { $0.name == "sms" }) else {
+            return nil
         }
         
-        return nil
+        return link
     }
     
     public func canSendPushCodeViaEmail() -> Bool {
@@ -69,10 +67,8 @@ open class OktaFactorPush : OktaFactor {
             return false
         }
         
-        for link in sendLinkArray {
-            if link.name == "email" {
-                return true
-            }
+        guard let _ = sendLinkArray.first(where: { $0.name == "email" }) else {
+            return false
         }
         
         return false
@@ -82,14 +78,12 @@ open class OktaFactorPush : OktaFactor {
         guard let sendLinkArray = factor.links?.send else {
             return nil
         }
-        
-        for link in sendLinkArray {
-            if link.name == "email" {
-                return link
-            }
+
+        guard let link = sendLinkArray.first(where: { $0.name == "email" }) else {
+            return nil
         }
         
-        return nil
+        return link
     }
 
     public func sendActivationLinkViaSms(with phoneNumber:String,
