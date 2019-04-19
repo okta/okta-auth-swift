@@ -14,6 +14,11 @@ import Foundation
 
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
+    public override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
+        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
+        statusType = .unauthenticated
+    }
+
     open func authenticate(username: String,
                            password: String,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -49,11 +54,6 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-
-    override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
-        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
-        statusType = .unauthenticated
     }
 
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
