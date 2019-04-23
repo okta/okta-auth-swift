@@ -39,7 +39,7 @@ open class OktaFactorPush : OktaFactor {
     }
 
     public func canSendPushCodeViaSms() -> Bool {
-        guard let sendLinkArray = factor.links?.send else {
+        guard let sendLinkArray = activationLinks?.send else {
             return false
         }
         
@@ -47,11 +47,11 @@ open class OktaFactorPush : OktaFactor {
             return false
         }
         
-        return false
+        return true
     }
 
     public func codeViaSmsLink() -> LinksResponse.Link? {
-        guard let sendLinkArray = factor.links?.send else {
+        guard let sendLinkArray = activationLinks?.send else {
             return nil
         }
 
@@ -63,7 +63,7 @@ open class OktaFactorPush : OktaFactor {
     }
     
     public func canSendPushCodeViaEmail() -> Bool {
-        guard let sendLinkArray = factor.links?.send else {
+        guard let sendLinkArray = activationLinks?.send else {
             return false
         }
         
@@ -71,11 +71,11 @@ open class OktaFactorPush : OktaFactor {
             return false
         }
         
-        return false
+        return true
     }
 
     public func codeViaEmailLink() -> LinksResponse.Link? {
-        guard let sendLinkArray = factor.links?.send else {
+        guard let sendLinkArray = activationLinks?.send else {
             return nil
         }
 
@@ -91,11 +91,6 @@ open class OktaFactorPush : OktaFactor {
                                          onError: @escaping (_ error: OktaError) -> Void) {
         guard canSendPushCodeViaSms() else {
             onError(OktaError.wrongStatus("Can't find 'send' link in response"))
-            return
-        }
-
-        guard responseDelegate != nil else {
-            onError(OktaError.invalidParameters("Empty responseDelegate"))
             return
         }
 
@@ -120,11 +115,6 @@ open class OktaFactorPush : OktaFactor {
             return
         }
 
-        guard responseDelegate != nil else {
-            onError(OktaError.invalidParameters("Empty responseDelegate"))
-            return
-        }
-
         restApi?.sendActivationLink(link: codeViaEmailLink()!,
                                     stateToken: stateToken,
                                     phoneNumber: nil,
@@ -140,7 +130,7 @@ open class OktaFactorPush : OktaFactor {
     }
 
     override public func activate(with link: LinksResponse.Link,
-                                  passCode: String?,
+                                  passCode: String? = nil,
                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                   onError: @escaping (_ error: OktaError) -> Void,
                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {

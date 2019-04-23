@@ -18,6 +18,11 @@ open class OktaFactorTotp : OktaFactor {
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void,
                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+        guard canSelect() else {
+            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
+            return
+        }
+        
         self.verifyFactor(with: links!.verify!,
                           answer: nil,
                           passCode: passCode,

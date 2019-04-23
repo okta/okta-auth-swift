@@ -117,7 +117,7 @@ class OktaAPITests : XCTestCase {
     }
     
     func testPerformLink() {
-        let link = LinksResponse.Link(href: url, hints: [:])
+        let link = LinksResponse.Link(name: nil, href: url, hints: [:])
         let token = "token"
         
         let exp = XCTestExpectation()
