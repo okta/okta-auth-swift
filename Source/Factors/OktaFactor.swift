@@ -155,8 +155,7 @@ open class OktaFactor {
                           onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
-    public func activate(with link: LinksResponse.Link,
-                         passCode: String?,
+    public func activate(passCode: String?,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void,
                          onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
@@ -165,7 +164,7 @@ open class OktaFactor {
             return
         }
 
-        self.verifyFactor(with: link,
+        self.verifyFactor(with: activationLink!,
                           answer: nil,
                           passCode: passCode,
                           onStatusChange: onStatusChange,
