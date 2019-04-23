@@ -129,60 +129,31 @@ open class OktaFactorPush : OktaFactor {
         })
     }
 
-    override public func activate(with link: LinksResponse.Link,
-                                  passCode: String? = nil,
-                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                  onError: @escaping (_ error: OktaError) -> Void,
-                                  onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canActivate() else {
-            onError(OktaError.wrongStatus("Can't find 'activate' link in response"))
-            return
-        }
-        
-        self.activate(with: link,
-                      onStatusChange: onStatusChange,
-                      onError: onError,
-                      onFactorStatusUpdate: onFactorStatusUpdate)
+    public func enroll(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void) {
+        super.enroll(questionId: nil,
+                     answer: nil,
+                     credentialId: nil,
+                     passCode: nil,
+                     phoneNumber: nil,
+                     onStatusChange: onStatusChange,
+                     onError: onError)
     }
 
-    public func activate(with link: LinksResponse.Link,
-                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func activate(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void,
                          onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        self.verifyFactor(with: link,
-                          answer: nil,
-                          passCode: nil,
-                          onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: onFactorStatusUpdate)
-    }
-
-    override public func verify(passCode: String?,
-                                answerToSecurityQuestion: String?,
-                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                onError: @escaping (_ error: OktaError) -> Void,
-                                onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canVerify() else {
-            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
-            return
-        }
-        
-        self.verify(onStatusChange: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+        super.activate(passCode: nil, onStatusChange: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void,
                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canVerify() else {
-            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
-            return
-        }
-        self.verifyFactor(with: verifyLink!,
-                          answer: nil,
-                          passCode: nil,
-                          onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: onFactorStatusUpdate)
+        super.verify(passCode: nil,
+                     answerToSecurityQuestion: nil,
+                     onStatusChange: onStatusChange,
+                     onError: onError,
+                     onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     // MARK: - Internal
