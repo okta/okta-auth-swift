@@ -19,80 +19,28 @@ open class OktaFactorCall : OktaFactor {
             return factor.profile?.phoneNumber
         }
     }
-
-    override public func enroll(questionId: String?,
-                                answer: String?,
-                                credentialId: String?,
-                                passCode: String?,
-                                phoneNumber: String?,
-                                onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                                onError: @escaping (OktaError) -> Void) {
-        guard canEnroll() else {
-            onError(OktaError.wrongStatus("Can't find 'enroll' link in response"))
-            return
-        }
-        
-        self.enroll(phoneNumber: phoneNumber,
-                    onStatusChange: onStatusChange,
-                    onError: onError,
-                    onFactorStatusUpdate: nil)
-    }
     
-    public func enroll(phoneNumber: String?,
+    public func enroll(phoneNumber: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                       onError: @escaping (OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canEnroll() else {
-            onError(OktaError.wrongStatus("Can't find 'enroll' link in response"))
-            return
-        }
-
-        restApi?.enrollFactor(factor,
-                              with: factor.links!.enroll!,
-                              stateToken: stateToken,
-                              phoneNumber: phoneNumber,
-                              questionId: nil,
-                              answer: nil,
-                              credentialId: nil,
-                              passCode: nil,
-                              completion: { result in
-                                self.handleServerResponse(response: result,
-                                                          onStatusChange: onStatusChange,
-                                                          onError: onError,
-                                                          onFactorStatusUpdate: onFactorStatusUpdate)
-        })
-    }
-
-    override public func verify(passCode: String?,
-                                answerToSecurityQuestion: String?,
-                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                onError: @escaping (_ error: OktaError) -> Void,
-                                onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canVerify() else {
-            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
-            return
-        }
-        
-        self.verify(passCode: passCode,
+                       onError: @escaping (OktaError) -> Void) {
+        self.enroll(questionId: nil,
+                    answer: nil,
+                    credentialId: nil,
+                    passCode: nil,
+                    phoneNumber: phoneNumber,
                     onStatusChange: onStatusChange,
-                    onError: onError,
-                    onFactorStatusUpdate: onFactorStatusUpdate)
+                    onError: onError)
     }
-    
-    public func verify(passCode: String?,
+
+    public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void,
                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard canVerify() else {
-            onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
-            return
-        }
-        self.verifyFactor(with: verifyLink!,
-                          answer: nil,
-                          passCode: passCode,
-                          onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: onFactorStatusUpdate)
+        super.verify(passCode: passCode,
+                     answerToSecurityQuestion: nil,
+                     onStatusChange: onStatusChange,
+                     onError: onError,
+                     onFactorStatusUpdate: onFactorStatusUpdate)
     }
 
     // MARK: - Internal
