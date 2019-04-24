@@ -15,7 +15,7 @@
 		2F7C3BBC226DEA3200A62FD4 /* OktaFactorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7C3BBB226DEA3200A62FD4 /* OktaFactorTests.swift */; };
 		2F7C3BBD226DED1B00A62FD4 /* SUCCESS in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B8B2268D50500A62FD4 /* SUCCESS */; };
 		2F7C3BBE226DED1E00A62FD4 /* MFA_CHALLENGE_WAITING_PUSH in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B912268D73000A62FD4 /* MFA_CHALLENGE_WAITING_PUSH */; };
-		2F7C3BBF226DED2300A62FD4 /* MFA_ENROLL_NotEnroller in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnroller */; };
+		2F7C3BBF226DED2300A62FD4 /* MFA_ENROLL_NotEnrolled in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnrolled */; };
 		2F7C3BC0226DED2300A62FD4 /* MFA_ENROLL_PartiallyEnrolled in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B852268D00B00A62FD4 /* MFA_ENROLL_PartiallyEnrolled */; };
 		2F7C3BC1226DED2300A62FD4 /* MFA_ENROLL_ACTIVATE_SMS in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B832268CF7400A62FD4 /* MFA_ENROLL_ACTIVATE_SMS */; };
 		2F7C3BC2226DED2300A62FD4 /* MFA_ENROLL_ACTIVATE_Push in Resources */ = {isa = PBXBuildFile; fileRef = 2F7C3B8D2268D60E00A62FD4 /* MFA_ENROLL_ACTIVATE_Push */; };
@@ -160,7 +160,7 @@
 		2F7C3B702268AF1500A62FD4 /* OktaAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAPITests.swift; sourceTree = "<group>"; };
 		2F7C3B712268AF1500A62FD4 /* OktaAPIRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAPIRequestTests.swift; sourceTree = "<group>"; };
 		2F7C3B7D2268B83400A62FD4 /* OktaFactorPushTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaFactorPushTests.swift; sourceTree = "<group>"; };
-		2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnroller */ = {isa = PBXFileReference; lastKnownFileType = text; path = MFA_ENROLL_NotEnroller; sourceTree = "<group>"; };
+		2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnrolled */ = {isa = PBXFileReference; lastKnownFileType = text; path = MFA_ENROLL_NotEnrolled; sourceTree = "<group>"; };
 		2F7C3B832268CF7400A62FD4 /* MFA_ENROLL_ACTIVATE_SMS */ = {isa = PBXFileReference; lastKnownFileType = text; path = MFA_ENROLL_ACTIVATE_SMS; sourceTree = "<group>"; };
 		2F7C3B852268D00B00A62FD4 /* MFA_ENROLL_PartiallyEnrolled */ = {isa = PBXFileReference; lastKnownFileType = text; path = MFA_ENROLL_PartiallyEnrolled; sourceTree = "<group>"; };
 		2F7C3B872268D43600A62FD4 /* MFA_REQUIRED */ = {isa = PBXFileReference; lastKnownFileType = text; path = MFA_REQUIRED; sourceTree = "<group>"; };
@@ -313,7 +313,7 @@
 				2FF5C85A21D3AEEC00EECA75 /* PrimaryAuthFactorsResponse */,
 				2FF5C85721D3A9E200EECA75 /* OperationNotAllowedError */,
 				2FF5C85D21D3B15000EECA75 /* AuthenticationFailedError */,
-				2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnroller */,
+				2F7C3B812268CE3A00A62FD4 /* MFA_ENROLL_NotEnrolled */,
 				2F7C3B852268D00B00A62FD4 /* MFA_ENROLL_PartiallyEnrolled */,
 				2F7C3B832268CF7400A62FD4 /* MFA_ENROLL_ACTIVATE_SMS */,
 				2F7C3B8D2268D60E00A62FD4 /* MFA_ENROLL_ACTIVATE_Push */,
@@ -594,7 +594,7 @@
 				2F7C3BC4226DED2300A62FD4 /* MFA_CHALLENGE_SMS in Resources */,
 				2F7C3BC3226DED2300A62FD4 /* MFA_REQUIRED in Resources */,
 				2FF5C85E21D3B15000EECA75 /* AuthenticationFailedError in Resources */,
-				2F7C3BBF226DED2300A62FD4 /* MFA_ENROLL_NotEnroller in Resources */,
+				2F7C3BBF226DED2300A62FD4 /* MFA_ENROLL_NotEnrolled in Resources */,
 				2FF5C85921D3A9E700EECA75 /* OperationNotAllowedError in Resources */,
 				2F7C3BC0226DED2300A62FD4 /* MFA_ENROLL_PartiallyEnrolled in Resources */,
 				2F7C3BC1226DED2300A62FD4 /* MFA_ENROLL_ACTIVATE_SMS in Resources */,

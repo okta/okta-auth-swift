@@ -31,7 +31,7 @@ class OktaFactorResultProtocolMock: OktaFactorResultProtocol {
         
         if let changedStatus = changedStatus {
             onStatusChange(changedStatus)
-        }else if let error = error {
+        } else if let error = error {
             onError(error)
         } else if let statusUpdate = statusUpdate {
             onFactorStatusUpdate?(statusUpdate)

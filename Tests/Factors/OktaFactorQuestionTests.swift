@@ -16,7 +16,7 @@ import XCTest
 class OktaFactorQuestionTests: OktaFactorTestCase {
     
     func testFactorQuestionId() {
-        var factor: OktaFactorQuestion? = createFactor(from: .MFA_ENROLL_NotEnroller, type: .question)
+        var factor: OktaFactorQuestion? = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .question)
         XCTAssertNil(factor?.factorQuestionId)
         
         factor = createFactor(from: .MFA_REQUIRED, type: .question)
@@ -24,7 +24,7 @@ class OktaFactorQuestionTests: OktaFactorTestCase {
     }
     
     func testFactorQuestionText() {
-        var factor: OktaFactorQuestion? = createFactor(from: .MFA_ENROLL_NotEnroller, type: .question)
+        var factor: OktaFactorQuestion? = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .question)
         XCTAssertNil(factor?.factorQuestionText)
         
         factor = createFactor(from: .MFA_REQUIRED, type: .question)
@@ -34,7 +34,7 @@ class OktaFactorQuestionTests: OktaFactorTestCase {
     // MARK: - enroll
     
     func testEnroll() {
-        guard let factor: OktaFactorQuestion = createFactor(from: .MFA_ENROLL_NotEnroller, type: .question) else {
+        guard let factor: OktaFactorQuestion = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .question) else {
             XCTFail()
             return
         }
@@ -70,7 +70,7 @@ class OktaFactorQuestionTests: OktaFactorTestCase {
     }
     
     func testEnroll_ApiFailure() {
-         guard let factor: OktaFactorQuestion = createFactor(from: .MFA_ENROLL_NotEnroller, type: .question) else {
+         guard let factor: OktaFactorQuestion = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .question) else {
             XCTFail()
             return
         }

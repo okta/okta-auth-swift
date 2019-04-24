@@ -17,7 +17,7 @@ import XCTest
 class OktaFactorTests: XCTestCase {
 
     func testCreation_Sms() {
-        guard let testResponse = TestResponse.MFA_ENROLL_NotEnroller.parse(),
+        guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
               let factorsResponse = testResponse.embedded!.factors,
               let factorResponse = factorsResponse.first(where: { $0.factorType == .sms }) else {
@@ -46,7 +46,7 @@ class OktaFactorTests: XCTestCase {
     }
     
     func testCreation_question() {
-        guard let testResponse = TestResponse.MFA_ENROLL_NotEnroller.parse(),
+        guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
               let factorsResponse = testResponse.embedded!.factors,
               let factorResponse = factorsResponse.first(where: { $0.factorType == .question }) else {
@@ -75,7 +75,7 @@ class OktaFactorTests: XCTestCase {
     }
     
     func testCreation_Push() {
-        guard let testResponse = TestResponse.MFA_ENROLL_NotEnroller.parse(),
+        guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
               let factorsResponse = testResponse.embedded!.factors,
               let factorResponse = factorsResponse.first(where: { $0.factorType == .push }) else {
@@ -104,7 +104,7 @@ class OktaFactorTests: XCTestCase {
     }
     
     func testCreation_Totp() {
-        guard let testResponse = TestResponse.MFA_ENROLL_NotEnroller.parse(),
+        guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
               let factorsResponse = testResponse.embedded!.factors,
               let factorResponse = factorsResponse.first(where: { $0.factorType == .TOTP }) else {

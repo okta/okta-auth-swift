@@ -15,7 +15,7 @@ import Foundation
 @testable import OktaAuthNative
 
 enum TestResponse: String {
-    case MFA_ENROLL_NotEnroller = "MFA_ENROLL_NotEnroller"
+    case MFA_ENROLL_NotEnrolled = "MFA_ENROLL_NotEnrolled"
     case MFA_ENROLL_PartiallyEnrolled = "MFA_ENROLL_PartiallyEnrolled"
     case MFA_ENROLL_ACTIVATE_SMS = "MFA_ENROLL_ACTIVATE_SMS"
     case MFA_ENROLL_ACTIVATE_Push = "MFA_ENROLL_ACTIVATE_Push"

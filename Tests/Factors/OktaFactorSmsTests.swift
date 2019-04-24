@@ -16,7 +16,7 @@ import XCTest
 class OktaFactorSmsTests: OktaFactorTestCase {
 
     func testPhoneNumber() {
-        var factor: OktaFactorSms? = createFactor(from: .MFA_ENROLL_NotEnroller, type: .sms)
+        var factor: OktaFactorSms? = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .sms)
         XCTAssertNil(factor?.phoneNumber)
         
         factor = createFactor(from: .MFA_ENROLL_ACTIVATE_SMS, type: .sms)
@@ -26,7 +26,7 @@ class OktaFactorSmsTests: OktaFactorTestCase {
     // MARK: - enroll
     
     func testEnroll() {
-        guard let factor: OktaFactorSms = createFactor(from: .MFA_ENROLL_NotEnroller, type: .sms) else {
+        guard let factor: OktaFactorSms = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .sms) else {
             XCTFail()
             return
         }
@@ -60,7 +60,7 @@ class OktaFactorSmsTests: OktaFactorTestCase {
     }
     
     func testEnroll_ApiFailure() {
-         guard let factor: OktaFactorSms = createFactor(from: .MFA_ENROLL_NotEnroller, type: .sms) else {
+         guard let factor: OktaFactorSms = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .sms) else {
             XCTFail()
             return
         }
