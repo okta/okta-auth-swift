@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProtocol {
+open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
@@ -103,7 +103,9 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus, OktaFactorResultProto
         
         statusType = .MFAChallenge
     }
+}
 
+extension OktaAuthStatusFactorChallenge: OktaFactorResultProtocol {
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void,
