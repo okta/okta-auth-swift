@@ -37,7 +37,7 @@ public struct OktaAPISuccessResponse: Codable {
     public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
-    public private(set) var expirationDate: Date?
+    public private(set) var expirationDate: String?
     public private(set) var relayState: String?
     public private(set) var recoveryToken: String?
     public private(set) var recoveryType: RecoveryType?
