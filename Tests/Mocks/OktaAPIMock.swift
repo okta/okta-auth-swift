@@ -165,6 +165,30 @@ class OktaAPIMock: OktaAPI {
         return req
     }
     
+    @discardableResult override public func verifyFactor(with link: LinksResponse.Link,
+                                                         stateToken: String,
+                                                         answer: String? = nil,
+                                                         passCode: String? = nil,
+                                                         recoveryToken: String? = nil,
+                                                         rememberDevice: Bool? = nil,
+                                                         autoPush: Bool? = nil,
+                                                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        self.verifyFactorCalled = true
+        self.factorVerificationLink = link
+        self.factorVerificationPassCode = passCode
+        self.factorVerificationAnswer = answer
+
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
+    
     @discardableResult override public func perform(link: LinksResponse.Link,
                                                     stateToken: String,
                                                     completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
@@ -175,6 +199,50 @@ class OktaAPIMock: OktaAPI {
         
         self.performCalled = true
         self.performedLink = link
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
+    
+    @discardableResult override public func sendActivationLink(link: LinksResponse.Link,
+                                                               stateToken: String,
+                                                               phoneNumber: String? = nil,
+                                                               completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        self.sentActivationLink = link
+        self.sendActivationLinkCalled = true
+
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
+    
+    @discardableResult override public func enrollFactor(_ factor: EmbeddedResponse.Factor,
+                                                         with link: LinksResponse.Link,
+                                                         stateToken: String,
+                                                         phoneNumber: String?,
+                                                         questionId: String?,
+                                                         answer: String?,
+                                                         credentialId: String?,
+                                                         passCode: String?,
+                                                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        self.enrollLink = link
+        self.enrollPhoneNumber = phoneNumber
+        self.enrollQuestionId = questionId
+        self.enrollAnswer = answer
+        self.enrollCalled = true
+
         let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
@@ -192,4 +260,18 @@ class OktaAPIMock: OktaAPI {
     var performCalled: Bool = false
 
     var performedLink: LinksResponse.Link?
+
+    var sendActivationLinkCalled: Bool = false
+    var enrollCalled: Bool = false
+    
+    var sentActivationLink: LinksResponse.Link?
+    
+    var factorVerificationLink: LinksResponse.Link?
+    var factorVerificationPassCode: String?
+    var factorVerificationAnswer: String?
+    
+    var enrollLink: LinksResponse.Link?
+    var enrollPhoneNumber: String?
+    var enrollQuestionId: String?
+    var enrollAnswer: String?
 }

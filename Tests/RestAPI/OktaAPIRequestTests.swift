@@ -15,7 +15,7 @@ import XCTest
 
 class OktaAPIRequestTests : XCTestCase {
     
-    let url = URL(string: "http://example.com")!
+    let url = URL(string: "https://example.com")!
     var req: OktaAPIRequest!
     
     override func setUp() {
