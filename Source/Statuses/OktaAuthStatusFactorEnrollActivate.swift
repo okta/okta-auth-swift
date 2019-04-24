@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResultProtocol {
+open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     
     public internal(set) var stateToken: String
 
@@ -103,11 +103,13 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus, OktaFactorResult
         
         statusType = .MFAEnrollActivate
     }
+}
 
+extension OktaAuthStatusFactorEnrollActivate: OktaFactorResultProtocol {
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void,
-                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
         self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
     }
 }
