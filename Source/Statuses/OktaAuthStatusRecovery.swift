@@ -13,6 +13,8 @@
 import Foundation
 
 open class OktaAuthStatusRecovery : OktaAuthStatus {
+
+    public internal(set) var stateToken: String
     
     open var recoveryQuestion: String? {
         get {
@@ -48,7 +50,9 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
             return
         }
         
-        restApi.recoverWith(answer: answer, recoveryToken: nil, link: model.links!.next!) { result in
+        restApi.recoverWith(answer: answer,
+                            stateToken: stateToken,
+                            recoveryToken: nil, link: model.links!.next!) { result in
                 self.handleServerResponse(result,
                                           onStatusChanged: onStatusChange,
                                           onError: onError)
@@ -63,7 +67,9 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
             return
         }
         
-        restApi.recoverWith(answer: nil, recoveryToken: recoveryToken, link: model.links!.next!) { result in
+        restApi.recoverWith(answer: nil,
+                            stateToken: stateToken,
+                            recoveryToken: recoveryToken, link: model.links!.next!) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
@@ -71,6 +77,10 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
     }
     
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
         try super.init(currentState: currentState, model: model)
         statusType = .recovery
     }

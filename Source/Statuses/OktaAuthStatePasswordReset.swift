@@ -37,7 +37,7 @@ open class OktaAuthStatusPasswordReset : OktaAuthStatus {
             return
         }
 
-        restApi.resetPassword(newPassword: newPassword, link: model.links!.next!) { result in
+        restApi.resetPassword(newPassword: newPassword, stateToken: stateToken, link: model.links!.next!) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
