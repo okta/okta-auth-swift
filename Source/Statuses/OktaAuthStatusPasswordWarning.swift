@@ -15,6 +15,15 @@ import Foundation
 open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
     
     public internal(set) var stateToken: String
+    
+    open func canChange() -> Bool {
+        
+        guard (model.links?.next?.href) != nil else {
+            return false
+        }
+        
+        return true
+    }
 
     open func canSkip() -> Bool {
         

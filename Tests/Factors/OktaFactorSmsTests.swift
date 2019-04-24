@@ -103,14 +103,12 @@ class OktaFactorSmsTests: OktaFactorTestCase {
         
         let ex = expectation(description: "Operation should succeed!")
         
-        factor.activate(
-            with: factor.activationLink!,
-            passCode: "1234",
-            onStatusChange: { status in
+        factor.activate(passCode: "1234",
+                        onStatusChange: { status in
                 XCTAssertEqual( AuthStatus.unauthenticated , status.statusType)
                 ex.fulfill()
             },
-            onError: { error in
+                        onError: { error in
                 XCTFail(error.localizedDescription)
                 ex.fulfill()
             }
@@ -136,7 +134,6 @@ class OktaFactorSmsTests: OktaFactorTestCase {
         let ex = expectation(description: "Operation should fail!")
         
         factor.activate(
-            with: factor.activationLink!,
             passCode: "1234",
             onStatusChange: { status in
                 XCTFail("API failure expected!")

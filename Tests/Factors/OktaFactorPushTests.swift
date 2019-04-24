@@ -254,7 +254,6 @@ class OktaFactorPushTests: OktaFactorTestCase {
         let ex = expectation(description: "Operation should succeed!")
         
         factor.activate(
-            with: factor.activationLink!,
             onStatusChange: { status in
                 XCTAssertEqual( AuthStatus.unauthenticated , status.statusType)
                 ex.fulfill()
@@ -285,7 +284,6 @@ class OktaFactorPushTests: OktaFactorTestCase {
         let ex = expectation(description: "Operation should fail!")
         
         factor.activate(
-            with: factor.activationLink!,
             onStatusChange: { status in
                 XCTFail("API failure expected!")
                 ex.fulfill()

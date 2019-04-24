@@ -13,9 +13,7 @@
 import Foundation
 
 open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
-    
-    public internal(set) var stateToken: String
-    
+
     open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
         get {
             return model.recoveryType
@@ -53,6 +51,10 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
     open func verifyFactor(passCode: String,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
+        guard let stateToken = model.stateToken else {
+            onError(.invalidResponse)
+            return
+        }
         guard canVerify() else {
             onError(.wrongStatus("Can't find 'next' link in response"))
             return
@@ -74,6 +76,10 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
     open func verifyFactor(recoveryToken: String,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
+        guard let stateToken = model.stateToken else {
+            onError(.invalidResponse)
+            return
+        }
         guard canVerify() else {
             onError(.wrongStatus("Can't find 'next' link in response"))
             return
@@ -94,6 +100,10 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
 
     open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
+        guard let stateToken = model.stateToken else {
+            onError(.invalidResponse)
+            return
+        }
         guard canResend() else {
             onError(.wrongStatus("Can't find 'resend' link in response"))
             return
@@ -118,10 +128,6 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
     }
 
     override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
         try super.init(currentState: currentState, model: model)
         statusType = .recoveryChallenge
     }
