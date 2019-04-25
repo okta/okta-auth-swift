@@ -1,25 +1,59 @@
-# Authentication SDK for Swift
+[<img src="https://devforum.okta.com/uploads/oktadev/original/1X/bf54a16b5fda189e4ad2706fb57cbb7a1e5b8deb.png" align="right" width="256px"/>](https://devforum.okta.com/)
+[![CI Status](http://img.shields.io/travis/okta/okta-auth-swift.svg?style=flat)](https://travis-ci.org/okta/okta-auth-swift)
+[![Version](https://img.shields.io/cocoapods/v/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
+[![License](https://img.shields.io/cocoapods/l/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
+[![Platform](https://img.shields.io/cocoapods/p/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
+[![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://developer.apple.com/swift/)
 
-> :warning: Beta alert! This library is in beta. See [release status](#release-status) for more information.
+# Okta Swift Authentication SDK
 
+The Okta Authentication SDK is a convenience wrapper around [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn.html).
+
+* [Is This Library Right for Me](#is-this-library-right-for-me)
+* [Authentication State Machine](#authentication-state-machine)
 * [Release status](#release-status)
 * [Need help?](#need-help)
 * [Getting started](#getting-started)
 * [Usage guide](#usage-guide)
-* [API Reference](#api-reference)
-    * [authenticate](#authenticate)
-    * [cancelTransaction](#cancelTransaction)
-    * [fetchTransactionState](#fetchTransactionState)
-    * [changePassword](#changePassword)
-    * [verify](#verify)
-    * [performLink](#performLink)
-    * [resetStatus](#resetStatus)
-    * [handleStatusChange](#handleStatusChange)
+    * [Authenticate a User](#authenticate-a-user)
+    * [Unlock account](#unlock-account)
+    * [Forgot password](#forgot-password)
+    * [Restore authentication or recover transaction with state token](#restore-authentication-or-recover-transaction-with-state-token)
+* [API Reference - Status classes](#api-reference--status-classes)
+    * [OktaAuthStatus](#oktaauthstatus)
+    * [OktaAuthStatusFactorEnroll](#oktaauthstatusfactorenroll)
+    * [OktaAuthStatusFactorEnrollActivate](#oktaauthstatusfactorenrollactivate)
+    * [OktaAuthStatusFactorRequired](#oktaauthstatusfactorrequired)
+    * [OktaAuthStatusFactorChallenge](#oktaauthstatusfactorchallenge)
+    * [OktaAuthStatusPasswordExpired](#oktaauthstatuspasswordexpired)
+    * [OktaAuthStatusPasswordWarning](#oktaauthstatuspasswordwarning)
+    * [OktaAuthStatusRecoveryChallenge](#oktaauthstatusrecoverychallenge)
+    * [OktaAuthStatusPasswordReset](#oktaauthstatuspasswordreset)
+    * [OktaAuthStatusLockedOut](#oktaauthstatuslockedout)
+* [API Reference - Factor classes](#api-reference--factor-classes)
+    * [OktaFactorSms](#oktafactorsms)
+    * [OktaFactorCall](#opktafactorcall)
+    * [OktaFactorPush](#oktafactorpush)
+    * [OktaFactorTotp](#oktafactortotp)
+    * [OktaFactorQuestion](#oktafactorquestion)
+    * [OktaFactorQuestion](#oktafactorquestion)
+    * [OktaFactorToken](#oktafactortoken)
+    * [OktaFactorOther](#oktafactorother)
+* [SDK extenstion](#sdk-extenstion)
 * [Contributing](#contributing)
  
-The Okta Authentication SDK is a convenience wrapper around [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn.html).
+## Is This Library Right for Me?
 
-**NOTE:** Using OAuth 2.0 or OpenID Connect to integrate your application instead of this library will require much less work, and has a smaller risk profile. Please see [this guide](https://developer.okta.com/use_cases/authentication/) to see if using this API is right for your use case.
+This SDK is a convenient wrapper for [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn/). These APIs are powerful and useful if you need to achieve one of these cases:
+
+- You have an existing application that needs to accept primary credentials (username and password) and do custom logic before communicating with Okta.
+- You have significantly custom authentication workflow or UI needs, such that Okta’s hosted sign-in page or [Sign-In Widget](https://github.com/okta/okta-signin-widget) do not give you enough flexibility.
+
+The power of this SDK comes with more responsibility and maintenance: you will have to design your authentication workflow and UIs by hand, respond to all relevant states in Okta’s authentication state machine, and keep up to date with new features and states in Okta.
+
+Otherwise, most applications can use the Okta hosted sign-in page or the Sign-in Widget. For these cases, you should use [Okta's OIDC SDK](https://github.com/okta/okta-oidc-ios) or other OIDC/OAuth 2.0 library.
+
+## Authentication State Machine
 
 Okta's Authentication API is built around a [state machine](https://developer.okta.com/docs/api/resources/authn#transaction-state). In order to use this library you will need to be familiar with the available states. You will need to implement a handler for each state you want to support.  
 
@@ -31,7 +65,8 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 | Version | Status                    |
 | ------- | ------------------------- |
-| 0.x     | :warning: Beta            |
+| 0.x.0 | :warning: Retired |
+| 1.x | :heavy_check_mark: Stable |
  
 The latest release can always be found on the [releases page][github-releases].
  
@@ -48,183 +83,855 @@ If you do not already have a **Developer Edition Account**, you can create one a
  
 ## Getting started
  
-Okta is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+Okta is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod "OktaAuth"
+pod "OktaAuthSdk"
 ```
- 
-Construct a client instance by passing it your Okta domain name and API token:
- 
-[//]: # (method: createClient)
-```swift
-let client = AuthenticationClient(oktaDomain: URL(string: "https://{yourOktaDomain}")!, delegate: self)
-```
-[//]: # (end: createClient)
-
-The client must implement the [`AuthenticationClientDelegate`](AuthenticationClientDelegate) protocol. 
 
 ## Usage guide
 
-These examples will help you understand how to use this library.
+SDK implements the following flows:
+- Primary authentication - allows you to verify username and password credentials for a user.
+- Multifactor authentication (MFA) - strengthens the security of password-based authentication by requiring additional verification of another factor such as a temporary one-time password or an SMS passcode. SDK supports user enrollment with MFA factors enabled by the administrator, as well as MFA challenges based on your Okta Sign-On Policy.
+- Unlock account - unlocks user account if it has been locked out due to excessive failed login attempts. **This functionality is subject to the security policy set by the administrator**.
+- Recover password - allows users to securely reset their password if they've forgotten it. **This functionality is subject to the security policy set by the administrator**
+- Restore authentication/unlock/recover transaction with the state token
 
-Once you initialize a `AuthenticationClient`, you can call methods to make requests to the Okta Authentication API.
-
-### Authenticate a User
-
-An authentication flow usually starts with a call to `authenticate`:
-
+To initiate particular flow please make call to one of the available functions in `OktaAuthSdk.swift`:
 ```swift
-client.authenticate(username: username, password: password)
+// Authentication
+public class func authenticate(with url: URL,
+                               username: String,
+                               password: String?,
+                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                               onError: @escaping (_ error: OktaError) -> Void)
+
+// Unlock account
+public class func unlockAccount(with url: URL,
+                                username: String,
+                                factorType: OktaRecoveryFactors,
+                                onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                onError: @escaping (_ error: OktaError) -> Void)
+
+// Forgot password
+public class func recoverPassword(with url: URL,
+                                  username: String,
+                                  factorType: OktaRecoveryFactors,
+                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                  onError: @escaping (_ error: OktaError) -> Void)
+
+// Restore authentication
+public class func fetchStatus(with stateToken: String,
+                              using url: URL,
+                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                              onError: @escaping (_ error: OktaError) -> Void)
 ```
 
-### AuthenticationClientDelegate
-
-This protocol allows the client to provide handlers for each state that the Authentication API may return. Also delegate is used to resolve states requiring user input (e.g. reset password when user should be prompted to enter new password).
+Please note that closure `onStatusChange` returns `OktaAuthStatus` instance as a parameter. Instance of `OktaAuthStatus` class represents the current status that is returned by the server. It is developer's responsibilty to handle current status in order to proceed with the initiated flow. Check the status type by calling `status.statusType` and downcast to concrete status class. Example of  handling function could the following:
 
 ```swift
-extension ViewController: AuthenticationClientDelegate {
-    func handleSuccess(sessionToken: String) {
-        // update UI accordingly
-        presentAlert("Sign In Succeeded!")
-    }
+func handleStatus(status: OktaAuthStatus) {
 
-    func handleError(_ error: OktaError) {
-        // update UI accordingly
-        presentAlert("Sign In Failed!")
-    }
+    switch status.statusType {
+    case .success:
+        let successState: OktaAuthStatusSuccess = status as! OktaAuthStatusSuccess
+        handleSuccessStatus(successStatus: successStatus)
 
-    func handleChangePassword(canSkip: Bool, callback: @escaping (_ old: String?, _ new: String?, _ skip: Bool) -> Void) {
-        // Ask user to enter old and new password, and resume flow by calling callback
-        presentChangePasswordForm(
-            canSkip: canSkip,
-            completion: { oldPassword, newPassword, skip in
-                callback(oldPassword, newPassword, false)
-            }
-            skip: {
-                callback(nil, nil, true)
-            }
-        )
-    }
+    case .passwordWarning:
+        let warningPasswordStatus: OktaAuthStatusPasswordWarning = status as! OktaAuthStatusPasswordWarning
+        handlePasswordWarning(passwordWarningStatus: warningPasswordStatus)
+
+    case .passwordExpired:
+        let expiredPasswordStatus: OktaAuthStatusPasswordExpired = status as! OktaAuthStatusPasswordExpired
+        handleChangePassword(passwordExpiredStatus: expiredPasswordStatus)
+
+    case .MFAEnroll:
+        let mfaEnroll: OktaAuthStatusFactorEnroll = status as! OktaAuthStatusFactorEnroll
+        handleEnrollment(enrollmentStatus: mfaEnrollStatus)
+
+    case .MFAEnrollActivate:
+        let mfaEnrollActivate: OktaAuthStatusFactorEnrollActivate = status as! OktaAuthStatusFactorEnrollActivate
+        handleActivateEnrollment(enrollActivateStatus: mfaEnrollActivateStatus)
+
+    case .MFARequired:
+        let mfaRequired: OktaAuthStatusFactorRequired = status as! OktaAuthStatusFactorRequired
+        handleFactorRequired(factorRequiredStatus: mfaRequiredStatus)
+
+    case .MFAChallenge:
+        let mfaChallenge: OktaAuthStatusFactorChallenge = status as! OktaAuthStatusFactorChallenge
+        handleFactorChallenge(factorChallengeStatus: mfaChallengeStatus)
+
+    case .recovery:
+        let recovery: OktaAuthStatusRecovery = status as! OktaAuthStatusRecovery
+        handleRecovery(recoveryStatus: recoveryStatus)
     
-    func transactionCancelled() {
-        // Update UI accordingly
+    case .recoveryChallenge:
+        let recoveyChallengeStatus: OktaAuthStatusRecoveryChallenge = status as! OktaAuthStatusRecoveryChallenge
+        handleRecoveryChallenge(recoveryChallengeStatus: recoveyChallengeStatus)
+        
+    case .passwordReset:
+        let passwordResetStatus: OktaAuthStatuPasswordReset = status as! OktaAuthStatuPasswordReset
+        handlePasswordReset(passwordResetStatus: passwordResetStatus)
+
+    case .lockedOut:
+        let lockedOutStatus: OktaAuthStatusLockedOut = status as! OktaAuthStatusLockedOut
+        handleLockedOut(lockedOutStatus: lockedOutStatus)
+
+    case .unauthenticated:
+        let unauthenticatedStatus: OktaAuthUnauthenticated = status as! OktaAuthUnauthenticated
+        handleUnauthenticated(unauthenticatedStatus: unauthenticatedStatus)
     }
 }
 ```
 
-### AuthenticationClientMFAHandler
+### Authenticate a User
 
-This protocol is designed to implement user interaction during MFA authorization. Implement `selectFactor(factors:callback:)` to select which factor user wants to use to fulfill authorization. Other method are called depending on which factor is selected. Client code has to provide info needed for factor verification (e.g. answer to a security question, or code sent via SMS, etc).  
+An authentication journey starts with a call to `authenticate` method:
 
 ```swift
-    func selectFactor(factors: [EmbeddedResponse.Factor], callback: @escaping (_ factor: EmbeddedResponse.Factor) -> Void) {
-        presentFactorSelectionForm(factors: factors) { selectedFactor in
-            callback(selectedFactor)
-        }
+OktaAuthSdk.authenticate(with: URL(string: "https://{yourOktaDomain}")!,
+                         username: "username",
+                         password: "password",
+                         onStatusChange: { authStatus in
+                             handleStatus(status: authStatus)
+},
+                         onError: { error in
+                             handleError(error)
+})
+
+```
+Please refer to [Primary Authentication](https://developer.okta.com/docs/api/resources/authn/#primary-authentication) section of API documentation for more details behind that call.
+
+### Unlock account
+
+```swift
+OktaAuthSdk.unlockAccount(with: URL(string: "https://{yourOktaDomain}")!,
+                          username: "username",
+                          factorType: .sms,
+                          onStatusChange: { authStatus in
+                              handleStatus(status: authStatus)
+},
+                          onError: { error in
+                              handleError(error)
+})
+```
+Please refer to [Unlock Account](https://developer.okta.com/docs/api/resources/authn/#unlock-account) section of API documentation for more details behind that call.
+
+### Forgot password
+
+```swift
+OktaAuthSdk.recoverPassword(with: URL(string: "https://{yourOktaDomain}")!,
+                            username: "username",
+                            factorType: .sms,
+                            onStatusChange: { authStatus in
+                                handleStatus(status: authStatus)
+},
+                            onError: { error in
+                                handleError(error)
+})
+```
+Please refer to [Forgot Password](https://developer.okta.com/docs/api/resources/authn/#forgot-password) section of API documentation for more details behind that call.
+
+### Restore authentication or recover transaction with the state token
+
+```swift
+OktaAuthSdk.fetchStatus(with: "state_token",
+                        using: URL(string: "https://{yourOktaDomain}")!,
+                        onStatusChange: { authStatus in
+                            handleStatus(status: authStatus)
+},
+                        onError: { error in
+                            handleError(error)
+})
+```
+Please refer to [Get Transaction State](https://developer.okta.com/docs/api/resources/authn/#get-transaction-state) section of API documentation for more details behind that call.
+
+## API Reference - Status classes
+
+Collection of status classes. Downcast the status instance to status specific class to get access to status specific functions and properties.
+
+### OktaAuthStatus
+
+Base status class that implements some common functions for the statuses. Also contains `statusType` property that is used to check the actual status type.
+
+#### canReturn
+
+Returns `true` if current status can transit to the previous status.
+
+```swift
+open func canReturn() -> Bool
+```
+
+#### returnToPreviousStatus
+
+Moves the current transaction state back to the previous state. [API link](https://developer.okta.com/docs/api/resources/authn/#previous-transaction-state)
+
+```swift
+open func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                 onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### canCancel
+
+Returns `true` if current flow can be cancelled.
+
+```swift
+open func canCancel() -> Bool
+```
+
+#### cancel
+
+Cancels the current transaction and revokes the state token. [API link](https://developer.okta.com/docs/api/resources/authn/#previous-transaction-state)
+
+```swift
+open func cancel(onSuccess: (() -> Void)? = nil,
+                 onError: ((_ error: OktaError) -> Void)? = nil)
+```
+
+### OktaAuthStatusUnauthenticated
+
+Class is used to initiate authentication or recovery transactions.
+
+```swift
+open func authenticate(username: String,
+                       password: String,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+
+open func unlockAccount(username: String,
+                        factorType: OktaRecoveryFactors,
+                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                        onError: @escaping (_ error: OktaError) -> Void)
+
+open func recoverPassword(username: String,
+                          factorType: OktaRecoveryFactors,
+                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                          onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusSuccess
+
+The transaction has completed successfully. Add handler function to retrieve the session token.
+
+### OktaAuthStatusFactorEnroll
+
+The user must select and enroll an available factor for additional verification. Add handler function to enroll specific factor.
+
+#### canEnrollFactor
+
+Returns `true` if specific factor can be enrolled.
+
+```swift
+open func canEnrollFactor(factor: OktaFactor) -> Bool
+```
+
+#### canSkipEnrollment
+
+Returns `true` if enrollment can be skipped.
+
+```swift
+open func canSkipEnrollment() -> Bool
+```
+
+#### skipEnrollment
+
+Skips the current transaction state and advance to the next state. [API link](https://developer.okta.com/docs/api/resources/authn/#skip-transaction-state)
+
+```swift
+open func skipEnrollment(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                         onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### enrollFactor
+
+Enrolls a user with a factor assigned by their MFA Policy.  [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-factor)
+
+```swift
+open func enrollFactor(factor: OktaFactor,
+                       questionId: String?,
+                       answer: String?,
+                       credentialId: String?,
+                       passCode: String?,
+                       phoneNumber: String?,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusFactorEnrollActivate
+
+The user must activate the factor to complete enrollment.
+
+#### canResend
+
+Returns `true` if SDK can resend factor.
+
+```swift
+open func canResend(factor: OktaFactor) -> Bool
+```
+
+#### activateFactor
+
+Activates sms, call and token:software:totp factors to complete the enrollment process. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-factor)
+
+```swift
+open func activateFactor(passCode: String?,
+                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                         onError: @escaping (_ error: OktaError) -> Void,
+                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### resendFactor
+
+Tries to resend activate request.
+
+```swift
+open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusFactorRequired
+
+The user must provide additional verification with a previously enrolled factor.
+
+#### selectFactor
+
+Triggers selected factor. Sends Sms/Call OTP or push notification to Okta Verify application.
+
+```swift
+open func selectFactor(_ factor: OktaFactor,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusFactorChallenge
+
+The user must verify the factor-specific challenge.
+
+#### canVerify
+
+Returns `true` if SDK can verify challenge.
+
+```swift
+open func canVerify() -> Bool
+```
+
+#### canResend
+
+Returns `true` if SDK can resend challenge for the selected factor.
+
+```swift
+open func canResend() -> Bool
+```
+
+#### verifyFactor
+
+Verifies an answer to a question factor or OTP code for Sms/Call/Totp/Token factors.  [API link](https://developer.okta.com/docs/api/resources/authn/#verify-factor)
+
+```swift
+open func verifyFactor(passCode: String?,
+                       answerToSecurityQuestion: String?,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void,
+                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### resendFactor
+
+Sends another OTP code or push notification if the user didn't receive the previous one due to timeout or error.
+
+```swift
+open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusPasswordExpired
+
+The user's password was successfully validated but is expired.
+
+### canChange
+
+Returns `true` if password can be changed.
+
+```swift
+open func canChange() -> Bool
+```
+
+#### changePassword
+
+Changes a user's password by providing the existing password and the new password.  [API link](https://developer.okta.com/docs/api/resources/authn/#change-password)
+
+```swift
+open func changePassword(oldPassword: String,
+                         newPassword: String,
+                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                         onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusPasswordWarning
+
+The user's password was successfully validated but is about to expire and should be changed.
+
+#### canChange
+
+Returns `true` if password can be changed.
+
+```swift
+open func canChange() -> Bool
+```
+
+#### canSkip
+
+Returns `true` if user may skip password change.
+
+```swift
+open func canSkip() -> Bool
+```
+
+#### changePassword
+
+Changes a user's password by providing the existing password and the new password.  [API link](https://developer.okta.com/docs/api/resources/authn/#change-password)
+
+```swift
+open func changePassword(oldPassword: String,
+                         newPassword: String,
+                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                         onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### skipPasswordChange
+
+Sends skip request to skip the password change state and advance to the next state.  [API link](https://developer.okta.com/docs/api/resources/authn/#skip-transaction-state)
+
+```swift
+open func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                             onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusRecovery
+
+The user has requested a recovery token to reset their password or unlock their account.
+
+#### canRecover
+
+Returns `true` if recovery flow can be continued.
+
+```swift
+open func canRecover() -> Bool
+```
+
+#### recoverWithAnswer
+
+Answers the user's recovery question. [API link](https://developer.okta.com/docs/api/resources/authn/#answer-recovery-question)
+
+```swift
+open func recoverWithAnswer(_ answer: String,
+                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                            onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusRecoveryChallenge
+
+The user must verify the factor-specific recovery challenge.
+
+#### canVerify
+
+Returns `true` if factor can be verified.
+
+```swift
+open func canVerify() -> Bool
+```
+
+#### canResend
+
+Returns `true` if factor can be resent.
+
+```swift
+open func canResend() -> Bool
+```
+
+#### verifyFactor
+
+Verifies Sms/Call OTP(passCode) sent to the user's device for primary authentication for a recovery transaction. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-recovery-factor)
+
+```swift
+open func verifyFactor(passCode: String,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### resendFactor
+
+Resends Sms/Call OTP sent to the user's device for a recovery transaction. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-sms-recovery-factor)
+
+```swift
+open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusPasswordReset
+
+The user successfully answered their recovery question and must to set a new password.
+
+#### canReset
+
+Returns `true` if password can be reset.
+
+```swift
+open func canReset() -> Bool
+```
+
+#### resetPassword
+
+Resets a user's password to complete a recovery transaction. [API link](https://developer.okta.com/docs/api/resources/authn/#reset-password)
+
+```swift
+open func resetPassword(newPassword: String,
+                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                        onError: @escaping (_ error: OktaError) -> Void)
+```
+
+### OktaAuthStatusLockedOut
+
+The user account is locked; self-service unlock or administrator unlock is required.
+
+#### canUnlock
+
+Returns `true` if account can be unlocked.
+
+```swift
+open func canUnlock() -> Bool
+```
+
+#### unlock
+
+Starts a new unlock recovery transaction for a given user and issues a recovery token that can be used to unlock a user's account. [API link](https://developer.okta.com/docs/api/resources/authn/#unlock-account)
+
+```swift
+open func unlock(username: String,
+                 factorType: OktaRecoveryFactors,
+                 onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                 onError: @escaping (_ error: OktaError) -> Void)
+```
+
+## API Reference - Factor classes
+
+Collection of factor classes. Downcast the factor instance to factor specific class to get access to factor specific functions and properties.
+
+### OktaFactorSms
+
+#### enroll
+
+Enrolls a user with the Okta sms factor and an SMS profile. A text message with an OTP is sent to the device during enrollment.  [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-sms-factor)
+
+```swift
+public func enroll(phoneNumber: String?,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### activate
+
+Activates a sms factor by verifying the OTP. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-sms-factor)
+
+```swift
+public func activate(passCode: String?,
+                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void,
+                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### select
+
+Sends a new OTP to the device. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-sms-factor)
+
+```swift
+public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### verify
+
+Verifies an enrolled sms factor by verifying the OTP. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-sms-factor)
+
+```swift
+public func verify(passCode: String?,
+                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorCall
+
+#### enroll
+
+Enrolls a user with the Okta call factor and a Call profile. A voice call with an OTP is sent to the device during enrollment.  [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-call-factor)
+
+```swift
+public func enroll(phoneNumber: String?,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### activate
+
+Activates a call factor by verifying the OTP. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-call-factor)
+
+```swift
+public func activate(passCode: String?,
+                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void,
+                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### select
+
+Sends a new OTP to the device. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-call-factor)
+
+```swift
+public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### verify
+
+Verifies an enrolled call factor by verifying the OTP. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-call-factor)
+
+```swift
+public func verify(passCode: String?,
+                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorPush
+
+#### enroll
+
+Enrolls a user with the Okta verify push factor. The factor must be activated on the device by scanning the QR code or visiting the activation link sent via email or sms.
+Use the published activation links to embed the QR code or distribute an activation email or sms.  [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-verify-push-factor)
+
+```swift
+public func enroll(onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### activate
+
+Activation of push factors are asynchronous and must be polled for completion when the factorResult returns a WAITING status.
+**NOTE:** Polling is implemented by the SDK(default timer is 5 seconds), so you don't need to implement it in your code. SDK will notify your application about the last factor status via `onFactorStatusUpdate` closure.
+Activations have a short lifetime (minutes) and will TIMEOUT if they are not completed before the `expireAt` timestamp. Restart the activation process if the activation is expired. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-call-factor)
+
+```swift
+public func activate(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void,
+                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### sendActivationLinkViaSms
+
+Sends an activation SMS when when the user is unable to scan the QR code provided as part of an Okta Verify transaction. If for any reason the user can't scan the QR code, they can use the link provided in SMS to complete the transaction. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-push-factor)
+
+```swift
+public func sendActivationLinkViaSms(with phoneNumber:String,
+                                     onSuccess: @escaping () -> Void,
+                                     onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### sendActivationLinkViaEmail
+
+Sends an activation email when when the user is unable to scan the QR code provided as part of an Okta Verify transaction. If for any reason the user can't scan the QR code, they can use the link provided in email to complete the transaction. [API link](https://developer.okta.com/docs/api/resources/authn/#activate-push-factor)
+
+```swift
+public func sendActivationLinkViaEmail(onSuccess: @escaping () -> Void,
+                                       onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### select
+
+Sends an asynchronous push notification (challenge) to the device for the user to approve or reject. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-push-factor)
+
+```swift
+public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### verify
+
+Sends an asynchronous push notification (challenge) to the device for the user to approve or reject. The factorResult for the transaction will have a result of WAITING, SUCCESS, REJECTED, or TIMEOUT. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-push-factor)
+**NOTE:** Polling is implemented by the SDK(default timer is 5 seconds), so you don't need to implement it in your code. SDK will notify your application about the last factor status via `onFactorStatusUpdate` closure.
+
+```swift
+public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorTotp
+
+#### enroll
+
+Enrolls a user with the Okta token:software:totp factor. [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-verify-totp-factor)
+
+```swift
+public func enroll(onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### activate
+
+Activates a token:software:totp factor by verifying the OTP(passcode). [API link](https://developer.okta.com/docs/api/resources/authn/#activate-totp-factor)
+
+```swift
+public func activate(passCode: String,
+                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                     onError: @escaping (_ error: OktaError) -> Void,
+                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### select
+
+Selects TOTP factor from the list of required factors and verifies the OTP(passcode).  [API link](https://developer.okta.com/docs/api/resources/authn/#verify-totp-factor)
+
+```swift
+public func select(passCode: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### verify
+
+Verifies an OTP for a token:software:totp factor. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-totp-factor)
+
+```swift
+public func verify(passCode: String,
+                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorQuestion
+
+#### enroll
+
+Enrolls a user with the Okta question factor. List of security questions can be downloaded by `downloadSecurityQuestions` call.
+
+```swift
+public func enroll(questionId: String,
+                   answer: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### downloadSecurityQuestions
+
+Downloads security questions for the user
+
+```swift
+public func downloadSecurityQuestions(onDownloadComplete: @escaping ([SecurityQuestion]) -> Void,
+                                      onError: @escaping (_ error: OktaError) -> Void)
+```
+
+#### select
+
+Selects question factor from the list of required factors and verifies the answer.  [API link](https://developer.okta.com/docs/api/resources/authn/#verify-security-question-factor)
+
+```swift
+public func select(answerToSecurityQuestion: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+#### verify
+
+Verifies an answer to a question factor. [API link](https://developer.okta.com/docs/api/resources/authn/#verify-security-question-factor)
+
+```swift
+public func verify(answerToSecurityQuestion: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorToken
+
+#### enroll
+
+Enrolls a user with a RSA SecurID factor and a token profile. RSA tokens must be verified with the current pin+passcode as part of the enrollment request. [API link](https://developer.okta.com/docs/api/resources/authn/#enroll-rsa-securid-factor)
+
+```swift
+public func enroll(credentialId: String,
+                   passCode: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### select
+
+Selects token factor from the list of required factors and verifies the passcode.
+
+```swift
+public func select(passCode: String,
+                   onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                   onError: @escaping (OktaError) -> Void)
+```
+
+#### verify
+
+Verifies a passcode to a token factor. 
+
+```swift
+public func verify(passCode: String,
+                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                   onError: @escaping (_ error: OktaError) -> Void,
+                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+### OktaFactorOther
+
+SDK doesn't implement swift classes for all available factors. SDK returns `OktaFactorOther` instance for the non-implemented factors, e.g.: Google Authenticator, Symantec VIP Factor, U2F and etc. Use `OktaFactorOther` class to send arbitary data to the Okta server. For more information regarding payload please refer to the [API documentation](https://developer.okta.com/docs/api/resources/authn/#multifactor-authentication-operations)
+
+#### sendRequest
+
+Sends arbitary `kayValuePayload` body in the https request. 
+
+```swift
+public func sendRequest(with link: LinksResponse.Link,
+                        keyValuePayload: Dictionary<String, Any>,
+                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
+                        onError: @escaping (OktaError) -> Void,
+                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+```
+
+
+
+## SDK extenstion
+
+You are open to subclass from any available status classes and add your custom implementation or extend with additional properties. In that case you have to also subclass from `OktaAuthStatusResponseHandler` class and override `handleServerResponse` or/and `createAuthStatus` methods.
+When all this can be useful:
+- Okta added new status in the state machine and you need to handle it
+- You want to change status polling logic
+- You created class that is inherrited from OktaAuthStatus* class
+
+```swift
+class MyResponseHandler: OktaAuthStatusResponseHandler {
+    override func createAuthStatus(basedOn response: OktaAPISuccessResponse,
+                                   and currentStatus: OktaAuthStatus) throws -> OktaAuthStatus {
+        // implementation
     }
+}
 
-    func pushStateUpdated(_ state: OktaAPISuccessResponse.FactorResult) {
-        // Update UI accordingly
-    }
-
-    func requestTOTP(callback: @escaping (_ code: String) -> Void) {
-        presentTOTPCodeForm { totpCodeFromUser in
-            callback(totpCodeFromUser)
-        }
-    }
-
-    func requestSMSCode(phoneNumber: String?, callback: @escaping (_ code: String) -> Void) {
-        presentSMSCodeForm { smsCodeFromUser in
-            callback(smsCodeFromUser)
-        }
-    }
-
-    func securityQuestion(question: String, callback: @escaping (_ answer: String) -> Void) {
-        presentSecurityQuestionForm { userAnswer in
-            callback(userAnswer)
-        }
-    }
-```
-
-## API Reference
-
-### authenticate
-
-Start the authentication flow by simply calling `authenticate` with user credentials. Use the [`handleStatusChange`](#handle-status-change) method to take more control over authentication flow.
-
-```swift
-    client.authenticate(username: username, password: password)
-```
-
-### cancelTransaction
-Call `cancelTransaction` to cancel active authentication flow. SDK will send cancel request and reset internal states upon completion. Use the  `transactionCancelled` delegate method to handle cancellation event. 
-
-```swift
-    client.cancelTransaction()
-```
-
-### fetchTransactionState
-
-To retrieves the current transaction state for a state token call `fetchTransactionState`. Useful when user has state token only and wants to know details about current transaction state.
-
-```swift
-    client.fetchTransactionState()
-```
-
-### changePassword
-
-When auth state is `PASSWORD_EXPIRED` user should be prompted to reset the password. In case of  `PASSWORD_WARN` state user also can be prompted to change their password (however there could be another flow). To complete this operation call `changePassword`.
-
-```swift
-    client.changePassword(oldPassword: old, newPassword: new)
-```
-
-### verify 
-
-When auth state is `MFA_REQUIRED`  or  `MFA_CHALLENGE` user should be prompted to verify MFA factor. To complete this operation call `verify(factor:, passCode:, rememberDevice:, autoPush:)`. Also user can specify option to remember device or send push automatically (in case of `push` factor).
-
-```swift
-    client.verify(factor: factor,
-        answer: "security question answer")
-
-    client.verify(factor: factor,
-        passCode: "user_passcode")
-```
-
-### performLink
-
-If current auth state implies redirection to certain link, this can be implemented by calling `perform(link:)`. Note, you should use link from current auth state, in other case you can break consistency of current transaction. 
-
-```swift
-    perform(link: link)
-```
-
-### resetStatus
-
-To reset current auth state and clear all the stored credentials call `resetStatus`.
-
-```swift
-    client.resetStatus()
-```
-
-### handleStatusChange
-
-Default state machine implementation is described in `handleStatusChange`. Uses [`delegate`](#auth-client-delegate) to proceed auth flow if state requires user input.
-
-Usually clients are not expected to call this method by their own. It is called when AuthenticationClient receives updated auth state. Method is used to handle every possible auth state and therefore proceed authentication transaction. 
-
-Use the [`statusHandler`](#status-handler) property to provide custom implementation of state machine.
-
-```swift
-    client.handleStatusChange()
+let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "https://{yourOktaDomain}")!,
+                                                          responseHandler: MyResponseHandler())
 ```
 
 ## Contributing
  
 We're happy to accept contributions and PRs!
 
-[devforum]: https://devforum.okta.com/
-[github-issues]: https://github.com/okta/okta-auth-swift/issues
-[github-releases]: https://github.com/okta/okta-auth-swift/releases
+- [devforum](https://devforum.okta.com)
+- [github-issues](https://github.com/okta/okta-auth-swift/issues)
+- [github-releases](https://github.com/okta/okta-auth-swift/releases)
