@@ -24,6 +24,12 @@ enum TestResponse: String {
     case MFA_CHALLENGE_TOTP = "MFA_CHALLENGE_TOTP"
     case MFA_CHALLENGE_WAITING_PUSH = "MFA_CHALLENGE_WAITING_PUSH"
     case SUCCESS = "SUCCESS"
+    case PASSWORD_WARN = "PASSWORD_WARN"
+    case PASSWORD_EXPIRED = "PASSWORD_EXPIRED"
+    case PASSWORD_RESET = "PASSWORD_RESET"
+    case LOCKED_OUT = "LOCKED_OUT"
+    case RECOVERY = "RECOVERY"
+    case RECOVERY_CHALLENGE = "RECOVERY_CHALLENGE"
     
     func parse() -> OktaAPISuccessResponse? {
         guard let file = Bundle(for: OktaAPIMock.self).url(forResource: self.rawValue, withExtension: nil),

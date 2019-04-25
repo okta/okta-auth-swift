@@ -1,0 +1,25 @@
+{
+   "status":"LOCKED_OUT",
+   "_embedded":{
+
+   },
+   "_links":{
+      "next":{
+         "name":"unlock",
+         "href":"https://lohika-um.oktapreview.com/api/v1/authn/recovery/unlock",
+         "hints":{
+            "allow":[
+               "POST"
+            ]
+         }
+      },
+      "cancel":{
+         "href":"https://lohika-um.oktapreview.com/api/v1/authn/cancel",
+         "hints":{
+            "allow":[
+               "POST"
+            ]
+         }
+      }
+   }
+}
