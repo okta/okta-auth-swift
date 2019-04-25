@@ -117,12 +117,14 @@ open class OktaAPI {
     }
 
     @discardableResult open func recoverWith(answer: String?,
+                                             stateToken: String,
                                              recoveryToken: String?,
                                              link: LinksResponse.Link,
                                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
         req.bodyParams = [:]
+        req.bodyParams = ["stateToken": stateToken]
         req.bodyParams?["answer"] = answer
         req.bodyParams?["recoveryToken"] = recoveryToken
         req.run()
@@ -130,11 +132,13 @@ open class OktaAPI {
     }
 
     @discardableResult open func resetPassword(newPassword: String,
+                                               stateToken: String,
                                                link: LinksResponse.Link,
                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
         req.bodyParams = ["newPassword": newPassword]
+        req.bodyParams?["stateToken"] = stateToken
         req.run()
         return req
     }
