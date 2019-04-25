@@ -19,7 +19,7 @@ The Okta Authentication SDK is a convenience wrapper around [Okta's Authenticati
     * [Unlock account](#unlock-account)
     * [Forgot password](#forgot-password)
     * [Restore authentication or recover transaction with state token](#restore-authentication-or-recover-transaction-with-state-token)
-* [API Reference - Status classes](#api-reference--status-classes)
+* [API Reference - Status classes](#api-reference---status-classes)
     * [OktaAuthStatus](#oktaauthstatus)
     * [OktaAuthStatusFactorEnroll](#oktaauthstatusfactorenroll)
     * [OktaAuthStatusFactorEnrollActivate](#oktaauthstatusfactorenrollactivate)
@@ -30,7 +30,7 @@ The Okta Authentication SDK is a convenience wrapper around [Okta's Authenticati
     * [OktaAuthStatusRecoveryChallenge](#oktaauthstatusrecoverychallenge)
     * [OktaAuthStatusPasswordReset](#oktaauthstatuspasswordreset)
     * [OktaAuthStatusLockedOut](#oktaauthstatuslockedout)
-* [API Reference - Factor classes](#api-reference--factor-classes)
+* [API Reference - Factor classes](#api-reference---factor-classes)
     * [OktaFactorSms](#oktafactorsms)
     * [OktaFactorCall](#opktafactorcall)
     * [OktaFactorPush](#oktafactorpush)
@@ -932,6 +932,6 @@ let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string
  
 We're happy to accept contributions and PRs!
 
-- [devforum](https://devforum.okta.com)
-- [github-issues](https://github.com/okta/okta-auth-swift/issues)
-- [github-releases](https://github.com/okta/okta-auth-swift/releases)
+[devforum]: https://devforum.okta.com/
+[github-issues]: https://github.com/okta/okta-auth-swift/issues
+[github-releases]: https://github.com/okta/okta-auth-swift/releases
