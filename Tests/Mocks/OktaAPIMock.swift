@@ -98,6 +98,12 @@ class OktaAPIMock: OktaAPI {
         return req
     }
     
+    @discardableResult override public func cancelTransaction(with link: LinksResponse.Link,
+                                                              stateToken: String,
+                                                              completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        return cancelTransaction(stateToken: stateToken, completion: completion)
+    }
+    
     @discardableResult override public func cancelTransaction(stateToken: String,
                                                               completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         
