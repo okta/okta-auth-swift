@@ -112,6 +112,14 @@
                "POST"
             ]
          }
+      },
+      "skip":{
+         "href":"https://test.domain.com/api/v1/authn/skip",
+         "hints":{
+            "allow":[
+               "POST"
+            ]
+         }
       }
    }
 }

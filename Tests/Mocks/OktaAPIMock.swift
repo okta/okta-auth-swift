@@ -119,6 +119,14 @@ class OktaAPIMock: OktaAPI {
         return req
     }
     
+    @discardableResult override public func changePassword(link: LinksResponse.Link,
+                                                           stateToken: String,
+                                                           oldPassword: String,
+                                                           newPassword: String,
+                                                           completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        return changePassword(stateToken: stateToken, oldPassword: oldPassword, newPassword: newPassword, completion: completion)
+    }
+    
     @discardableResult override public func changePassword(stateToken: String,
                                                            oldPassword: String,
                                                            newPassword: String,
@@ -255,6 +263,38 @@ class OktaAPIMock: OktaAPI {
         
         return req
     }
+    
+    @discardableResult override public func unlockAccount(username: String,
+                                                          factor: FactorType,
+                                                          completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+
+        self.unlockCalled = true
+
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
+    
+    @discardableResult override public func resetPassword(newPassword: String,
+                                                          link: LinksResponse.Link,
+                                                          completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+
+        self.resetPasswordCalled = true
+
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
+        return req
+    }
 
     private let result: OktaAPIRequest.Result
     
@@ -269,6 +309,8 @@ class OktaAPIMock: OktaAPI {
 
     var sendActivationLinkCalled: Bool = false
     var enrollCalled: Bool = false
+    var unlockCalled: Bool = false
+    var resetPasswordCalled: Bool = false
     
     var sentActivationLink: LinksResponse.Link?
     
