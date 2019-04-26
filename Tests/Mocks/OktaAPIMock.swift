@@ -280,6 +280,7 @@ class OktaAPIMock: OktaAPI {
     }
     
     @discardableResult override public func resetPassword(newPassword: String,
+                                                          stateToken: String,
                                                           link: LinksResponse.Link,
                                                           completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         DispatchQueue.main.async {
