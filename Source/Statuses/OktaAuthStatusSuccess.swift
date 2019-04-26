@@ -16,7 +16,7 @@ open class OktaAuthStatusSuccess : OktaAuthStatus {
     
     public var sessionToken: String
 
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         guard let sessionToken = model.sessionToken else {
             throw OktaError.invalidResponse
         }

@@ -14,13 +14,13 @@ import Foundation
 
 open class OktaAuthStatus {
 
-    public internal(set) var restApi: OktaAPI
+    public var restApi: OktaAPI
 
-    public internal(set) var statusType : AuthStatus = .unknown("Unknown status")
+    public var statusType : AuthStatus = .unknown("Unknown status")
 
-    public internal(set) var model: OktaAPISuccessResponse
+    public var model: OktaAPISuccessResponse
 
-    public internal(set) var responseHandler: OktaAuthStatusResponseHandler
+    public var responseHandler: OktaAuthStatusResponseHandler
 
     public init(oktaDomain: URL,
                 responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {

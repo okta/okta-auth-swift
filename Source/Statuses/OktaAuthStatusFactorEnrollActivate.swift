@@ -15,6 +15,25 @@ import Foundation
 open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     
     public internal(set) var stateToken: String
+    
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        guard let factor = model.embedded?.factor else {
+            throw OktaError.invalidResponse
+        }
+        guard let activateLink = model.links?.next else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        self.internalFactor = factor
+        self.activateLink = activateLink
+        
+        try super.init(currentState: currentState, model: model)
+        
+        statusType = .MFAEnrollActivate
+    }
 
     open lazy var factor: OktaFactor = {
         var createdFactor = OktaFactor.createFactorWith(internalFactor,
@@ -84,32 +103,13 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     }
 
     var internalFactor: EmbeddedResponse.Factor
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
-        }
-        guard let factor = model.embedded?.factor else {
-            throw OktaError.invalidResponse
-        }
-        guard let activateLink = model.links?.next else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        self.internalFactor = factor
-        self.activateLink = activateLink
-        
-        try super.init(currentState: currentState, model: model)
-        
-        statusType = .MFAEnrollActivate
-    }
 }
 
 extension OktaAuthStatusFactorEnrollActivate: OktaFactorResultProtocol {
-    func handleFactorServerResponse(response: OktaAPIRequest.Result,
-                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                    onError: @escaping (_ error: OktaError) -> Void,
-                                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
+    public func handleFactorServerResponse(response: OktaAPIRequest.Result,
+                                           onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                           onError: @escaping (_ error: OktaError) -> Void,
+                                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
         self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
     }
 }

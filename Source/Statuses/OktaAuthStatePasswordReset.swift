@@ -16,6 +16,24 @@ open class OktaAuthStatusPasswordReset : OktaAuthStatus {
 
     public internal(set) var stateToken: String
 
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        if let policy = model.embedded?.policy {
+            switch policy {
+            case .password(let password):
+                passwordExpiration = password.expiration
+                passwordComplexity = password.complexity
+            default:
+                break
+            }
+        }
+        try super.init(currentState: currentState, model: model)
+        statusType = .passwordReset
+    }
+
     open var passwordExpiration: EmbeddedResponse.Policy.Password.PasswordExpiration?
 
     open var passwordComplexity: EmbeddedResponse.Policy.Password.PasswordComplexity?
@@ -42,23 +60,5 @@ open class OktaAuthStatusPasswordReset : OktaAuthStatus {
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        if let policy = model.embedded?.policy {
-            switch policy {
-            case .password(let password):
-                passwordExpiration = password.expiration
-                passwordComplexity = password.complexity
-            default:
-                break
-            }
-        }
-        try super.init(currentState: currentState, model: model)
-        statusType = .passwordReset
     }
 }

@@ -12,7 +12,7 @@
 
 import Foundation
 
-protocol OktaFactorResultProtocol: class {
+public protocol OktaFactorResultProtocol: class {
     func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void,
@@ -64,8 +64,20 @@ open class OktaFactor {
                                    activationLink: activationLink)
         }
     }
-    
-    public internal(set) var factor: EmbeddedResponse.Factor
+
+    public init(factor: EmbeddedResponse.Factor,
+                stateToken: String,
+                verifyLink: LinksResponse.Link?,
+                activationLink: LinksResponse.Link?) {
+        self.factor = factor
+        self.stateToken = stateToken
+        self.verifyLink = verifyLink
+        self.activationLink = activationLink
+    }
+
+    public weak var responseDelegate: OktaFactorResultProtocol?
+    public var restApi: OktaAPI?
+    public var factor: EmbeddedResponse.Factor
 
     // REQUIRED, OPTIONAL
     public var enrollment: String? {
@@ -214,23 +226,11 @@ open class OktaFactor {
                           onError: onError,
                           onFactorStatusUpdate: nil)
     }
-    
-    weak var responseDelegate: OktaFactorResultProtocol?
+
     var stateToken: String
-    var restApi: OktaAPI?
     var verifyLink: LinksResponse.Link?
     var activationLink: LinksResponse.Link?
     var cancelled = false
-    
-    init(factor: EmbeddedResponse.Factor,
-         stateToken: String,
-         verifyLink: LinksResponse.Link?,
-         activationLink: LinksResponse.Link?) {
-        self.factor = factor
-        self.stateToken = stateToken
-        self.verifyLink = verifyLink
-        self.activationLink = activationLink
-    }
 
     func cancel() {
         cancelled = true
