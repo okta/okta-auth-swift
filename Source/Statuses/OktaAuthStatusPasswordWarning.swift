@@ -15,6 +15,15 @@ import Foundation
 open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
     
     public internal(set) var stateToken: String
+
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        try super.init(currentState: currentState, model: model)
+        statusType = .passwordWarning
+    }
     
     open func canChange() -> Bool {
         
@@ -63,14 +72,5 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        try super.init(currentState: currentState, model: model)
-        statusType = .passwordWarning
     }
 }

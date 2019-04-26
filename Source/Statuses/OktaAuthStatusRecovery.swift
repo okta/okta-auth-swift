@@ -15,6 +15,15 @@ import Foundation
 open class OktaAuthStatusRecovery : OktaAuthStatus {
 
     public internal(set) var stateToken: String
+
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        guard let stateToken = model.stateToken else {
+            throw OktaError.invalidResponse
+        }
+        self.stateToken = stateToken
+        try super.init(currentState: currentState, model: model)
+        statusType = .recovery
+    }
     
     open var recoveryQuestion: String? {
         get {
@@ -74,14 +83,5 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
         }
-    }
-    
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
-        }
-        self.stateToken = stateToken
-        try super.init(currentState: currentState, model: model)
-        statusType = .recovery
     }
 }

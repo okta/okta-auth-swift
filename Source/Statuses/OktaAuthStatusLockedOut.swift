@@ -14,6 +14,11 @@ import Foundation
 
 open class OktaAuthStatusLockedOut : OktaAuthStatus {
 
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
+        statusType = .lockedOut
+    }
+
     open func canUnlock() -> Bool {
         guard model.links?.next?.href != nil else {
             return false
@@ -40,10 +45,5 @@ open class OktaAuthStatusLockedOut : OktaAuthStatus {
         } catch let error {
             onError(error as! OktaError)
         }
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        try super.init(currentState: currentState, model: model)
-        statusType = .lockedOut
     }
 }

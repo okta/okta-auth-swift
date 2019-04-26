@@ -14,6 +14,11 @@ import Foundation
 
 open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
 
+    public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
+        try super.init(currentState: currentState, model: model)
+        statusType = .recoveryChallenge
+    }
+
     open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
         get {
             return model.recoveryType
@@ -125,10 +130,5 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
                                                       onStatusChanged: onStatusChange,
                                                       onError: onError)
         })
-    }
-
-    override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        try super.init(currentState: currentState, model: model)
-        statusType = .recoveryChallenge
     }
 }
