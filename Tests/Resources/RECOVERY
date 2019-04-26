@@ -1,4 +1,5 @@
 {
+  "stateToken": "00xdqXOE5qDXX8-PBR1bYv8AESqIEinDy3yul01tyh",
   "expiresAt": "2015-11-03T10:15:57.000Z",
   "status": "RECOVERY",
   "relayState": "/myapp/some/deep/link/i/want/to/return/to",
