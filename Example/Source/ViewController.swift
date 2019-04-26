@@ -97,6 +97,9 @@ class ViewController: UIViewController {
             case .question:
                 let questionFactor = factor as! OktaFactorQuestion
                 self.handleQuestionChallenge(factor: questionFactor)
+            case .push:
+                let pushFactor = factor as! OktaFactorPush
+                self.handlePushChallenge(factor: pushFactor)
             default:
                     let alert = UIAlertController(title: "Error", message: "Recieved challenge for unsupported factor", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -365,6 +368,17 @@ class ViewController: UIViewController {
             self.cancelTransaction()
         }))
         present(alert, animated: true, completion: nil)
+    }
+
+    func handlePushChallenge(factor: OktaFactorPush) {
+        
+        factor.verify(onStatusChange: { (status) in
+            self.handleStatus(status: status)
+        }, onError: { (error) in
+            self.handleError(error)
+        }) { _ in
+            self.updateStatus(status: self.currentStatus)
+        }
     }
 
     func cancelTransaction() {
