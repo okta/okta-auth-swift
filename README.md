@@ -9,7 +9,7 @@
 
 The Okta Authentication SDK is a convenience wrapper around [Okta's Authentication API](https://developer.okta.com/docs/api/resources/authn.html).
 
-* [Is This Library Right for Me](#is-this-library-right-for-me)
+* [Is This Library Right for Me?](#is-this-library-right-for-me)
 * [Authentication State Machine](#authentication-state-machine)
 * [Release status](#release-status)
 * [Need help?](#need-help)
@@ -65,7 +65,7 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 | Version | Status                    |
 | ------- | ------------------------- |
-| 0.x.0 | :warning: Retired |
+| 0.x | :warning: Retired |
 | 1.x | :heavy_check_mark: Stable |
 
 The latest release can always be found on the [releases page][github-releases].
@@ -91,7 +91,7 @@ pod "OktaAuthSdk"
 
 ## Usage guide
 
-SDK implements the following flows:
+The Authentication SDK helps you build the following flows using your own UI elements:
 - Primary authentication - allows you to verify username and password credentials for a user.
 - Multifactor authentication (MFA) - strengthens the security of password-based authentication by requiring additional verification of another factor such as a temporary one-time password or an SMS passcode. This SDK supports user enrollment with MFA factors enabled by the administrator, as well as MFA challenges based on your Okta Sign-On Policy.
 - Unlock account - unlocks a user account if it has been locked out due to excessive failed login attempts. **This functionality is subject to the [security policy set by the administrator](https://www.okta.com/demo/password-policies)**.
@@ -128,7 +128,7 @@ public class func fetchStatus(with stateToken: String,
                               onError: @escaping (_ error: OktaError) -> Void)
 ```
 
-Please note that the closure `onStatusChange` returns `OktaAuthStatus` instance as a parameter. Instance of `OktaAuthStatus` class represents the current status that is returned by the server. It's the developer's responsibilty to handle current status in order to proceed with the initiated flow. Check the status type by calling `status.statusType` and downcast to concrete status class. Here is an example of handler function:
+Please note that the closure `onStatusChange` returns `OktaAuthStatus` instance as a parameter. An instance of the `OktaAuthStatus` class represents the current status that is returned by the server. It's the developer's responsibilty to handle current status in order to proceed with the initiated flow. Check the status type by calling `status.statusType` and downcast to a concrete status class. Here is an example handler function:
 
 ```swift
 func handleStatus(status: OktaAuthStatus) {
@@ -396,7 +396,7 @@ The user must provide additional verification with a previously enrolled factor.
 
 #### selectFactor
 
-Triggers the selected factor. Sends Sms/Call OTP or push notification to Okta Verify application.
+Triggers the selected factor. Sends SMS/Call OTP or push notification to Okta Verify application.
 
 ```swift
 open func selectFactor(_ factor: OktaFactor,
@@ -426,7 +426,7 @@ open func canResend() -> Bool
 
 #### [verifyFactor](https://developer.okta.com/docs/api/resources/authn/#verify-factor)
 
-Verifies an answer to a question factor or OTP code for Sms/Call/Totp/Token factors.
+Verifies an answer to a question factor or OTP code for SMS/Call/Totp/Token factors.
 
 ```swift
 open func verifyFactor(passCode: String?,
@@ -552,7 +552,7 @@ open func canResend() -> Bool
 
 #### [verifyFactor](https://developer.okta.com/docs/api/resources/authn/#verify-recovery-factor)
 
-Verifies Sms/Call OTP(passCode) sent to the user's device for primary authentication for a recovery transaction.
+Verifies SMS/Call OTP(passCode) sent to the user's device for primary authentication for a recovery transaction.
 
 ```swift
 open func verifyFactor(passCode: String,
@@ -562,7 +562,7 @@ open func verifyFactor(passCode: String,
 
 #### [resendFactor](https://developer.okta.com/docs/api/resources/authn/#verify-sms-recovery-factor)
 
-Resends Sms/Call OTP sent to the user's device for a recovery transaction.
+Resends SMS/Call OTP sent to the user's device for a recovery transaction.
 
 ```swift
 open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -622,7 +622,7 @@ Collection of factor classes. Downcast the factor instance to a factor specific 
 
 #### [enroll](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-sms-factor)
 
-Enrolls a user with the Okta sms factor and an SMS profile. A text message with an OTP is sent to the device during enrollment.
+Enrolls a user with the Okta SMS factor and an SMS profile. A text message with an OTP is sent to the device during enrollment.
 
 ```swift
 public func enroll(phoneNumber: String?,
@@ -633,7 +633,7 @@ public func enroll(phoneNumber: String?,
 
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-sms-factor)
 
-Activates a sms factor by verifying the OTP.
+Activates an SMS factor by verifying the OTP.
 
 ```swift
 public func activate(passCode: String?,
@@ -653,7 +653,7 @@ public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Vo
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-sms-factor)
 
-Verifies an enrolled sms factor by verifying the OTP.
+Verifies an enrolled SMS factor by verifying the OTP.
 
 ```swift
 public func verify(passCode: String?,
@@ -709,8 +709,8 @@ public func verify(passCode: String?,
 
 #### [enroll](https://developer.okta.com/docs/api/resources/authn/#enroll-okta-verify-push-factor)
 
-Enrolls a user with the Okta verify push factor. The factor must be activated on the device by scanning the QR code or visiting the activation link sent via email or sms.
-Use the published activation links to embed the QR code or distribute an activation email or sms.
+Enrolls a user with the Okta verify push factor. The factor must be activated on the device by scanning the QR code or visiting the activation link sent via email or SMS.
+Use the published activation links to embed the QR code or distribute an activation email or SMS.
 
 ```swift
 public func enroll(onStatusChange: @escaping (OktaAuthStatus) -> Void,
