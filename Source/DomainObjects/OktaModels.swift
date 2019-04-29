@@ -12,12 +12,19 @@
 
 import Foundation
 
-// OktaAPISuceess and OktaAPIError are models for REST API json responses
+// OktaAPISuccess and OktaAPIError are models for REST API json responses
 
 public struct OktaAPISuccessResponse: Codable {
 
+    public enum RecoveryType: String, Codable {
+        case password = "PASSWORD"
+        case unlock = "UNLOCK"
+    }
+
     // Provides additional context for the last factor verification attempt.
     public enum FactorResult: String, Codable {
+        case success = "SUCCESS"
+        case active = "ACTIVE"
         case waiting = "WAITING"
         case cancelled = "CANCELLED"
         case timeout = "TIMEOUT"
@@ -30,8 +37,10 @@ public struct OktaAPISuccessResponse: Codable {
     public private(set) var status: AuthStatus?
     public private(set) var stateToken: String?
     public private(set) var sessionToken: String?
-    public private(set) var expirationDate: Date?
+    public private(set) var expirationDate: String?
     public private(set) var relayState: String?
+    public private(set) var recoveryToken: String?
+    public private(set) var recoveryType: RecoveryType?
     public private(set) var factorResult: FactorResult?
     public private(set) var factorType: FactorType?
     public private(set) var embedded: EmbeddedResponse?
@@ -48,6 +57,38 @@ public struct OktaAPISuccessResponse: Codable {
         case embedded = "_embedded"
         case links = "_links"
     }
+
+    public var rawData: Data?
+}
+
+public enum ResendLink: Codable {
+    
+    case resendArray([LinksResponse.Link])
+    case resend(LinksResponse.Link)
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let resendArray = try? container.decode([LinksResponse.Link].self) {
+            self = .resendArray(resendArray)
+        } else if let resend = try? container.decode(LinksResponse.Link.self) {
+            self = .resend(resend)
+        } else {
+            throw DecodingError.typeMismatch(
+                ResendLink.self,
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for Resend link")
+            )
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .resendArray(let resendArray):
+            try container.encode(resendArray)
+        case .resend(let resend):
+            try container.encode(resend)
+        }
+    }
 }
 
 public struct OktaAPIErrorResponse: Codable {
@@ -55,24 +96,40 @@ public struct OktaAPIErrorResponse: Codable {
         var errorSummary: String?
     }
 
-    public var errorCode: String?
-    public var errorSummary: String?
-    public var errorLink: String?
-    public var errorId: String?
-    public var errorCauses: [ErrorCause]?
+    var errorCode: String?
+    var errorSummary: String?
+    var errorLink: String?
+    var errorId: String?
+    var errorCauses: [ErrorCause]?
 }
 
 public struct LinksResponse: Codable {
     public struct Link: Codable {
+        let name: String?
         let href: URL
         let hints: [String:[String]]
     }
-    
-    public let next: Link?
-    public let prev: Link?
-    public let cancel: Link?
-    public let skip: Link?
-    public let resend: [Link]?
+    public struct QRCode: Codable {
+        let href: URL
+        let type: String?
+    }
+
+    let next: Link?
+    let prev: Link?
+    let cancel: Link?
+    let skip: Link?
+    let send: [Link]?
+    let resend: ResendLink?
+    let enroll: Link?
+    let verify: Link?
+    let questions: Link?
+    let qrcode: QRCode?
+}
+
+// Represents the security question for the Security Question factor.
+public struct SecurityQuestion: Codable {
+    public let question: String?
+    public let questionText: String?
 }
 
 public struct EmbeddedResponse: Codable {
@@ -85,15 +142,51 @@ public struct EmbeddedResponse: Codable {
     
     public struct Factor: Codable {
         public let id: String?
-        public let factorType: FactorType?
+        public let factorType: FactorType
         public let provider: FactorProvider?
         public let vendorName: String?
         public let profile: Profile?
+        public let embedded: Embedded?
+        public let links: LinksResponse?
+        public let enrollment: String?
+        public let status: String?
         
         public struct Profile: Codable {
             public let phoneNumber: String?
             public let question: String?
             public let questionText: String?
+        }
+
+        public struct Embedded: Codable {
+            public struct Activation: Codable {
+                public let expiresAt: String?
+                public let timeStep: Int?
+                public let sharedSecret: String?
+                public let encoding: String?
+                public let keyLength: Int?
+                public let links: LinksResponse?
+                enum CodingKeys: String, CodingKey {
+                    case expiresAt
+                    case timeStep
+                    case sharedSecret
+                    case encoding
+                    case keyLength
+                    case links = "_links"
+                }
+            }
+            public let activation: Activation?
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case factorType
+            case provider
+            case vendorName
+            case profile
+            case embedded = "_embedded"
+            case links = "_links"
+            case enrollment
+            case status
         }
     }
 

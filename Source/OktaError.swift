@@ -16,13 +16,15 @@ public enum OktaError: Error {
     case errorBuildingURLRequest
     case connectionError(Error)
     case emptyServerResponse
-    case responseSerializationError(Error)
+    case invalidResponse
+    case responseSerializationError(Error, Data)
     case serverRespondedWithError(OktaAPIErrorResponse)
-    case authenicationStateNotSupported(AuthStatus)
-    case factorNotSupported(EmbeddedResponse.Factor)
     case unexpectedResponse
-    case wrongState(String)
+    case wrongStatus(String)
     case alreadyInProgress
+    case unknownStatus(OktaAPISuccessResponse)
+    case internalError(String)
+    case invalidParameters(String)
 }
 
 public extension OktaError {
@@ -34,7 +36,9 @@ public extension OktaError {
             return "Connection error (\(error.localizedDescription))"
         case .emptyServerResponse:
             return "Empty server response"
-        case .responseSerializationError(let error):
+        case .invalidResponse:
+            return "Invalid server response"
+        case .responseSerializationError(let error, _):
             return "Response serialization error (\(error.localizedDescription))"
         case .serverRespondedWithError(let error):
             let description: String
@@ -46,16 +50,18 @@ public extension OktaError {
                 description = "Unknown"
             }
             return "Server responded with error: \(description)"
-        case .authenicationStateNotSupported(let status):
-            return "Authenication state not supported (\(status.description))"
-        case .factorNotSupported(let factor):
-            return "MFA factor not supported (\(factor))"
         case .unexpectedResponse:
             return "Unexpected response"
-        case .wrongState(error: let error):
+        case .wrongStatus(error: let error):
             return error
         case .alreadyInProgress:
             return "Another request is in progress"
+        case .unknownStatus:
+            return "Received state is unknown"
+        case .internalError:
+            return "Internal error"
+        case .invalidParameters:
+            return "Invalid parameters"
         }
     }
 }

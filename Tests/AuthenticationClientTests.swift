@@ -335,7 +335,7 @@ class AuthenticationClientTests: XCTestCase {
         }
         
         client.stateToken = "state_token"
-        let factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil)
+        let factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil, links: nil)
         client.verify(factor: factor)
         
         wait(for: [delegateVerifyer.asyncExpectation!], timeout: 1.0)
@@ -349,14 +349,14 @@ class AuthenticationClientTests: XCTestCase {
                                      urlSession: URLSession(configuration: .default),
                                      completion: { _ = $0; _ = $1})
         client.currentRequest = request
-        var factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil)
+        var factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil, links: nil)
         client.verify(factor: factor)
         XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
         XCTAssertNotNil(delegateVerifyer.error)
         XCTAssertEqual(delegateVerifyer.error?.description, OktaError.alreadyInProgress.description)
         
         client.currentRequest = nil
-        factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil)
+        factor = EmbeddedResponse.Factor(id: "factor_id", factorType: nil, provider: nil, vendorName: nil, profile: nil, links: nil)
         client.verify(factor: factor)
         XCTAssertTrue(delegateVerifyer.handleErrorCalled, "Expected delegate method handleErrorCalled to be called")
         XCTAssertNotNil(delegateVerifyer.error)
@@ -375,7 +375,7 @@ class AuthenticationClientTests: XCTestCase {
 
         client.stateToken = "state_token"
         client.factorResult = .waiting
-        client.links = LinksResponse(next: nil, prev: nil, cancel: nil, skip: nil, resend: nil)
+        client.links = LinksResponse(next: nil, prev: nil, cancel: nil, skip: nil, resend: nil, enroll: nil)
         client.embedded = EmbeddedResponse(user: nil, target: nil, policy: nil, authentication: nil, factor: nil, factors: nil)
         client.recoveryToken = "recovery_token"
         client.sessionToken = "session_token"
