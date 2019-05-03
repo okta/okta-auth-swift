@@ -21,7 +21,7 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
     }
     
     func testHandleServerResponse_PasswordWarning() {
-       verifyHandleServerResponse(.PASSWORD_WARN, expectedStatus: .passwordWarning)
+       verifyHandleServerResponse(.PASSWORD_WARNING, expectedStatus: .passwordWarning)
     }
     
     func testHandleServerResponse_PasswordExpired() {
@@ -62,7 +62,7 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
         
         challangeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
         
-        let ex = expectation(description: "Callback should be called")
+        var ex = expectation(description: "Callback should be called")
         
         let handler = OktaAuthStatusResponseHandler()
         handler.handleServerResponse(
@@ -81,8 +81,38 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
                 ex.fulfill()
             }
         )
+        waitForExpectations(timeout: 5.0)
+
+        challangeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
+        ex = expectation(description: "Callback should be called")
+        handler.pollInterval = 0.1
+        handler.handleServerResponse(
+            OktaAPIRequest.Result.success(model),
+            currentStatus: challangeStatus,
+            onStatusChanged: { status in
+                XCTFail("Unexpected status change!")
+                ex.fulfill()
+            },
+            onError: { error in
+                XCTFail(error.localizedDescription)
+                ex.fulfill()
+            },
+            onFactorStatusUpdate: { factorResult in
+                XCTAssertEqual(OktaAPISuccessResponse.FactorResult.waiting, factorResult)
+                ex.fulfill()
+            }
+        )
+        XCTAssertNotNil(handler.factorResultPollTimer)
+        XCTAssert(handler.factorResultPollTimer!.isValid)
         
         waitForExpectations(timeout: 5.0)
+        
+        ex = expectation(description: "VerifyFactor function should be called")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            XCTAssert(challangeStatus.apiMock.verifyFactorCalled)
+        }
+
+        waitForExpectations(timeout: 1.0)
     }
     
     func testHandleServerResponse_LockedOut() {
@@ -94,7 +124,7 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
     }
     
     func testHandleServerResponse_RecoveryChallenge() {
-        verifyHandleServerResponse(.RECOVERY_CHALLENGE, expectedStatus: .recoveryChallenge)
+        verifyHandleServerResponse(.RECOVERY_CHALLENGE_SMS, expectedStatus: .recoveryChallenge)
     }
     
     func testHandleServerResponse_Error() {

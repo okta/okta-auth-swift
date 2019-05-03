@@ -34,7 +34,7 @@
 		2F8155912270A983009FA6C5 /* OktaAuthStatusResponseHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8155902270A983009FA6C5 /* OktaAuthStatusResponseHandlerTests.swift */; };
 		2F8155932270B740009FA6C5 /* LOCKED_OUT in Resources */ = {isa = PBXBuildFile; fileRef = 2F8155922270B740009FA6C5 /* LOCKED_OUT */; };
 		2F8155952270B85B009FA6C5 /* RECOVERY in Resources */ = {isa = PBXBuildFile; fileRef = 2F8155942270B85B009FA6C5 /* RECOVERY */; };
-		2F8155972270B878009FA6C5 /* RECOVERY_CHALLENGE in Resources */ = {isa = PBXBuildFile; fileRef = 2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE */; };
+		2F8155972270B878009FA6C5 /* RECOVERY_CHALLENGE_SMS in Resources */ = {isa = PBXBuildFile; fileRef = 2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE_SMS */; };
 		2F8155992270B8AB009FA6C5 /* PASSWORD_RESET in Resources */ = {isa = PBXBuildFile; fileRef = 2F8155982270B8AB009FA6C5 /* PASSWORD_RESET */; };
 		2F81559B2271AD3D009FA6C5 /* OktaAuthStatusFactorEnrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F81559A2271AD3D009FA6C5 /* OktaAuthStatusFactorEnrollTests.swift */; };
 		2F81559D2271AD5B009FA6C5 /* OktaAuthStatusFactorEnrollActivateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F81559C2271AD5B009FA6C5 /* OktaAuthStatusFactorEnrollActivateTests.swift */; };
@@ -50,7 +50,7 @@
 		2FF5C85E21D3B15000EECA75 /* AuthenticationFailedError in Resources */ = {isa = PBXBuildFile; fileRef = 2FF5C85D21D3B15000EECA75 /* AuthenticationFailedError */; };
 		A12F4FF92238311A00DB9147 /* OktaAuthSdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */; };
 		A12F4FFA2238311A00DB9147 /* OktaAuthSdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */; };
-		A1671553227BA90700E7801D /* Unknown_State_And_FactorResult in Resources */ = {isa = PBXBuildFile; fileRef = A1671552227BA90700E7801D /* Unknown_State_And_FactorResult */; };
+		A151096D2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A151096B2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift */; };
 		A1671554227BA90700E7801D /* Unknown_State_And_FactorResult in Resources */ = {isa = PBXBuildFile; fileRef = A1671552227BA90700E7801D /* Unknown_State_And_FactorResult */; };
 		A179276D2229BDB90001C889 /* OktaAuthSdk.podspec in Resources */ = {isa = PBXBuildFile; fileRef = A179276C2229BDB90001C889 /* OktaAuthSdk.podspec */; };
 		A183359A2239A86D007C6175 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
@@ -112,6 +112,9 @@
 		A1920FE922615B3B007D50D2 /* OktaFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920FE722615B3B007D50D2 /* OktaFactorCall.swift */; };
 		A1C06F14221DFFD8005E8369 /* PASSWORD_EXPIRED in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F13221DFFD8005E8369 /* PASSWORD_EXPIRED */; };
 		A1C06F16221E0037005E8369 /* PASSWORD_WARN in Resources */ = {isa = PBXBuildFile; fileRef = A1C06F15221E0037005E8369 /* PASSWORD_WARN */; };
+		A1E746442282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E746432282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift */; };
+		A1E74646228207A800C48A28 /* RECOVERY_CHALLENGE_EMAIL in Resources */ = {isa = PBXBuildFile; fileRef = A1E74645228207A800C48A28 /* RECOVERY_CHALLENGE_EMAIL */; };
+		A1E746482282359B00C48A28 /* OktaAuthStatusRecoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E746472282359B00C48A28 /* OktaAuthStatusRecoveryTests.swift */; };
 		A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */; };
 		FA4ED9A021C1499200A065A1 /* OktaAuth_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4ED99E21C1499200A065A1 /* OktaAuth_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA4ED9AA21C2895B00A065A1 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
@@ -156,7 +159,7 @@
 		2F8155902270A983009FA6C5 /* OktaAuthStatusResponseHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusResponseHandlerTests.swift; sourceTree = "<group>"; };
 		2F8155922270B740009FA6C5 /* LOCKED_OUT */ = {isa = PBXFileReference; lastKnownFileType = text; path = LOCKED_OUT; sourceTree = "<group>"; };
 		2F8155942270B85B009FA6C5 /* RECOVERY */ = {isa = PBXFileReference; lastKnownFileType = text; path = RECOVERY; sourceTree = "<group>"; };
-		2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE */ = {isa = PBXFileReference; lastKnownFileType = text; path = RECOVERY_CHALLENGE; sourceTree = "<group>"; };
+		2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE_SMS */ = {isa = PBXFileReference; lastKnownFileType = text; path = RECOVERY_CHALLENGE_SMS; sourceTree = "<group>"; };
 		2F8155982270B8AB009FA6C5 /* PASSWORD_RESET */ = {isa = PBXFileReference; lastKnownFileType = text; path = PASSWORD_RESET; sourceTree = "<group>"; };
 		2F81559A2271AD3D009FA6C5 /* OktaAuthStatusFactorEnrollTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusFactorEnrollTests.swift; sourceTree = "<group>"; };
 		2F81559C2271AD5B009FA6C5 /* OktaAuthStatusFactorEnrollActivateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusFactorEnrollActivateTests.swift; sourceTree = "<group>"; };
@@ -171,6 +174,7 @@
 		2FF5C85A21D3AEEC00EECA75 /* PrimaryAuthFactorsResponse */ = {isa = PBXFileReference; explicitFileType = text.json; path = PrimaryAuthFactorsResponse; sourceTree = "<group>"; };
 		2FF5C85D21D3B15000EECA75 /* AuthenticationFailedError */ = {isa = PBXFileReference; lastKnownFileType = text; path = AuthenticationFailedError; sourceTree = "<group>"; };
 		A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthSdk.swift; sourceTree = "<group>"; };
+		A151096B2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusPasswordWarningTests.swift; sourceTree = "<group>"; };
 		A1671552227BA90700E7801D /* Unknown_State_And_FactorResult */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Unknown_State_And_FactorResult; sourceTree = "<group>"; };
 		A179276C2229BDB90001C889 /* OktaAuthSdk.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OktaAuthSdk.podspec; sourceTree = "<group>"; };
 		A1920F77225E64D0007D50D2 /* OktaFactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactor.swift; path = Factors/OktaFactor.swift; sourceTree = "<group>"; };
@@ -203,6 +207,9 @@
 		A1920FE722615B3B007D50D2 /* OktaFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OktaFactorCall.swift; path = Factors/OktaFactorCall.swift; sourceTree = "<group>"; };
 		A1C06F13221DFFD8005E8369 /* PASSWORD_EXPIRED */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASSWORD_EXPIRED; sourceTree = "<group>"; };
 		A1C06F15221E0037005E8369 /* PASSWORD_WARN */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PASSWORD_WARN; sourceTree = "<group>"; };
+		A1E746432282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusRecoveryChallengeTests.swift; sourceTree = "<group>"; };
+		A1E74645228207A800C48A28 /* RECOVERY_CHALLENGE_EMAIL */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = RECOVERY_CHALLENGE_EMAIL; sourceTree = "<group>"; };
+		A1E746472282359B00C48A28 /* OktaAuthStatusRecoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusRecoveryTests.swift; sourceTree = "<group>"; };
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
 		FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OktaAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4ED99E21C1499200A065A1 /* OktaAuth_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OktaAuth_iOS.h; sourceTree = "<group>"; };
@@ -273,6 +280,9 @@
 				2F8155A22271EEC1009FA6C5 /* OktaAuthStatusPasswordExpiredTests.swift */,
 				2F8155A62271F6DC009FA6C5 /* OktaAuthStatePasswordResetTests.swift */,
 				2F8155A42271F352009FA6C5 /* OktaAuthStatusLockedOutTests.swift */,
+				A151096B2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift */,
+				A1E746432282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift */,
+				A1E746472282359B00C48A28 /* OktaAuthStatusRecoveryTests.swift */,
 			);
 			path = Statuses;
 			sourceTree = "<group>";
@@ -307,7 +317,8 @@
 				2F8155982270B8AB009FA6C5 /* PASSWORD_RESET */,
 				2F8155922270B740009FA6C5 /* LOCKED_OUT */,
 				2F8155942270B85B009FA6C5 /* RECOVERY */,
-				2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE */,
+				2F8155962270B878009FA6C5 /* RECOVERY_CHALLENGE_SMS */,
+				A1E74645228207A800C48A28 /* RECOVERY_CHALLENGE_EMAIL */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -531,7 +542,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A179276D2229BDB90001C889 /* OktaAuthSdk.podspec in Resources */,
-				A1671553227BA90700E7801D /* Unknown_State_And_FactorResult in Resources */,
 				2F8D79F421D6601600CFDF12 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -545,7 +555,7 @@
 				2F8155992270B8AB009FA6C5 /* PASSWORD_RESET in Resources */,
 				A1C06F14221DFFD8005E8369 /* PASSWORD_EXPIRED in Resources */,
 				2FF5C85C21D3B04D00EECA75 /* PrimaryAuthFactorsResponse in Resources */,
-				2F8155972270B878009FA6C5 /* RECOVERY_CHALLENGE in Resources */,
+				2F8155972270B878009FA6C5 /* RECOVERY_CHALLENGE_SMS in Resources */,
 				2F7C3BC2226DED2300A62FD4 /* MFA_ENROLL_ACTIVATE_Push in Resources */,
 				2F7C3BC4226DED2300A62FD4 /* MFA_CHALLENGE_SMS in Resources */,
 				2F7C3BC3226DED2300A62FD4 /* MFA_REQUIRED in Resources */,
@@ -559,6 +569,7 @@
 				2F7C3BC5226DED2300A62FD4 /* MFA_CHALLENGE_TOTP in Resources */,
 				2F7C3BBE226DED1E00A62FD4 /* MFA_CHALLENGE_WAITING_PUSH in Resources */,
 				2FF5C85221D1078E00EECA75 /* PrimaryAuthResponse in Resources */,
+				A1E74646228207A800C48A28 /* RECOVERY_CHALLENGE_EMAIL in Resources */,
 				2F7C3BBD226DED1B00A62FD4 /* SUCCESS in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -612,6 +623,7 @@
 				2F81558D22708395009FA6C5 /* OktaAuthStatus+Mocking.swift in Sources */,
 				2F8155A72271F6DC009FA6C5 /* OktaAuthStatePasswordResetTests.swift in Sources */,
 				2F81559B2271AD3D009FA6C5 /* OktaAuthStatusFactorEnrollTests.swift in Sources */,
+				A151096D2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift in Sources */,
 				A1920FDF22615B2E007D50D2 /* OktaModels.swift in Sources */,
 				A1920FC422615A97007D50D2 /* OktaAuthStatus.swift in Sources */,
 				A1920FB522615A97007D50D2 /* OktaAuthStatusResponseHandler.swift in Sources */,
@@ -627,6 +639,7 @@
 				A1920FC122615A97007D50D2 /* OktaAuthStatusPasswordWarning.swift in Sources */,
 				A1920FA622615A97007D50D2 /* OktaAuthStatusRecoveryChallenge.swift in Sources */,
 				2F7C3B7E2268B83400A62FD4 /* OktaFactorPushTests.swift in Sources */,
+				A1E746482282359B00C48A28 /* OktaAuthStatusRecoveryTests.swift in Sources */,
 				2F7C3B7A2268AF2800A62FD4 /* OktaAPIRequestTests.swift in Sources */,
 				A1920FE922615B3B007D50D2 /* OktaFactorCall.swift in Sources */,
 				A1920FD622615AE5007D50D2 /* Utils.swift in Sources */,
@@ -653,6 +666,7 @@
 				2F81559F2271AD76009FA6C5 /* OktaAuthStatusFactorRequiredTests.swift in Sources */,
 				2F7C3BD3226F540900A62FD4 /* OktaFactor+Mocking.swift in Sources */,
 				A1920F81225E81EE007D50D2 /* OktaFactorSms.swift in Sources */,
+				A1E746442282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift in Sources */,
 				A1920FCA22615A97007D50D2 /* OktaAuthStatusSuccess.swift in Sources */,
 				A1920F7D225E67A1007D50D2 /* OktaFactorPush.swift in Sources */,
 				2F8155A12271AD91009FA6C5 /* OktaAuthStatusFactorChallengeTests.swift in Sources */,

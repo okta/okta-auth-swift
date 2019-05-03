@@ -55,6 +55,8 @@ public struct OktaAPISuccessResponse: Codable {
         case sessionToken
         case expirationDate = "expiresAt"
         case relayState
+        case recoveryToken
+        case recoveryType
         case factorResult
         case factorType
         case embedded = "_embedded"
