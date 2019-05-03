@@ -120,6 +120,24 @@ class OktaModelsTests: XCTestCase {
         XCTAssertNil(response.links?.resend)
         XCTAssertNil(response.links?.skip)
     }
+
+    func testSuccessResponse_UnknownStatus() {
+        guard let jsonData = readResponse(named: "Unknown_State_And_FactorResult") else {
+            XCTFail("Test resource missing.")
+            return
+        }
+        
+        let response: OktaAPISuccessResponse
+        do {
+            response = try decoder.decode(OktaAPISuccessResponse.self, from: jsonData)
+        } catch let e {
+            XCTFail("JSON parsing failed with error: \(e)")
+            return
+        }
+        
+        XCTAssertEqual(AuthStatus.unknown("SOME_STATUS"), response.status)
+        XCTAssertEqual(OktaAPISuccessResponse.FactorResult.unknown("SOME_FACTOR_RESULT"), response.factorResult)
+    }
     
     func testErrorResponse_AuthenticationFailed() {
         guard let jsonData = readResponse(named: "AuthenticationFailedError") else {
@@ -163,7 +181,7 @@ class OktaModelsTests: XCTestCase {
         XCTAssertNotNil(response.errorCauses)
         XCTAssertEqual("This operation is not allowed in the current authentication state.", response.errorCauses?.first?.errorSummary)
     }
-    
+
     // MARK: - Utils
     
     private func readResponse(named name: String) -> Data? {
@@ -173,5 +191,4 @@ class OktaModelsTests: XCTestCase {
         
         return try? Data(contentsOf: url)
     }
-
 }

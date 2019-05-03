@@ -28,14 +28,15 @@ class OktaAuthStatusFactorEnrollActivateTests: XCTestCase {
     }
     
     func testFactor_Push() {
-        guard let statusSms = createStatus(withResponse: .MFA_ENROLL_ACTIVATE_Push) else {
+        guard let statusPush = createStatus(withResponse: .MFA_ENROLL_ACTIVATE_Push) else {
             XCTFail()
             return
         }
         
-        XCTAssertEqual(FactorType.push, statusSms.factor.type)
-        XCTAssertTrue(statusSms === statusSms.factor.responseDelegate)
-        XCTAssertTrue(statusSms.restApi === statusSms.factor.restApi)
+        XCTAssertEqual(FactorType.push, statusPush.factor.type)
+        XCTAssertEqual(OktaAPISuccessResponse.FactorResult.waiting, statusPush.model.factorResult)
+        XCTAssertTrue(statusPush === statusPush.factor.responseDelegate)
+        XCTAssertTrue(statusPush.restApi === statusPush.factor.restApi)
     }
     
     // MARK: - resend
