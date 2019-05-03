@@ -39,14 +39,15 @@ class OktaAuthStatusFactorChallengeTests: XCTestCase {
     }
     
     func testFactor_Push() {
-        guard let statusSms = createStatus(withResponse: .MFA_CHALLENGE_WAITING_PUSH) else {
+        guard let statusPush = createStatus(withResponse: .MFA_CHALLENGE_WAITING_PUSH) else {
             XCTFail()
             return
         }
         
-        XCTAssertEqual(FactorType.push, statusSms.factor.type)
-        XCTAssertTrue(statusSms === statusSms.factor.responseDelegate)
-        XCTAssertTrue(statusSms.restApi === statusSms.factor.restApi)
+        XCTAssertEqual(FactorType.push, statusPush.factor.type)
+        XCTAssertEqual(OktaAPISuccessResponse.FactorResult.waiting, statusPush.model.factorResult)
+        XCTAssertTrue(statusPush === statusPush.factor.responseDelegate)
+        XCTAssertTrue(statusPush.restApi === statusPush.factor.restApi)
     }
     
     // MARK: - verify

@@ -16,22 +16,25 @@ import Foundation
 
 public struct OktaAPISuccessResponse: Codable {
 
-    public enum RecoveryType: String, Codable {
-        case password = "PASSWORD"
-        case unlock = "UNLOCK"
+    public enum RecoveryType {
+        case password
+        case unlock
+        case unknown(String)
     }
 
     // Provides additional context for the last factor verification attempt.
-    public enum FactorResult: String, Codable {
-        case success = "SUCCESS"
-        case active = "ACTIVE"
-        case waiting = "WAITING"
-        case cancelled = "CANCELLED"
-        case timeout = "TIMEOUT"
-        case timeWindowExceeded = "TIME_WINDOW_EXCEEDED"
-        case passcodeReplayed = "PASSCODE_REPLAYED"
-        case error = "ERROR"
-        case rejected = "REJECTED"
+    public enum FactorResult {
+        case success
+        case active
+        case pending
+        case waiting
+        case cancelled
+        case timeout
+        case timeWindowExceeded
+        case passcodeReplayed
+        case error
+        case rejected
+        case unknown(String)
     }
 
     public private(set) var status: AuthStatus?
@@ -239,10 +242,11 @@ public struct EmbeddedResponse: Codable {
     public struct AuthenticationObject: Codable {
 
         /// The protocol of authentication.
-        public enum AuthProtocol: String, Codable {
-            case saml_2_0 = "SAML2.0"
-            case saml_1_1 = "SAML1.1"
-            case ws_fed = "WS-FED"
+        public enum AuthProtocol {
+            case saml_2_0
+            case saml_1_1
+            case ws_fed
+            case unknown(String)
         }
         
         /// The issuer that generates the assertion after the authentication finishes.
@@ -320,7 +324,67 @@ public struct EmbeddedResponse: Codable {
     }
 }
 
-extension AuthStatus : Codable {
+public extension OktaAPISuccessResponse.FactorResult {
+    public init(raw: String) {
+        switch raw {
+        case "SUCCESS":
+            self = .success
+        case "ACTIVE":
+            self = .active
+        case "PENDING_ACTIVATION":
+            self = .pending
+        case "WAITING":
+            self = .waiting
+        case "CANCELLED":
+            self = .cancelled
+        case "TIMEOUT":
+            self = .timeout
+        case "TIME_WINDOW_EXCEEDED":
+            self = .timeWindowExceeded
+        case "PASSCODE_REPLAYED":
+            self = .passcodeReplayed
+        case "ERROR":
+            self = .error
+        case "REJECTED":
+            self = .rejected
+        default:
+            self = .unknown(raw)
+        }
+    }
+}
+
+public extension OktaAPISuccessResponse.FactorResult {
+    var rawValue: String {
+        switch self {
+        case .success:
+            return "SUCCESS"
+        case .active:
+            return "ACTIVE"
+        case .pending:
+            return "PENDING_ACTIVATION"
+        case .waiting:
+            return "WAITING"
+        case .cancelled:
+            return "CANCELLED"
+        case .timeout:
+            return "TIMEOUT"
+        case .timeWindowExceeded:
+            return "TIME_WINDOW_EXCEEDED"
+        case .passcodeReplayed:
+            return "PASSCODE_REPLAYED"
+        case .error:
+            return "ERROR"
+        case .rejected:
+            return "REJECTED"
+        case .unknown(let unknown):
+            return unknown
+        }
+    }
+}
+
+extension OktaAPISuccessResponse.FactorResult : Equatable {}
+
+extension OktaAPISuccessResponse.FactorResult : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
@@ -329,6 +393,93 @@ extension AuthStatus : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
-        self = AuthStatus(raw: stringValue)
+        self = OktaAPISuccessResponse.FactorResult(raw: stringValue)
     }
 }
+
+public extension OktaAPISuccessResponse.RecoveryType {
+    public init(raw: String) {
+        switch raw {
+        case "PASSWORD":
+            self = .password
+        case "UNLOCK":
+            self = .unlock
+        default:
+            self = .unknown(raw)
+        }
+    }
+}
+
+public extension OktaAPISuccessResponse.RecoveryType {
+    var rawValue: String {
+        switch self {
+        case .password:
+            return "PASSWORD"
+        case .unlock:
+            return "UNLOCK"
+        case .unknown(let unknown):
+            return unknown
+        }
+    }
+}
+
+extension OktaAPISuccessResponse.RecoveryType : Equatable {}
+
+extension OktaAPISuccessResponse.RecoveryType : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        self = OktaAPISuccessResponse.RecoveryType(raw: stringValue)
+    }
+}
+
+public extension EmbeddedResponse.AuthenticationObject.AuthProtocol {
+    public init(raw: String) {
+        switch raw {
+        case "SAML2.0":
+            self = .saml_2_0
+        case "SAML1.1":
+            self = .saml_1_1
+        case "WS-FED":
+            self = .ws_fed
+        default:
+            self = .unknown(raw)
+        }
+    }
+}
+
+public extension EmbeddedResponse.AuthenticationObject.AuthProtocol {
+    var rawValue: String {
+        switch self {
+        case .saml_2_0:
+            return "SAML2.0"
+        case .saml_1_1:
+            return "SAML1.1"
+        case .ws_fed:
+            return "WS-FED"
+        case .unknown(let unknown):
+            return unknown
+        }
+    }
+}
+
+extension EmbeddedResponse.AuthenticationObject.AuthProtocol : Equatable {}
+
+extension EmbeddedResponse.AuthenticationObject.AuthProtocol : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        self = EmbeddedResponse.AuthenticationObject.AuthProtocol(raw: stringValue)
+    }
+}
+
