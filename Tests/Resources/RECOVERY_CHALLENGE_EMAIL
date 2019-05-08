@@ -1,0 +1,7 @@
+{
+"status": "RECOVERY_CHALLENGE",
+"factorResult": "WAITING",
+"relayState": "/myapp/some/deep/link/i/want/to/return/to",
+"factorType": "EMAIL",
+"recoveryType": "PASSWORD"
+}

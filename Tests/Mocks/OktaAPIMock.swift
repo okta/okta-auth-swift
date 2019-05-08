@@ -297,6 +297,24 @@ class OktaAPIMock: OktaAPI {
         return req
     }
 
+    @discardableResult override open func recoverWith(answer: String?,
+                                                      stateToken: String,
+                                                      recoveryToken: String?,
+                                                      link: LinksResponse.Link,
+                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+
+        self.recoverCalled = true
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+
+        return req
+    }
+
     private let result: OktaAPIRequest.Result
     
     var primaryAuthenticationCalled: Bool = false
@@ -312,6 +330,7 @@ class OktaAPIMock: OktaAPI {
     var enrollCalled: Bool = false
     var unlockCalled: Bool = false
     var resetPasswordCalled: Bool = false
+    var recoverCalled: Bool = false
     
     var sentActivationLink: LinksResponse.Link?
     
