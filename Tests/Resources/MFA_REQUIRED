@@ -15,6 +15,42 @@
          }
       },
       "factors":[
+{
+"id": "clf193zUBEROPBNZKPPE",
+"factorType": "call",
+"provider": "OKTA",
+"profile": {
+"phoneNumber": "+1 XXX-XXX-1337"
+},
+"_links": {
+"verify": {
+"href": "https://test.domain.com/api/v1/authn/factors/clf193zUBEROPBNZKPPE/verify",
+"hints": {
+"allow": [
+"POST"
+]
+}
+}
+}
+},
+{
+"id": "rsalhpMQVYKHZKXZJQEW",
+"factorType": "token",
+"provider": "RSA",
+"profile": {
+"credentialId": "dade.murphy@example.com"
+},
+"_links": {
+"verify": {
+"href": "https://test.domain.com/api/v1/authn/factors/rsalhpMQVYKHZKXZJQEW/verify",
+"hints": {
+"allow": [
+"POST"
+]
+}
+}
+}
+},
          {
             "id":"ufskdh8bvdzPcnFQ20h7",
             "factorType":"question",

@@ -15,6 +15,48 @@
          }
       },
       "factors":[
+{
+"factorType": "unknown",
+"provider": "Unknown",
+"_links": {
+"enroll": {
+"href": "https://lohika-um.oktapreview.com/api/v1/authn/factors",
+"hints": {
+"allow": [
+"POST"
+]
+}
+}
+}
+},
+{
+"factorType": "call",
+"provider": "OKTA",
+"_links": {
+"enroll": {
+"href": "https://lohika-um.oktapreview.com/api/v1/authn/factors",
+"hints": {
+"allow": [
+"POST"
+]
+}
+}
+}
+},
+{
+"factorType": "token",
+"provider": "RSA",
+"_links": {
+"enroll": {
+"href": "https://lohika-um.oktapreview.com/api/v1/authn/factors",
+"hints": {
+"allow": [
+"POST"
+]
+}
+}
+}
+},
          {
             "factorType":"question",
             "provider":"OKTA",

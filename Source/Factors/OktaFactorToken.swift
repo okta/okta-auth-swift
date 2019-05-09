@@ -14,6 +14,18 @@ import Foundation
 
 open class OktaFactorToken : OktaFactor {
 
+    public var credentialId: String? {
+        get {
+            return factor.profile?.credentialId
+        }
+    }
+
+    public var factorProvider: FactorProvider? {
+        get {
+            return factor.provider
+        }
+    }
+
     public func enroll(credentialId: String,
                        passCode: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,

@@ -301,7 +301,7 @@ class OktaAPIMock: OktaAPI {
                                                       stateToken: String,
                                                       recoveryToken: String?,
                                                       link: LinksResponse.Link,
-                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+                                                      completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
         DispatchQueue.main.async {
             completion?(self.result)
         }
@@ -312,6 +312,49 @@ class OktaAPIMock: OktaAPI {
                                  urlSession: URLSession(configuration: .default),
                                  completion: { _ = $0; _ = $1})
 
+        return req
+    }
+
+    @discardableResult override open func downloadSecurityQuestions(with link: LinksResponse.Link,
+                                                                    onCompletion: (([SecurityQuestion]) -> Void)? = nil,
+                                                                    onError: ((OktaError) -> Void)? = nil) -> OktaAPIRequest {
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        guard let jsonData = getPayloadData(json: nil, resourceName: "Questions") else {
+            return req
+        }
+        let decoder = JSONDecoder()
+        let response: [SecurityQuestion]
+        do {
+            response = try decoder.decode([SecurityQuestion].self, from: jsonData)
+        } catch {
+            return req
+        }
+
+        DispatchQueue.main.async {
+            onCompletion?(response)
+        }
+        
+        self.downloadQuestionsCalled = true
+
+        return req
+    }
+
+    @discardableResult override open func sendApiRequest(with link: LinksResponse.Link,
+                                                         bodyParams: Dictionary<String, Any>?,
+                                                         method: OktaAPIRequest.Method,
+                                                         completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        self.sendApiRequestCalled = true
+        
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        
         return req
     }
 
@@ -331,6 +374,8 @@ class OktaAPIMock: OktaAPI {
     var unlockCalled: Bool = false
     var resetPasswordCalled: Bool = false
     var recoverCalled: Bool = false
+    var downloadQuestionsCalled: Bool = false
+    var sendApiRequestCalled: Bool = false
     
     var sentActivationLink: LinksResponse.Link?
     
@@ -342,4 +387,30 @@ class OktaAPIMock: OktaAPI {
     var enrollPhoneNumber: String?
     var enrollQuestionId: String?
     var enrollAnswer: String?
+
+    func  getPayloadData(json: String?, resourceName: String?) -> Data? {
+        var jsonData: Data?
+        if let resourceName = resourceName,
+           let url = Bundle.init(for: OktaAPIMock.self).url(forResource: resourceName, withExtension: nil) {
+
+            do {
+                jsonData = try Data(contentsOf: url)
+            } catch {
+                return nil
+            }
+        } else {
+            return nil
+        }
+        
+        if let json = json {
+            
+            jsonData = json.data(using: .utf8)
+        }
+        
+        guard jsonData != nil else {
+            return nil
+        }
+
+        return jsonData
+    }
 }

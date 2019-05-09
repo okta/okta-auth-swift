@@ -160,6 +160,7 @@ public struct EmbeddedResponse: Codable {
             public let phoneNumber: String?
             public let question: String?
             public let questionText: String?
+            public let credentialId: String?
         }
 
         public struct Embedded: Codable {
