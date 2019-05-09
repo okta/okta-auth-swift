@@ -35,6 +35,8 @@ public extension FactorType {
             self = .sms
         case "token:software:totp":
             self = .TOTP
+        case "call":
+            self = .call
         case "push":
             self = .push
         case "token":
@@ -69,7 +71,7 @@ public extension FactorType {
         case .token:
             return "token"
         case .tokenHardware:
-            return "Htoken:hardware"
+            return "token:hardware"
         case .web:
             return "Web"
         case .u2f:
@@ -126,34 +128,75 @@ extension FactorType : Codable {
     }
 }
 
-public enum FactorProvider: String, Codable {
-    case okta = "OKTA"
-    case google = "GOOGLE"
-    case rsa = "RSA"
-    case symantec = "SYMANTEC"
-    case yubico = "YUBICO"
-    case duo = "DUO"
-    case fido = "FIDO"
+public enum FactorProvider {
+    case okta
+    case google
+    case rsa
+    case symantec
+    case yubico
+    case duo
+    case fido
+    case unknown(String)
 }
 
 public extension FactorProvider {
-    var description: String {
+    public init(raw: String) {
+        switch raw {
+        case "OKTA":
+            self = .okta
+        case "GOOGLE":
+            self = .google
+        case "RSA":
+            self = .rsa
+        case "SYMANTEC":
+            self = .symantec
+        case "YUBICO":
+            self = .yubico
+        case "DUO":
+            self = .duo
+        case "FIDO":
+            self = .fido
+        default:
+            self = .unknown(raw)
+        }
+    }
+}
+
+public extension FactorProvider {
+    var rawValue: String {
         switch self {
         case .okta:
-            return "Okta"
+            return "OKTA"
         case .google:
-            return "Google"
+            return "GOOGLE"
         case .rsa:
             return "RSA"
         case .symantec:
-            return "Symantec"
+            return "SYMANTEC"
         case .yubico:
-            return "Yubico"
+            return "YUBICO"
         case .duo:
             return "DUO"
         case .fido:
             return "FIDO"
+        case .unknown(_):
+            return "unknown"
         }
+    }
+}
+
+extension FactorProvider : Equatable {}
+
+extension FactorProvider : Codable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        self = FactorProvider(raw: stringValue)
     }
 }
 

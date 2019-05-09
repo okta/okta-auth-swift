@@ -24,6 +24,9 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
         
         let factors = status.availableFactors
         let expectedFactors: [FactorType] = [
+            .unknown("unknown"),
+            .call,
+            .token,
             .question,
             .sms,
             .push,

@@ -24,6 +24,8 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
         
         let factors = status.availableFactors
         let expectedFactors: [FactorType] = [
+            .call,
+            .token,
             .question,
             .sms,
             .push,

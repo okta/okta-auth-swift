@@ -18,6 +18,7 @@ enum TestResponse: String {
     case MFA_ENROLL_NotEnrolled = "MFA_ENROLL_NotEnrolled"
     case MFA_ENROLL_PartiallyEnrolled = "MFA_ENROLL_PartiallyEnrolled"
     case MFA_ENROLL_ACTIVATE_SMS = "MFA_ENROLL_ACTIVATE_SMS"
+    case MFA_ENROLL_ACTIVATE_CALL = "MFA_ENROLL_ACTIVATE_CALL"
     case MFA_ENROLL_ACTIVATE_Push = "MFA_ENROLL_ACTIVATE_Push"
     case MFA_REQUIRED = "MFA_REQUIRED"
     case MFA_CHALLENGE_SMS = "MFA_CHALLENGE_SMS"
