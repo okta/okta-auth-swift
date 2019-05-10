@@ -98,37 +98,37 @@ public enum ResendLink: Codable {
 
 public struct OktaAPIErrorResponse: Codable {
     public struct ErrorCause: Codable {
-        var errorSummary: String?
+        public var errorSummary: String?
     }
 
-    var errorCode: String?
-    var errorSummary: String?
-    var errorLink: String?
-    var errorId: String?
-    var errorCauses: [ErrorCause]?
+    public var errorCode: String?
+    public var errorSummary: String?
+    public var errorLink: String?
+    public var errorId: String?
+    public var errorCauses: [ErrorCause]?
 }
 
 public struct LinksResponse: Codable {
     public struct Link: Codable {
-        let name: String?
-        let href: URL
-        let hints: [String:[String]]
+        public let name: String?
+        public let href: URL
+        public let hints: [String:[String]]
     }
     public struct QRCode: Codable {
-        let href: URL
-        let type: String?
+        public let href: URL
+        public let type: String?
     }
 
-    let next: Link?
-    let prev: Link?
-    let cancel: Link?
-    let skip: Link?
-    let send: [Link]?
-    let resend: ResendLink?
-    let enroll: Link?
-    let verify: Link?
-    let questions: Link?
-    let qrcode: QRCode?
+    public let next: Link?
+    public let prev: Link?
+    public let cancel: Link?
+    public let skip: Link?
+    public let send: [Link]?
+    public let resend: ResendLink?
+    public let enroll: Link?
+    public let verify: Link?
+    public let questions: Link?
+    public let qrcode: QRCode?
 }
 
 // Represents the security question for the Security Question factor.
@@ -210,7 +210,7 @@ public struct EmbeddedResponse: Codable {
         
         /// User’s recovery question used for verification of a recovery transaction.
         public struct RecoveryQuestion: Codable {
-            let question: String?
+            public let question: String?
         }
         
         public let id: String?
