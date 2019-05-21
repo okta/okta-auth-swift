@@ -29,7 +29,7 @@ public enum AuthStatus {
 }
 
 public extension AuthStatus {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "UNAUTHENTICATED":
             self = .unauthenticated
@@ -60,7 +60,7 @@ public extension AuthStatus {
         }
     }
     
-    public var rawValue: String {
+    var rawValue: String {
         switch self {
         case .unauthenticated:
             return "UNAUTHENTICATED"
@@ -88,37 +88,6 @@ public extension AuthStatus {
             return "SUCCESS"
         case .unknown(let raw):
             return raw
-        }
-    }
-
-    public var description: String {
-        switch self {
-        case .unauthenticated:
-            return "Unauthenticated"
-        case .passwordWarning:
-            return "Password Warning"
-        case .passwordExpired:
-            return "Password Expired"
-        case .recovery:
-            return "Recovery"
-        case .recoveryChallenge:
-            return "Recovery Challenge"
-        case .passwordReset:
-            return "Password Reset"
-        case .lockedOut:
-            return "Locked Out"
-        case .MFAEnroll:
-            return "MFA Enroll"
-        case .MFAEnrollActivate:
-            return "MFA Enroll Activate"
-        case .MFARequired:
-            return "MFA Required"
-        case .MFAChallenge:
-            return "MFA Challenge"
-        case .success:
-            return "Success"
-        case .unknown(let raw):
-            return "Unknown (\(raw))"
         }
     }
 }

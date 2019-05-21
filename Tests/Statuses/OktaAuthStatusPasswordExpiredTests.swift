@@ -63,7 +63,7 @@ class OktaAuthStatusPasswordExpiredTests: XCTestCase {
             },
             onError: { error in
                 XCTAssertEqual(
-                    "The operation couldn’t be completed. (OktaAuthNative_iOS_Tests.OktaError error 2.)",
+                    "Server responded with error: Authentication failed",
                     error.localizedDescription
                 )
                 ex.fulfill()

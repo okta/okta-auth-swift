@@ -61,16 +61,6 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
         return true
     }
 
-    open func activateFactor(passCode: String?,
-                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void,
-                             onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        self.factor.activate(passCode: passCode,
-                             onStatusChange: onStatusChange,
-                             onError: onError,
-                             onFactorStatusUpdate: onFactorStatusUpdate)
-    }
-
     open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         guard canResend() else {

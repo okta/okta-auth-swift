@@ -27,7 +27,7 @@ public enum FactorType {
 }
 
 public extension FactorType {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "question":
             self = .question
@@ -43,7 +43,7 @@ public extension FactorType {
             self = .token
         case "token:hardware":
             self = .tokenHardware
-        case "web":
+        case "web", "Web":
             self = .web
         case "u2f":
             self = .u2f
@@ -73,42 +73,13 @@ public extension FactorType {
         case .tokenHardware:
             return "token:hardware"
         case .web:
-            return "Web"
+            return "web"
         case .u2f:
             return "u2f"
         case .email:
             return "email"
-        case .unknown(_):
-            return "unknown"
-        }
-    }
-}
-
-public extension FactorType {
-    var description: String {
-        switch self {
-        case .question:
-            return "Security Question"
-        case .sms:
-            return "SMS"
-        case .call:
-            return "Call"
-        case .TOTP:
-            return "TOTP"
-        case .push:
-            return "Push Notification"
-        case .token:
-            return "Token"
-        case .tokenHardware:
-            return "Hardware Token"
-        case .web:
-            return "Web"
-        case .u2f:
-            return "U2F"
-        case .email:
-            return "Email"
-        case .unknown(_):
-            return "unknown"
+        case .unknown(let value):
+            return value
         }
     }
 }
@@ -140,7 +111,7 @@ public enum FactorProvider {
 }
 
 public extension FactorProvider {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "OKTA":
             self = .okta
@@ -179,8 +150,8 @@ public extension FactorProvider {
             return "DUO"
         case .fido:
             return "FIDO"
-        case .unknown(_):
-            return "unknown"
+        case .unknown(let raw):
+            return raw
         }
     }
 }

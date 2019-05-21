@@ -25,13 +25,6 @@ open class OktaFactorTotp : OktaFactor {
                     onError: onError)
     }
 
-    public func activate(passCode: String,
-                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                         onError: @escaping (_ error: OktaError) -> Void,
-                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        super.activate(passCode: passCode, onStatusChange: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
-    }
-
     public func select(passCode: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void) {
