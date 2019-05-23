@@ -78,8 +78,38 @@ public extension FactorType {
             return "u2f"
         case .email:
             return "email"
-        case .unknown(let value):
-            return value
+        case .unknown(let raw):
+            return raw
+        }
+    }
+}
+
+@available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v5.0. Please use rawValue instead.")
+public extension FactorType {
+    var description: String {
+        switch self {
+        case .question:
+            return "Security Question"
+        case .sms:
+            return "SMS"
+        case .call:
+            return "Call"
+        case .TOTP:
+            return "TOTP"
+        case .push:
+            return "Push Notification"
+        case .token:
+            return "Token"
+        case .tokenHardware:
+            return "Hardware Token"
+        case .web:
+            return "Web"
+        case .u2f:
+            return "U2F"
+        case .email:
+            return "Email"
+        case .unknown(let raw):
+            return raw
         }
     }
 }

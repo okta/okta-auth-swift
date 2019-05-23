@@ -90,6 +90,38 @@ public extension AuthStatus {
             return raw
         }
     }
+
+    @available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v5.0. Please use rawValue instead.")
+    var description: String {
+        switch self {
+        case .unauthenticated:
+            return "Unauthenticated"
+        case .passwordWarning:
+            return "Password Warning"
+        case .passwordExpired:
+            return "Password Expired"
+        case .recovery:
+            return "Recovery"
+        case .recoveryChallenge:
+            return "Recovery Challenge"
+        case .passwordReset:
+            return "Password Reset"
+        case .lockedOut:
+            return "Locked Out"
+        case .MFAEnroll:
+            return "MFA Enroll"
+        case .MFAEnrollActivate:
+            return "MFA Enroll Activate"
+        case .MFARequired:
+            return "MFA Required"
+        case .MFAChallenge:
+            return "MFA Challenge"
+        case .success:
+            return "Success"
+        case .unknown(let raw):
+            return "Unknown (\(raw))"
+        }
+    }
 }
 
 extension AuthStatus : Equatable {}
