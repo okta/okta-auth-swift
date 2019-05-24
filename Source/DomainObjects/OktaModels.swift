@@ -328,7 +328,7 @@ public struct EmbeddedResponse: Codable {
 }
 
 public extension OktaAPISuccessResponse.FactorResult {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "SUCCESS":
             self = .success
@@ -354,9 +354,7 @@ public extension OktaAPISuccessResponse.FactorResult {
             self = .unknown(raw)
         }
     }
-}
 
-public extension OktaAPISuccessResponse.FactorResult {
     var rawValue: String {
         switch self {
         case .success:
@@ -401,7 +399,7 @@ extension OktaAPISuccessResponse.FactorResult : Codable {
 }
 
 public extension OktaAPISuccessResponse.RecoveryType {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "PASSWORD":
             self = .password
@@ -442,7 +440,7 @@ extension OktaAPISuccessResponse.RecoveryType : Codable {
 }
 
 public extension EmbeddedResponse.AuthenticationObject.AuthProtocol {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "SAML2.0":
             self = .saml_2_0

@@ -1,15 +1,15 @@
 {
-   "stateToken":"00mv-_JFjDYoBJdKRVgXHX0e-BZxWouM9jcRj_EsyC",
+   "stateToken":"test_state_token",
    "expiresAt":"2019-04-18T15:53:11.000Z",
    "status":"MFA_REQUIRED",
    "_embedded":{
       "user":{
-         "id":"00ujbyedtoxuuXn9l0h7",
+         "id":"test_user_id",
          "passwordChanged":"2019-02-11T14:09:22.000Z",
          "profile":{
-            "login":"ayurok",
-            "firstName":"ayurok",
-            "lastName":"ayurok",
+            "login":"test_user",
+            "firstName":"test_first_name",
+            "lastName":"test_last_name",
             "locale":"en",
             "timeZone":"America/Los_Angeles"
          }
@@ -96,7 +96,7 @@
             "provider":"OKTA",
             "vendorName":"OKTA",
             "profile":{
-               "credentialId":"ayurok",
+               "credentialId":"test_user",
                "deviceType":"SmartPhone_IPhone",
                "keys":[
                   {
@@ -129,7 +129,7 @@
             "provider":"OKTA",
             "vendorName":"OKTA",
             "profile":{
-               "credentialId":"ayurok"
+               "credentialId":"test_id"
             },
             "_links":{
                "verify":{

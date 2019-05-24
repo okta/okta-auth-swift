@@ -40,7 +40,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
             onError: { error in
                 XCTAssertEqual(
                     "Invalid server response",
-                    error.description
+                    error.localizedDescription
                 )
                 ex.fulfill()
             }
@@ -59,7 +59,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
             onError: { error in
                 XCTAssertEqual(
                     "Invalid server response",
-                    error.description
+                    error.localizedDescription
                 )
                 ex.fulfill()
             }
@@ -136,7 +136,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
         },
             onError: { error in
                 XCTAssertEqual(
-                    "The operation couldn’t be completed. (OktaAuthNative_iOS_Tests.OktaError error 2.)",
+                    "Server responded with error: Authentication failed",
                     error.localizedDescription
                 )
                 ex.fulfill()
@@ -158,7 +158,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
         },
             onError: { error in
                 XCTAssertEqual(
-                    "The operation couldn’t be completed. (OktaAuthNative_iOS_Tests.OktaError error 2.)",
+                    "Server responded with error: Authentication failed",
                     error.localizedDescription
                 )
                 ex.fulfill()
@@ -168,6 +168,32 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
         
         XCTAssertTrue(status.apiMock.performCalled)
+    }
+    
+    func testVerifyWithRecoveryTonken() {
+        guard let status = createStatusForSMSChallenge() else {
+            XCTFail()
+            return
+        }
+        
+        status.setupApiMockResponse(.SUCCESS)
+        
+        let ex = expectation(description: "Callback is expected!")
+        status.verifyFactor(
+            recoveryToken: "test_token",
+            onStatusChange: { status in
+                XCTAssertEqual(AuthStatus.success, status.statusType)
+                ex.fulfill()
+            },
+            onError: { error in
+                XCTFail(error.localizedDescription)
+                ex.fulfill()
+            }
+        )
+        
+        waitForExpectations(timeout: 5.0)
+        
+        XCTAssertTrue(status.apiMock.verifyFactorCalled)
     }
 
     // MARK: - Utils
