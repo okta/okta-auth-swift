@@ -83,10 +83,17 @@ If you do not already have a **Developer Edition Account**, you can create one a
 
 ## Getting started
 
+### CocoaPods
 This SDK is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
 pod "OktaAuthSdk"
+```
+
+### Carthage
+To integrate this SDK into your Xcode project using [Carthage](https://github.com/Carthage/Carthage), specify it in your Cartfile:
+```ruby
+github "okta/okta-auth-swift"
 ```
 
 ## Usage guide
