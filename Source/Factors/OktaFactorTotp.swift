@@ -14,6 +14,24 @@ import Foundation
 
 open class OktaFactorTotp : OktaFactor {
 
+    public var activation: EmbeddedResponse.Factor.Embedded.Activation? {
+        get {
+            return factor.embedded?.activation
+        }
+    }
+
+    public var activationLinks: LinksResponse? {
+        get {
+            return factor.embedded?.activation?.links
+        }
+    }
+
+    public var qrCodeLink: LinksResponse.QRCode? {
+        get {
+            return factor.embedded?.activation?.links?.qrcode
+        }
+    }
+
     public func enroll(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         self.enroll(questionId: nil,

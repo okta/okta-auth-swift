@@ -14,6 +14,21 @@ import XCTest
 @testable import OktaAuthNative
 
 class OktaFactorTotpTests: OktaFactorTestCase {
+
+    func testActivation() {
+        guard let factor: OktaFactorTotp = createFactor(from: .MFA_ENROLL_ACTIVATE_TOTP, type: .TOTP) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertNotNil(factor.activation)
+        XCTAssertNotNil(factor.activationLinks)
+        XCTAssertNotNil(factor.activationLinks?.qrcode)
+        XCTAssertEqual(
+            "https://test.domain.com.com/api/v1/users/factors/qr/cQYp5xpm",
+            factor.qrCodeLink?.href.absoluteString
+        )
+    }
     
     // MARK: - verify
     
