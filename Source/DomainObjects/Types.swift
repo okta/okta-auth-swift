@@ -84,7 +84,7 @@ public extension FactorType {
     }
 }
 
-@available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v5.0. Please use rawValue instead.")
+@available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v2.0. Please use rawValue instead.")
 public extension FactorType {
     var description: String {
         switch self {

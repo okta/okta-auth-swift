@@ -91,7 +91,7 @@ public extension AuthStatus {
         }
     }
 
-    @available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v5.0. Please use rawValue instead.")
+    @available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v2.0. Please use rawValue instead.")
     var description: String {
         switch self {
         case .unauthenticated:
