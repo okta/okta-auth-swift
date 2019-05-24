@@ -15,6 +15,69 @@ import XCTest
 
 class OktaFactorTotpTests: OktaFactorTestCase {
     
+    // MARK: - enroll
+    
+    func testEnroll() {
+        guard let factor: OktaFactorTotp = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .TOTP) else {
+            XCTFail()
+            return
+        }
+        
+        factor.setupApiMockResponse(.MFA_REQUIRED)
+        let delegate = factor.setupMockDelegate(with: try! OktaAuthStatusFactorRequired(
+            currentState: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!),
+            model: TestResponse.MFA_REQUIRED.parse()!
+        ))
+        
+        let ex = expectation(description: "Operation should succeed!")
+        
+        factor.enroll(
+            onStatusChange: { status in
+                XCTAssertEqual( AuthStatus.MFARequired , status.statusType)
+                ex.fulfill()
+            },
+            onError: { error in
+                XCTFail(error.localizedDescription)
+                ex.fulfill()
+            }
+        )
+        
+        waitForExpectations(timeout: 5.0)
+        
+        verifyDelegateSucceeded(delegate, with: .MFA_REQUIRED)
+        
+        XCTAssertTrue(factor.apiMock.enrollCalled)
+    }
+    
+    func testEnroll_ApiFailure() {
+         guard let factor: OktaFactorTotp = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .TOTP) else {
+            XCTFail()
+            return
+        }
+        
+        factor.setupApiMockFailure()
+        let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
+        
+        let ex = expectation(description: "Operation should fail!")
+        
+        factor.enroll(
+            onStatusChange: { status in
+                XCTFail("Operation should fail!")
+                ex.fulfill()
+            },
+            onError: { error in
+                XCTAssertEqual(delegate.error?.localizedDescription, error.localizedDescription)
+                ex.fulfill()
+            }
+        )
+        
+        waitForExpectations(timeout: 5.0)
+        
+        verifyDelegateFailed(delegate)
+        
+        XCTAssertTrue(factor.apiMock.enrollCalled)
+    }
+    
     // MARK: - verify
     
     func testVerify() {
@@ -110,7 +173,7 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             },
             onError: { error in
-                XCTFail(error.description)
+                XCTFail(error.localizedDescription)
                 ex.fulfill()
             }
         )

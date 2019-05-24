@@ -146,7 +146,7 @@ class OktaFactorPushTests: OktaFactorTestCase {
             },
             onError: { error in
                 XCTAssertEqual(
-                    "The operation couldn’t be completed. (OktaAuthNative_iOS_Tests.OktaError error 2.)",
+                    "Server responded with error: Authentication failed",
                     error.localizedDescription
                 )
                 ex.fulfill()
@@ -227,7 +227,7 @@ class OktaFactorPushTests: OktaFactorTestCase {
             },
             onError: { error in
                 XCTAssertEqual(
-                    "The operation couldn’t be completed. (OktaAuthNative_iOS_Tests.OktaError error 2.)",
+                    "Server responded with error: Authentication failed",
                     error.localizedDescription
                 )
                 ex.fulfill()
@@ -386,7 +386,7 @@ class OktaFactorPushTests: OktaFactorTestCase {
                 ex.fulfill()
             },
             onError: { error in
-                XCTFail(error.description)
+                XCTFail(error.localizedDescription)
                 ex.fulfill()
             }
         )

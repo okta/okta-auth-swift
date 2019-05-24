@@ -29,7 +29,7 @@ public enum AuthStatus {
 }
 
 public extension AuthStatus {
-    public init(raw: String) {
+    init(raw: String) {
         switch raw {
         case "UNAUTHENTICATED":
             self = .unauthenticated
@@ -60,7 +60,7 @@ public extension AuthStatus {
         }
     }
     
-    public var rawValue: String {
+    var rawValue: String {
         switch self {
         case .unauthenticated:
             return "UNAUTHENTICATED"
@@ -91,7 +91,8 @@ public extension AuthStatus {
         }
     }
 
-    public var description: String {
+    @available(swift, deprecated: 1.2, obsoleted: 2.0, message: "This will be removed in v2.0. Please use rawValue instead.")
+    var description: String {
         switch self {
         case .unauthenticated:
             return "Unauthenticated"

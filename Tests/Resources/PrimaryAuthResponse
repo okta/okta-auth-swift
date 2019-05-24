@@ -1,1 +1,0 @@
-{"expiresAt":"2018-12-26T12:44:13.000Z","status":"SUCCESS","sessionToken":"test_session_token","_embedded":{"user":{"id":"test_user_id","passwordChanged":"2018-12-03T10:47:38.000Z","profile":{"login":"testname.testlastname@okta.com","firstName":"TestName","lastName":"TestLastName","locale":"en","timeZone":"America/Los_Angeles"}}}}
