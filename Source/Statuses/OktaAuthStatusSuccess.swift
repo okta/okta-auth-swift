@@ -14,13 +14,16 @@ import Foundation
 
 open class OktaAuthStatusSuccess : OktaAuthStatus {
     
-    public var sessionToken: String
+    open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
+        get {
+            return model.recoveryType
+        }
+    }
+
+    public var sessionToken: String?
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
-        guard let sessionToken = model.sessionToken else {
-            throw OktaError.invalidResponse
-        }
-        self.sessionToken = sessionToken
+        self.sessionToken = model.sessionToken
         try super.init(currentState: currentState, model: model)
         statusType = .success
     }
