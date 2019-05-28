@@ -241,7 +241,7 @@ class OktaFactorCallTests: OktaFactorTestCase {
                 ex.fulfill()
         },
             onError: { error in
-                XCTFail(error.description)
+                XCTFail(error.localizedDescription)
                 ex.fulfill()
         }
         )

@@ -357,6 +357,18 @@ class OktaAPIMock: OktaAPI {
         
         return req
     }
+    
+    override func recoverPassword(username: String, factor: FactorType, completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
+        DispatchQueue.main.async {
+            completion?(self.result)
+        }
+        
+        self.recoverCalled = true
+        let req = OktaAPIRequest(baseURL: URL(string: "https://dummy.url")!,
+                                 urlSession: URLSession(configuration: .default),
+                                 completion: { _ = $0; _ = $1})
+        return req
+    }
 
     private let result: OktaAPIRequest.Result
     
