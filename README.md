@@ -33,14 +33,14 @@ The Okta Authentication SDK is a convenience wrapper around [Okta's Authenticati
     * [OktaAuthStatusLockedOut](#oktaauthstatuslockedout)
 * [API Reference - Factor classes](#api-reference---factor-classes)
     * [OktaFactorSms](#oktafactorsms)
-    * [OktaFactorCall](#opktafactorcall)
+    * [OktaFactorCall](#oktafactorcall)
     * [OktaFactorPush](#oktafactorpush)
     * [OktaFactorTotp](#oktafactortotp)
     * [OktaFactorQuestion](#oktafactorquestion)
     * [OktaFactorQuestion](#oktafactorquestion)
     * [OktaFactorToken](#oktafactortoken)
     * [OktaFactorOther](#oktafactorother)
-* [SDK extenstion](#sdk-extenstion)
+* [SDK extension](#sdk-extension)
 * [Contributing](#contributing)
 
 ## Is This Library Right for Me?
