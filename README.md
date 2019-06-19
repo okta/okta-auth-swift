@@ -77,6 +77,7 @@ If you run into problems using the SDK, you can
 
 * Ask questions on the [Okta Developer Forums][devforum]
 * Post [issues][github-issues] here on GitHub (for code errors)
+* Check our [sample application](https://github.com/okta/samples-ios/tree/master/custom-sign-in)
 
 ## Prerequisites
 
@@ -192,6 +193,7 @@ func handleStatus(status: OktaAuthStatus) {
     }
 }
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/AuthFlowCoordinator.swift#L41-L87)
 
 ### Authenticate a User
 
@@ -207,9 +209,9 @@ OktaAuthSdk.authenticate(with: URL(string: "https://{yourOktaDomain}")!,
                          onError: { error in
                              handleError(error)
 })
-
 ```
 Please refer to the [Primary Authentication](https://developer.okta.com/docs/api/resources/authn/#primary-authentication) section of API documentation for more information about this API request.
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/SignIn/SignInViewController.swift#L98-L108)
 
 ### Unlock account
 
@@ -225,6 +227,7 @@ OktaAuthSdk.unlockAccount(with: URL(string: "https://{yourOktaDomain}")!,
 })
 ```
 Please refer to the [Unlock Account](https://developer.okta.com/docs/api/resources/authn/#unlock-account) section of API documentation for more information about this API request.
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/SignIn/SignInViewController.swift#L67-L83)
 
 ### Forgot password
 
@@ -240,6 +243,7 @@ OktaAuthSdk.recoverPassword(with: URL(string: "https://{yourOktaDomain}")!,
 })
 ```
 Please refer to the [Forgot Password](https://developer.okta.com/docs/api/resources/authn/#forgot-password) section of API documentation for more information about this API request.
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/SignIn/SignInViewController.swift#L55-L65)
 
 ### Restore authentication or recover transaction with the state token
 
@@ -270,6 +274,7 @@ Returns `true` if current status can transition to the previous status.
 ```swift
 open func canReturn() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/AuthBaseViewController.swift#L39-L47)
 
 #### [returnToPreviousStatus](https://developer.okta.com/docs/api/resources/authn/#previous-transaction-state)
 
@@ -279,6 +284,7 @@ Moves the current transaction state back to the previous state.
 open func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                  onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/AuthBaseViewController.swift#L65-L71)
 
 #### canCancel
 
@@ -287,6 +293,7 @@ Returns `true` if current flow can be cancelled.
 ```swift
 open func canCancel() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordManagementViewController.swift#L32-L33)
 
 #### [cancel](https://developer.okta.com/docs/api/resources/authn/#previous-transaction-state)
 
@@ -296,6 +303,7 @@ Cancels the current transaction and revokes the state token.
 open func cancel(onSuccess: (() -> Void)? = nil,
                  onError: ((_ error: OktaError) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/AuthBaseViewController.swift#L59)
 
 ### OktaAuthStatusUnauthenticated
 
@@ -321,6 +329,7 @@ open func recoverPassword(username: String,
 ### OktaAuthStatusSuccess
 
 The transaction has completed successfully. Add a handler function to retrieve the session token.
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/UserProfile/UserProfileViewController.swift#L29-L51)
 
 ### OktaAuthStatusFactorEnroll
 
@@ -341,6 +350,7 @@ Returns `true` if enrollment can be skipped.
 ```swift
 open func canSkipEnrollment() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L30-L36)
 
 #### [skipEnrollment](https://developer.okta.com/docs/api/resources/authn/#skip-transaction-state)
 
@@ -350,6 +360,7 @@ Skips the current transaction state and advance to the next state.
 open func skipEnrollment(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L41-L47)
 
 #### [enrollFactor](https://developer.okta.com/docs/api/resources/authn/#enroll-factor)
 
@@ -377,6 +388,7 @@ Returns `true` if SDK can resend factor.
 ```swift
 open func canResend(factor: OktaFactor) -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L35)
 
 #### [activateFactor](https://developer.okta.com/docs/api/resources/authn/#activate-factor)
 
@@ -397,6 +409,7 @@ Tries to resend activate request.
 open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L58-L63)
 
 ### OktaAuthStatusFactorRequired
 
@@ -423,6 +436,7 @@ Returns `true` if the SDK can verify challenge.
 ```swift
 open func canVerify() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L30)
 
 #### canResend
 
@@ -431,6 +445,7 @@ Returns `true` if the SDK can resend challenge for the selected factor.
 ```swift
 open func canResend() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L29)
 
 #### [verifyFactor](https://developer.okta.com/docs/api/resources/authn/#verify-factor)
 
@@ -452,6 +467,7 @@ Sends another OTP code or push notification if the user didn't receive the previ
 open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L50-L55)
 
 ### OktaAuthStatusPasswordExpired
 
@@ -475,6 +491,7 @@ open func changePassword(oldPassword: String,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordManagementViewController.swift#L42-L49)
 
 ### OktaAuthStatusPasswordWarning
 
@@ -495,6 +512,7 @@ Returns `true` if user may skip password change.
 ```swift
 open func canSkip() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordManagementViewController.swift#L29)
 
 #### [changePassword](https://developer.okta.com/docs/api/resources/authn/#change-password)
 
@@ -506,6 +524,7 @@ open func changePassword(oldPassword: String,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                          onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordManagementViewController.swift#L52-L59)
 
 #### [skipPasswordChange](https://developer.okta.com/docs/api/resources/authn/#skip-transaction-state)
 
@@ -515,6 +534,7 @@ Sends skip request to skip the password change state and advance to the next sta
 open func skipPasswordChange(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                              onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordManagementViewController.swift#L66-L70)
 
 ### OktaAuthStatusRecovery
 
@@ -527,6 +547,7 @@ Returns `true` if recovery flow can be continued.
 ```swift
 open func canRecover() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryViewController.swift#L29)
 
 #### [recoverWithAnswer](https://developer.okta.com/docs/api/resources/authn/#answer-recovery-question)
 
@@ -537,6 +558,7 @@ open func recoverWithAnswer(_ answer: String,
                             onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                             onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryViewController.swift#L39-L47)
 
 ### OktaAuthStatusRecoveryChallenge
 
@@ -549,6 +571,7 @@ Returns `true` if the factor can be verified.
 ```swift
 open func canVerify() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryChallengeViewController.swift#L38)
 
 #### canResend
 
@@ -557,6 +580,7 @@ Returns `true` if the factor can be resent.
 ```swift
 open func canResend() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryChallengeViewController.swift#L39)
 
 #### [verifyFactor](https://developer.okta.com/docs/api/resources/authn/#verify-recovery-factor)
 
@@ -567,6 +591,7 @@ open func verifyFactor(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryChallengeViewController.swift#L55-L63)
 
 #### [resendFactor](https://developer.okta.com/docs/api/resources/authn/#verify-sms-recovery-factor)
 
@@ -576,6 +601,7 @@ Resends SMS/Call OTP sent to the user's device for a recovery transaction.
 open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordRecoveryChallengeViewController.swift#L68-L74)
 
 ### OktaAuthStatusPasswordReset
 
@@ -588,6 +614,7 @@ Returns `true` if password can be reset.
 ```swift
 open func canReset() -> Bool
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordResetViewController.swift#L29)
 
 #### [resetPassword](https://developer.okta.com/docs/api/resources/authn/#reset-password)
 
@@ -598,6 +625,7 @@ open func resetPassword(newPassword: String,
                         onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                         onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/PasswordManagement/PasswordResetViewController.swift#L38-L46)
 
 ### OktaAuthStatusLockedOut
 
@@ -638,6 +666,7 @@ public func enroll(phoneNumber: String?,
                    onError: @escaping (OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L103-L117)
 
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-sms-factor)
 
@@ -649,6 +678,7 @@ public func activate(passCode: String?,
                      onError: @escaping (_ error: OktaError) -> Void,
                      onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L88-L98)
 
 #### [select](https://developer.okta.com/docs/api/resources/authn/#verify-sms-factor)
 
@@ -658,6 +688,7 @@ Sends a new OTP to the device.
 public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                    onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-sms-factor)
 
@@ -669,6 +700,7 @@ public func verify(passCode: String?,
                    onError: @escaping (_ error: OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L73-L84)
 
 ### OktaFactorCall
 
@@ -682,6 +714,7 @@ public func enroll(phoneNumber: String?,
                    onError: @escaping (OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L103-L117)
 
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-call-factor)
 
@@ -693,6 +726,7 @@ public func activate(passCode: String?,
                      onError: @escaping (_ error: OktaError) -> Void,
                      onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L88-L98)
 
 #### [select](https://developer.okta.com/docs/api/resources/authn/#verify-call-factor)
 
@@ -701,6 +735,7 @@ Sends a new OTP to the device.
 public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                    onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-call-factor)
 
@@ -712,6 +747,7 @@ public func verify(passCode: String?,
                    onError: @escaping (_ error: OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L73-L84)
 
 ### OktaFactorPush
 
@@ -724,6 +760,7 @@ Use the published activation links to embed the QR code or distribute an activat
 public func enroll(onStatusChange: @escaping (OktaAuthStatus) -> Void,
                    onError: @escaping (OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L125-L134)
 
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-call-factor)
 
@@ -736,6 +773,7 @@ public func activate(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> 
                      onError: @escaping (_ error: OktaError) -> Void,
                      onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFActivatePushTotpViewController.swift#L48-L62)
 
 #### [sendActivationLinkViaSms](https://developer.okta.com/docs/api/resources/authn/#activate-push-factor)
 
@@ -764,6 +802,7 @@ Sends an asynchronous push notification (challenge) to the device for the user t
 public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                    onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-push-factor)
 
@@ -775,6 +814,7 @@ public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Vo
                    onError: @escaping (_ error: OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAPushViewController.swift#L44-L57)
 
 ### OktaFactorTotp
 
@@ -786,6 +826,7 @@ Enrolls a user with the Okta token:software:totp factor.
 public func enroll(onStatusChange: @escaping (OktaAuthStatus) -> Void,
                    onError: @escaping (OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L139-L148)
 
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-totp-factor)
 
@@ -797,6 +838,7 @@ public func activate(passCode: String,
                      onError: @escaping (_ error: OktaError) -> Void,
                      onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFActivatePushTotpViewController.swift#L75-L90)
 
 #### [select](https://developer.okta.com/docs/api/resources/authn/#verify-totp-factor)
 
@@ -807,6 +849,7 @@ public func select(passCode: String,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
                    onError: @escaping (OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-totp-factor)
 
@@ -818,6 +861,7 @@ public func verify(passCode: String,
                    onError: @escaping (_ error: OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFATOTPViewController.swift#L39-L50)
 
 ### OktaFactorQuestion
 
@@ -832,6 +876,7 @@ public func enroll(questionId: String,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
                    onError: @escaping (OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L178-L190)
 
 #### downloadSecurityQuestions
 
@@ -841,6 +886,7 @@ Downloads security questions for the user
 public func downloadSecurityQuestions(onDownloadComplete: @escaping ([SecurityQuestion]) -> Void,
                                       onError: @escaping (_ error: OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L154-L167)
 
 #### [select](https://developer.okta.com/docs/api/resources/authn/#verify-security-question-factor)
 
@@ -852,6 +898,7 @@ public func select(answerToSecurityQuestion: String,
                    onError: @escaping (OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-security-question-factor)
 
@@ -863,6 +910,7 @@ public func verify(answerToSecurityQuestion: String,
                    onError: @escaping (OktaError) -> Void,
                    onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASecurityQuestionViewController.swift#L36-L47)
 
 ### OktaFactorToken
 
@@ -886,6 +934,7 @@ public func select(passCode: String,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
                    onError: @escaping (OktaError) -> Void)
 ```
+Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
 #### verify
 
