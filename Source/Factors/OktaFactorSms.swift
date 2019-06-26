@@ -34,13 +34,11 @@ open class OktaFactorSms : OktaFactor {
 
     public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                       onError: @escaping (_ error: OktaError) -> Void) {
         super.verify(passCode: passCode,
                      answerToSecurityQuestion: nil,
                      onStatusChange: onStatusChange,
-                     onError: onError,
-                     onFactorStatusUpdate: onFactorStatusUpdate)
+                     onError: onError)
     }
 
     // MARK: - Internal

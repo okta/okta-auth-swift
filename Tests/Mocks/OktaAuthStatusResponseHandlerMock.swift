@@ -23,7 +23,7 @@ class OktaAuthStatusResponseHandlerMock: OktaAuthStatusResponseHandler {
     var response: OktaAPIRequest.Result?
     
     init(changedStatus: OktaAuthStatus? = nil, error: OktaError? = nil, statusUpdate: OktaAPISuccessResponse.FactorResult? = nil) {
-        super.init(pollInterval: 5.0)
+        super.init()
         self.changedStatus = changedStatus
         self.error = error
         self.statusUpdate = statusUpdate
@@ -32,8 +32,7 @@ class OktaAuthStatusResponseHandlerMock: OktaAuthStatusResponseHandler {
     override func handleServerResponse(_ response: OktaAPIRequest.Result,
                               currentStatus: OktaAuthStatus,
                               onStatusChanged: @escaping (OktaAuthStatus) -> Void,
-                              onError: @escaping (OktaError) -> Void,
-                              onFactorStatusUpdate: ((OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                              onError: @escaping (OktaError) -> Void) {
         self.handleResponseCalled = true
         self.response = response
         
@@ -44,11 +43,6 @@ class OktaAuthStatusResponseHandlerMock: OktaAuthStatusResponseHandler {
         
         if let error = error {
             onError(error)
-            return
-        }
-        
-        if let statusUpdate = statusUpdate {
-            onFactorStatusUpdate?(statusUpdate)
             return
         }
     }

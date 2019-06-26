@@ -45,9 +45,8 @@ open class OktaFactorTotp : OktaFactor {
 
     public func activate(passCode: String,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                         onError: @escaping (_ error: OktaError) -> Void,
-                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        super.activate(passCode: passCode, onStatusChange: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                         onError: @escaping (_ error: OktaError) -> Void) {
+        super.activate(passCode: passCode, onStatusChange: onStatusChange, onError: onError)
     }
 
     public func select(passCode: String,
@@ -57,19 +56,16 @@ open class OktaFactorTotp : OktaFactor {
                           answer: nil,
                           passCode: passCode,
                           onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: nil)
+                          onError: onError)
     }
     
     public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                       onError: @escaping (_ error: OktaError) -> Void) {
         super.verify(passCode: passCode,
                      answerToSecurityQuestion: nil,
                      onStatusChange: onStatusChange,
-                     onError: onError,
-                     onFactorStatusUpdate: onFactorStatusUpdate)
+                     onError: onError)
     }
 
     // MARK: - Internal

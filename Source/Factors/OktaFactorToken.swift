@@ -44,19 +44,16 @@ open class OktaFactorToken : OktaFactor {
                        onError: @escaping (OktaError) -> Void) {
         self.verify(passCode: passCode,
                     onStatusChange: onStatusChange,
-                    onError: onError,
-                    onFactorStatusUpdate: nil)
+                    onError: onError)
     }
     
     public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                       onError: @escaping (_ error: OktaError) -> Void) {
         super.verify(passCode: passCode,
                      answerToSecurityQuestion: nil,
                      onStatusChange: onStatusChange,
-                     onError: onError,
-                     onFactorStatusUpdate: onFactorStatusUpdate)
+                     onError: onError)
     }
 
     // MARK: - Internal

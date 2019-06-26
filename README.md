@@ -397,8 +397,7 @@ Activates sms, call and token:software:totp factors to complete the enrollment p
 ```swift
 open func activateFactor(passCode: String?,
                          onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                         onError: @escaping (_ error: OktaError) -> Void,
-                         onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                         onError: @escaping (_ error: OktaError) -> Void)
 ```
 
 #### resendFactor
@@ -455,8 +454,7 @@ Verifies an answer to a question factor or OTP code for SMS/Call/Totp/Token fact
 open func verifyFactor(passCode: String?,
                        answerToSecurityQuestion: String?,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                       onError: @escaping (_ error: OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                       onError: @escaping (_ error: OktaError) -> Void)
 ```
 
 #### resendFactor
@@ -663,8 +661,7 @@ Enrolls a user with the Okta SMS factor and an SMS profile. A text message with 
 ```swift
 public func enroll(phoneNumber: String?,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                   onError: @escaping (OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L103-L117)
 
@@ -675,8 +672,7 @@ Activates an SMS factor by verifying the OTP.
 ```swift
 public func activate(passCode: String?,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                     onError: @escaping (_ error: OktaError) -> Void,
-                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                     onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L88-L98)
 
@@ -697,8 +693,7 @@ Verifies an enrolled SMS factor by verifying the OTP.
 ```swift
 public func verify(passCode: String?,
                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                   onError: @escaping (_ error: OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L73-L84)
 
@@ -711,8 +706,7 @@ Enrolls a user with the Okta call factor and a Call profile. A voice call with a
 ```swift
 public func enroll(phoneNumber: String?,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                   onError: @escaping (OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFAEnrollmentViewController.swift#L103-L117)
 
@@ -723,8 +717,7 @@ Activates a call factor by verifying the OTP.
 ```swift
 public func activate(passCode: String?,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                     onError: @escaping (_ error: OktaError) -> Void,
-                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                     onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L88-L98)
 
@@ -744,8 +737,7 @@ Verifies an enrolled call factor by verifying the OTP.
 ```swift
 public func verify(passCode: String?,
                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                   onError: @escaping (_ error: OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASMSViewController.swift#L73-L84)
 
@@ -765,13 +757,11 @@ Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign
 #### [activate](https://developer.okta.com/docs/api/resources/authn/#activate-call-factor)
 
 Activation of push factors are asynchronous and must be polled for completion when the factorResult returns a WAITING status.
-**NOTE:** Polling is implemented by the SDK (default timer is 5 seconds), so you don't need to implement it in your code. SDK will notify your application about the last factor status via `onFactorStatusUpdate` closure.
 Activations have a short lifetime (minutes) and will TIMEOUT if they are not completed before the `expireAt` timestamp. Restart the activation process if the activation is expired.
 
 ```swift
 public func activate(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                     onError: @escaping (_ error: OktaError) -> Void,
-                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                     onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFActivatePushTotpViewController.swift#L48-L62)
 
@@ -807,14 +797,29 @@ Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign
 #### [verify](https://developer.okta.com/docs/api/resources/authn/#verify-push-factor)
 
 Sends an asynchronous push notification (challenge) to the device for the user to approve or reject. The `factorResult` for the transaction will have a result of WAITING, SUCCESS, REJECTED, or TIMEOUT.
-**NOTE:** Polling is implemented by the SDK (default interval is 5 seconds), so you don't need to implement it in your code. SDK will notify your application about the last factor status via `onFactorStatusUpdate` closure.
 
 ```swift
 public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                   onError: @escaping (_ error: OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (_ error: OktaError) -> Void)
 ```
-Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAPushViewController.swift#L44-L57)
+Implement polling logic in order to get updates for the push factor result.
+**NOTE** Don't call `verify` function too often, keep polling interval within 3-5 seconds to not cause extra load on the server
+Example of polling logic:
+```swift
+func handlePushChallenge(factor: OktaFactorPush) {
+    factor.verify(onStatusChange: { (status) in
+        if status.factorResult == .waiting {
+            DispatchQueue.main.asyncAfter(deadline:.now() + 5.0) {
+                self.handlePushChallenge(factor: factor)
+            }
+        } else {
+            self.handleStatus(status: status)
+        }
+    }, onError: { (error) in
+        self.handleError(error)
+    })
+}
+```
 
 ### OktaFactorTotp
 
@@ -835,8 +840,7 @@ Activates a token:software:totp factor by verifying the OTP (passcode).
 ```swift
 public func activate(passCode: String,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                     onError: @escaping (_ error: OktaError) -> Void,
-                     onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                     onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/Enrollment/MFActivatePushTotpViewController.swift#L75-L90)
 
@@ -858,8 +862,7 @@ Verifies an OTP for a token:software:totp factor.
 ```swift
 public func verify(passCode: String,
                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                   onError: @escaping (_ error: OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (_ error: OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFATOTPViewController.swift#L39-L50)
 
@@ -895,8 +898,7 @@ Selects a question factor from the list of required factors and verifies the ans
 ```swift
 public func select(answerToSecurityQuestion: String,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                   onError: @escaping (OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFAViewController.swift#L65-L71)
 
@@ -907,8 +909,7 @@ Verifies an answer to a question factor.
 ```swift
 public func verify(answerToSecurityQuestion: String,
                    onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                   onError: @escaping (OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (OktaError) -> Void)
 ```
 Sample app [example](https://github.com/okta/samples-ios/blob/master/custom-sign-in/OktaNativeLogin/MFA/MFASecurityQuestionViewController.swift#L36-L47)
 
@@ -943,8 +944,7 @@ Verifies a passcode to a token factor.
 ```swift
 public func verify(passCode: String,
                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                   onError: @escaping (_ error: OktaError) -> Void,
-                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                   onError: @escaping (_ error: OktaError) -> Void)
 ```
 
 ### OktaFactorOther
@@ -959,8 +959,7 @@ Sends arbitrary `kayValuePayload` body in the https request.
 public func sendRequest(with link: LinksResponse.Link,
                         keyValuePayload: Dictionary<String, Any>,
                         onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                        onError: @escaping (OktaError) -> Void,
-                        onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                        onError: @escaping (OktaError) -> Void)
 ```
 
 
