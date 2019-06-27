@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         guard let username = usernameField.text,
             let password = passwordField.text else { return }
 
-        OktaAuthSdk.authenticate(with: URL(string: "https://dev-949814.okta.com")!,
+        OktaAuthSdk.authenticate(with: URL(string: "https://{yourOktaDomain}")!,
                                  username: username,
                                  password: password,
                                  onStatusChange: { authStatus in
