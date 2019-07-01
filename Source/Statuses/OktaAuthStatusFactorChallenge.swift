@@ -53,7 +53,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         return true
     }
 
-    open func canPoll() -> Bool {
+    override open func canPoll() -> Bool {
         return model.links?.next?.name == "poll" || factor.type == .push
     }
 
