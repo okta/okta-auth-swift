@@ -47,6 +47,12 @@ open class OktaAuthStatus {
         }
     }
 
+    open var factorResult: OktaAPISuccessResponse.FactorResult? {
+        get {
+            return model.factorResult
+        }
+    }
+
     open func canReturn() -> Bool {
         guard model.links?.prev != nil else {
             return false
@@ -86,8 +92,6 @@ open class OktaAuthStatus {
 
     open func cancel(onSuccess: (() -> Void)? = nil,
                      onError: ((_ error: OktaError) -> Void)? = nil) {
-        
-        self.responseHandler.cancel()
 
         guard statusType != .unauthenticated else {
             onSuccess?()
@@ -118,33 +122,6 @@ open class OktaAuthStatus {
     // MARK: Internal
     internal var cancelled = false
 
-    func poll(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-              onError: @escaping (_ error: OktaError) -> Void,
-              onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
-        guard let pollLink = model.links?.next else {
-            onError(.wrongStatus("Can't find 'next' link in response"))
-            return
-        }
-
-        guard let stateToken = model.stateToken else {
-            onError(.wrongStatus("Empty state token in response"))
-            return
-        }
-
-        restApi.verifyFactor(with: pollLink,
-                             stateToken: stateToken,
-                             answer: nil,
-                             passCode: nil,
-                             rememberDevice: nil,
-                             autoPush: nil,
-                             completion:  { result in
-                                self.handleServerResponse(result,
-                                                          onStatusChanged: onStatusChange,
-                                                          onError: onError,
-                                                          onFactorStatusUpdate: onFactorStatusUpdate)
-        })
-    }
-
     func fetchStatus(with stateToken: String,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                      onError: @escaping (_ error: OktaError) -> Void) {
@@ -158,8 +135,7 @@ open class OktaAuthStatus {
 
     func handleServerResponse(_ response: OktaAPIRequest.Result,
                               onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                              onError: @escaping (_ error: OktaError) -> Void,
-                              onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                              onError: @escaping (_ error: OktaError) -> Void) {
         if cancelled {
             return
         }
@@ -167,7 +143,6 @@ open class OktaAuthStatus {
         responseHandler.handleServerResponse(response,
                                              currentStatus: self,
                                              onStatusChanged: onStatusChanged,
-                                             onError: onError,
-                                             onFactorStatusUpdate: onFactorStatusUpdate)
+                                             onError: onError)
     }
 }

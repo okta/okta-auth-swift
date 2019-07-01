@@ -47,12 +47,6 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
     
     public let activateLink: LinksResponse.Link
 
-    open var factorResult: OktaAPISuccessResponse.FactorResult? {
-        get {
-            return model.factorResult
-        }
-    }
-
     open func canResend() -> Bool {
         guard model.links?.resend != nil else {
             return false
@@ -61,14 +55,16 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
         return true
     }
 
+    open func canPoll() -> Bool {
+        return model.links?.next?.name == "poll" || factor.type == .push
+    }
+
     open func activateFactor(passCode: String?,
                              onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                             onError: @escaping (_ error: OktaError) -> Void,
-                             onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                             onError: @escaping (_ error: OktaError) -> Void) {
         self.factor.activate(passCode: passCode,
                              onStatusChange: onStatusChange,
-                             onError: onError,
-                             onFactorStatusUpdate: onFactorStatusUpdate)
+                             onError: onError)
     }
 
     open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -108,8 +104,7 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
 extension OktaAuthStatusFactorEnrollActivate: OktaFactorResultProtocol {
     public func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                           onError: @escaping (_ error: OktaError) -> Void,
-                                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
-        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                                           onError: @escaping (_ error: OktaError) -> Void) {
+        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
     }
 }

@@ -55,64 +55,46 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
     func testHandleServerResponse_MFAChallenge_WaitingPush_alreadyWaiting() {
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.domain.url")!)
         guard let model = TestResponse.MFA_CHALLENGE_WAITING_PUSH.parse(),
-              let challangeStatus = try? OktaAuthStatusFactorChallenge(currentState: unauthenticatedStatus, model: model) else {
+              let challengeStatus = try? OktaAuthStatusFactorChallenge(currentState: unauthenticatedStatus, model: model) else {
               XCTFail()
               return
         }
         
-        challangeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
+        challengeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
         
         var ex = expectation(description: "Callback should be called")
         
         let handler = OktaAuthStatusResponseHandler()
         handler.handleServerResponse(
             OktaAPIRequest.Result.success(model),
-            currentStatus: challangeStatus,
+            currentStatus: challengeStatus,
             onStatusChanged: { status in
-                XCTFail("Unexpected status change!")
+                XCTAssertEqual(challengeStatus.statusType, status.statusType)
                 ex.fulfill()
             },
             onError: { error in
                 XCTFail(error.localizedDescription)
                 ex.fulfill()
-            },
-            onFactorStatusUpdate: { factorResult in
-                XCTAssertEqual(OktaAPISuccessResponse.FactorResult.waiting, factorResult)
-                ex.fulfill()
             }
         )
         waitForExpectations(timeout: 5.0)
 
-        challangeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
+        challengeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
         ex = expectation(description: "Callback should be called")
-        handler.pollInterval = 0.1
         handler.handleServerResponse(
             OktaAPIRequest.Result.success(model),
-            currentStatus: challangeStatus,
+            currentStatus: challengeStatus,
             onStatusChanged: { status in
-                XCTFail("Unexpected status change!")
+                XCTAssertEqual(challengeStatus.statusType, status.statusType)
                 ex.fulfill()
             },
             onError: { error in
                 XCTFail(error.localizedDescription)
                 ex.fulfill()
-            },
-            onFactorStatusUpdate: { factorResult in
-                XCTAssertEqual(OktaAPISuccessResponse.FactorResult.waiting, factorResult)
-                ex.fulfill()
             }
         )
-        XCTAssertNotNil(handler.factorResultPollTimer)
-        XCTAssert(handler.factorResultPollTimer!.isValid)
         
         waitForExpectations(timeout: 5.0)
-        
-        ex = expectation(description: "VerifyFactor function should be called")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            XCTAssert(challangeStatus.apiMock.verifyFactorCalled)
-        }
-
-        waitForExpectations(timeout: 1.0)
     }
     
     func testHandleServerResponse_LockedOut() {

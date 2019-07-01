@@ -57,8 +57,7 @@ open class OktaFactorQuestion : OktaFactor {
 
     public func select(answerToSecurityQuestion: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                       onError: @escaping (OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                       onError: @escaping (OktaError) -> Void) {
         guard canSelect() else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
@@ -68,19 +67,16 @@ open class OktaFactorQuestion : OktaFactor {
                           answer: answerToSecurityQuestion,
                           passCode: nil,
                           onStatusChange: onStatusChange,
-                          onError: onError,
-                          onFactorStatusUpdate: onFactorStatusUpdate)
+                          onError: onError)
     }
 
     public func verify(answerToSecurityQuestion: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                       onError: @escaping (OktaError) -> Void,
-                       onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                       onError: @escaping (OktaError) -> Void) {
         super.verify(passCode: nil,
                      answerToSecurityQuestion: answerToSecurityQuestion,
                      onStatusChange: onStatusChange,
-                     onError: onError,
-                     onFactorStatusUpdate: onFactorStatusUpdate)
+                     onError: onError)
     }
 
     // MARK: - Internal

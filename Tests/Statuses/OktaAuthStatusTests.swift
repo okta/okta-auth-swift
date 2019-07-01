@@ -205,67 +205,6 @@ class OktaAuthStatusTests: XCTestCase {
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
     
-    // MARK: - poll
-    
-    func testPoll() {
-        guard let response = TestResponse.MFA_CHALLENGE_WAITING_PUSH.parse(),
-              let status = try? OktaAuthStatusFactorChallenge(currentState: createUnathenticatedStatus(), model: response) else {
-              XCTFail()
-              return
-        }
-        
-        status.setupApiMockResponse(.SUCCESS)
-        
-        let ex = expectation(description: "Operation should succeed!")
-        
-        status.poll(
-            onStatusChange: { status in
-                XCTAssertEqual(AuthStatus.success, status.statusType)
-                ex.fulfill()
-            },
-            onError: { error in
-                XCTFail(error.localizedDescription)
-                ex.fulfill()
-            }
-        )
-        
-        waitForExpectations(timeout: 5.0)
-
-        XCTAssertTrue(status.apiMock.verifyFactorCalled)
-        XCTAssertEqual(response.links?.next?.href, status.apiMock.factorVerificationLink?.href)
-    }
-    
-    func testPoll_ApiError() {
-        guard let response = TestResponse.MFA_CHALLENGE_WAITING_PUSH.parse(),
-              let status = try? OktaAuthStatusFactorChallenge(currentState: createUnathenticatedStatus(), model: response) else {
-              XCTFail()
-              return
-        }
-        
-        status.setupApiMockFailure()
-        
-        let ex = expectation(description: "Operation should fail!")
-        
-        status.poll(
-            onStatusChange: { status in
-                XCTFail("Unexpected status change!")
-                ex.fulfill()
-            },
-            onError: { error in
-                XCTAssertEqual(
-                    "Server responded with error: Authentication failed",
-                    error.localizedDescription
-                )
-                ex.fulfill()
-            }
-        )
-        
-        waitForExpectations(timeout: 5.0)
-
-        XCTAssertTrue(status.apiMock.verifyFactorCalled)
-        XCTAssertEqual(response.links?.next?.href, status.apiMock.factorVerificationLink?.href)
-    }
-    
     // MARK: - fetchStatus
     
     func testFetchStatus() {

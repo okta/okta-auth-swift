@@ -58,7 +58,7 @@ class ViewController: UIViewController {
             
         case .success:
             let successState: OktaAuthStatusSuccess = status as! OktaAuthStatusSuccess
-            handleSuccessStatus(sessionToken: successState.sessionToken)
+            handleSuccessStatus(sessionToken: successState.sessionToken!)
 
         case .passwordWarning:
             let warningPasswordStatus: OktaAuthStatusPasswordWarning = status as! OktaAuthStatusPasswordWarning
@@ -112,7 +112,7 @@ class ViewController: UIViewController {
              .passwordReset,
              .lockedOut,
              .unauthenticated:
-              let alert = UIAlertController(title: "Error", message: "No handler for \(status.statusType.description)", preferredStyle: .alert)
+              let alert = UIAlertController(title: "Error", message: "No handler for \(status.statusType.rawValue)", preferredStyle: .alert)
               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
               present(alert, animated: true, completion: nil)
               self.cancelTransaction()
@@ -132,9 +132,9 @@ class ViewController: UIViewController {
         }
 
         if let factorResult = factorResult {
-            stateLabel.text = "\(status.statusType.description) \(factorResult.rawValue)"
+            stateLabel.text = "\(status.statusType.rawValue) \(factorResult.rawValue)"
         } else {
-            stateLabel.text = status.statusType.description
+            stateLabel.text = status.statusType.rawValue
         }
     }
 
@@ -186,7 +186,7 @@ class ViewController: UIViewController {
         
         let alert = UIAlertController(title: "Select verification factor", message: nil, preferredStyle: .actionSheet)
         factorRequiredStatus.availableFactors.forEach { factor in
-            alert.addAction(UIAlertAction(title: factor.type.description, style: .default, handler: { _ in
+            alert.addAction(UIAlertAction(title: factor.type.rawValue, style: .default, handler: { _ in
                 factorRequiredStatus.selectFactor(factor,
                                                   onStatusChange: { status in
                     self.handleStatus(status: status)
@@ -215,7 +215,7 @@ class ViewController: UIViewController {
         let alert = UIAlertController(title: "Select factor to enroll", message: nil, preferredStyle: .actionSheet)
         let factors = enrollmentStatus.availableFactors
         factors.forEach { factor in
-            var title = factor.type.description
+            var title = factor.type.rawValue
             if let factorStatus = factor.status {
                 title = title + " - " + "(\(factorStatus))"
             }
@@ -243,7 +243,7 @@ class ViewController: UIViewController {
                         self.handleError(error)
                     })
                 } else {
-                    let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.description) factor", preferredStyle: .alert)
+                    let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.rawValue) factor", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
                     self.cancelTransaction()
@@ -261,7 +261,7 @@ class ViewController: UIViewController {
         let factor = status.factor
         guard factor.type == .sms ||
               factor.type == .push else {
-            let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.description) factor", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Error", message: "No handler for \(factor.type.rawValue) factor", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             self.cancelTransaction()
@@ -281,9 +281,6 @@ class ViewController: UIViewController {
                 },
                                       onError: { error in
                                         self.handleError(error)
-                },
-                                      onFactorStatusUpdate: { factorResult in
-                                        self.updateStatus(status: self.currentStatus, factorResult: factorResult)
                 })
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -297,9 +294,7 @@ class ViewController: UIViewController {
                     self.handleStatus(status: status)
                 }, onError: { error in
                     self.handleError(error)
-                }) { factorResult in
-                    self.updateStatus(status: status, factorResult: factorResult)
-                }
+                })
             }
         }
     }
@@ -315,9 +310,6 @@ class ViewController: UIViewController {
             },
                            onError: { error in
                             self.handleError(error)
-            },
-                           onFactorStatusUpdate: { factorResult in
-                            self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -337,9 +329,6 @@ class ViewController: UIViewController {
             },
                            onError: { error in
                             self.handleError(error)
-            },
-                           onFactorStatusUpdate: { factorResult in
-                self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -359,9 +348,6 @@ class ViewController: UIViewController {
             },
                            onError: { error in
                             self.handleError(error)
-            },
-                           onFactorStatusUpdate: { factorResult in
-                            self.updateStatus(status: self.currentStatus, factorResult: factorResult)
             })
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
@@ -371,14 +357,18 @@ class ViewController: UIViewController {
     }
 
     func handlePushChallenge(factor: OktaFactorPush) {
-        
         factor.verify(onStatusChange: { (status) in
-            self.handleStatus(status: status)
+            if status.factorResult == .waiting {
+                self.updateStatus(status: status)
+                DispatchQueue.main.asyncAfter(deadline:.now() + 5.0) {
+                    self.handlePushChallenge(factor: factor)
+                }
+            } else {
+                self.handleStatus(status: status)
+            }
         }, onError: { (error) in
             self.handleError(error)
-        }) { _ in
-            self.updateStatus(status: self.currentStatus)
-        }
+        })
     }
 
     func cancelTransaction() {

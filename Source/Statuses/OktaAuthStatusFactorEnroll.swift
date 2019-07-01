@@ -101,8 +101,7 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
 extension OktaAuthStatusFactorEnroll: OktaFactorResultProtocol {
     public func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                           onError: @escaping (_ error: OktaError) -> Void,
-                                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
-        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                                           onError: @escaping (_ error: OktaError) -> Void) {
+        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
     }
 }

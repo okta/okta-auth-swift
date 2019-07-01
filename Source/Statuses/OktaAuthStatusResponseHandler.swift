@@ -13,22 +13,14 @@
 import Foundation
 
 open class OktaAuthStatusResponseHandler {
-    
-    public var pollInterval: TimeInterval
-    
-    public init(pollInterval: TimeInterval = 5) {
-        self.pollInterval = pollInterval
+
+    public init() {
     }
 
-    open func cancel() {
-        self.stopPollTimer(timer: self.factorResultPollTimer)
-    }
-    
     open func handleServerResponse(_ response: OktaAPIRequest.Result,
                                    currentStatus: OktaAuthStatus,
                                    onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void,
-                                   onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil)
+                                   onError: @escaping (_ error: OktaError) -> Void)
     {
         var authResponse : OktaAPISuccessResponse
         
@@ -38,19 +30,6 @@ open class OktaAuthStatusResponseHandler {
             return
         case .success(let success):
             authResponse = success
-        }
-
-        if let factorResult = authResponse.factorResult {
-            onFactorStatusUpdate?(factorResult)
-            if authResponse.status == currentStatus.statusType {
-                if case .waiting = factorResult {
-                    let timer = Timer(timeInterval: pollInterval, repeats: false) { _ in
-                        currentStatus.poll(onStatusChange: onStatusChanged, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
-                    }
-                    self.startPollTimer(timer: timer)
-                    return
-                }
-            }
         }
 
         do {
@@ -111,31 +90,5 @@ open class OktaAuthStatusResponseHandler {
         default:
             throw OktaError.unknownStatus(response)
         }
-    }
-
-    var factorResultPollTimer: Timer? = nil
-
-    func startPollTimer(timer: Timer) {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.stopPollTimer(timer: timer)
-            }
-            return
-        }
-        
-        RunLoop.current.add(timer, forMode: .common)
-        self.stopPollTimer(timer: self.factorResultPollTimer)
-        self.factorResultPollTimer = timer
-    }
-
-    func stopPollTimer(timer: Timer?) {
-        if !Thread.isMainThread {
-            DispatchQueue.main.async {
-                self.stopPollTimer(timer: timer)
-            }
-            return
-        }
-        
-        self.factorResultPollTimer?.invalidate()
     }
 }

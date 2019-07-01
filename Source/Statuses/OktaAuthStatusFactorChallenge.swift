@@ -41,12 +41,6 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         return createdFactor
     }()
 
-    open var factorResult: OktaAPISuccessResponse.FactorResult? {
-        get {
-            return model.factorResult
-        }
-    }
-
     open func canVerify() -> Bool {
         return factor.canVerify()
     }
@@ -59,16 +53,18 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         return true
     }
 
+    open func canPoll() -> Bool {
+        return model.links?.next?.name == "poll" || factor.type == .push
+    }
+
     open func verifyFactor(passCode: String?,
                            answerToSecurityQuestion: String?,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                           onError: @escaping (_ error: OktaError) -> Void,
-                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                           onError: @escaping (_ error: OktaError) -> Void) {
         self.factor.verify(passCode: passCode,
                            answerToSecurityQuestion: answerToSecurityQuestion,
                            onStatusChange: onStatusChange,
-                           onError: onError,
-                           onFactorStatusUpdate: onFactorStatusUpdate)
+                           onError: onError)
     }
 
     open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
@@ -88,11 +84,11 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         }
 
         self.restApi.perform(link: link,
-                         stateToken: stateToken,
-                         completion: { result in
-                            self.handleServerResponse(result,
-                                                      onStatusChanged: onStatusChange,
-                                                      onError: onError)
+                             stateToken: stateToken,
+                             completion: { result in
+                                self.handleServerResponse(result,
+                                                          onStatusChanged: onStatusChange,
+                                                          onError: onError)
         })
     }
 
@@ -108,9 +104,8 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
 extension OktaAuthStatusFactorChallenge: OktaFactorResultProtocol {
     public func handleFactorServerResponse(response: OktaAPIRequest.Result,
                                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
-                                           onError: @escaping (_ error: OktaError) -> Void,
-                                           onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)?) {
-        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError, onFactorStatusUpdate: onFactorStatusUpdate)
+                                           onError: @escaping (_ error: OktaError) -> Void) {
+        self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
     }
 }
 

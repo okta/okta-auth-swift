@@ -31,12 +31,6 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
         }
     }
 
-    open var factorResult: OktaAPISuccessResponse.FactorResult? {
-        get {
-            return model.factorResult
-        }
-    }
-
     open func canVerify() -> Bool {
         guard model.links?.next != nil else {
             return false

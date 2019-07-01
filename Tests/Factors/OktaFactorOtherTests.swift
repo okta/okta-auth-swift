@@ -40,10 +40,6 @@ class OktaFactorOtherTests: OktaFactorTestCase {
             onError: { error in
                 XCTFail(error.localizedDescription)
                 ex.fulfill()
-            },
-            onFactorStatusUpdate: { factorResult in
-                XCTFail("Unexpected call of onFactorStatusUpdate!")
-                ex.fulfill()
             }
         )
         
@@ -74,10 +70,6 @@ class OktaFactorOtherTests: OktaFactorTestCase {
             },
             onError: { error in
                 XCTAssertEqual(delegate.error?.localizedDescription, error.localizedDescription)
-                ex.fulfill()
-            },
-            onFactorStatusUpdate: { factorResult in
-                XCTFail("Unexpected call of onFactorStatusUpdate!")
                 ex.fulfill()
             }
         )

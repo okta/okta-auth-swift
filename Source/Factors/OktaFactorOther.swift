@@ -17,16 +17,14 @@ open class OktaFactorOther : OktaFactor {
     public func sendRequest(with link: LinksResponse.Link,
                             keyValuePayload: Dictionary<String, Any>,
                             onStatusChange: @escaping (OktaAuthStatus) -> Void,
-                            onError: @escaping (OktaError) -> Void,
-                            onFactorStatusUpdate: ((_ state: OktaAPISuccessResponse.FactorResult) -> Void)? = nil) {
+                            onError: @escaping (OktaError) -> Void) {
         self.restApi?.sendApiRequest(with: link,
                                      bodyParams: keyValuePayload,
                                      method: .post,
                                      completion: { result in
                                         self.handleServerResponse(response: result,
                                                                   onStatusChange: onStatusChange,
-                                                                  onError: onError,
-                                                                  onFactorStatusUpdate: onFactorStatusUpdate)
+                                                                  onError: onError)
         })
     }
 
