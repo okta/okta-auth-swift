@@ -153,6 +153,27 @@ open class OktaFactorPush : OktaFactor {
                      onError: onError)
     }
 
+    public func checkFactorResult(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+                                  onError: @escaping (_ error: OktaError) -> Void) {
+        guard canActivate() || canVerify() else {
+            onError(OktaError.wrongStatus("Can't find 'poll' link in response"))
+            return
+        }
+        
+        let pollLink: LinksResponse.Link?
+        if activationLink != nil {
+            pollLink = activationLink
+        } else {
+            pollLink = verifyLink
+        }
+        
+        self.verifyFactor(with: pollLink!,
+                          answer: nil,
+                          passCode: nil,
+                          onStatusChange: onStatusChange,
+                          onError: onError)
+    }
+
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
                   stateToken:String,
