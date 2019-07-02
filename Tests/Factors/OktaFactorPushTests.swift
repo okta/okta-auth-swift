@@ -363,6 +363,68 @@ class OktaFactorPushTests: OktaFactorTestCase {
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)
         XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
     }
+
+    // MARK: - checkFactorResult
+
+    func testCheckFactorResult() {
+        guard let factor: OktaFactorPush = createFactor(from: .MFA_REQUIRED, type: .push) else {
+            XCTFail()
+            return
+        }
+        
+        factor.setupApiMockResponse(.MFA_REQUIRED)
+        let delegate = factor.setupMockDelegate(with: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!))
+        
+        let ex = expectation(description: "Operation should succeed!")
+        
+        factor.checkFactorResult(
+            onStatusChange: { status in
+                XCTAssertEqual(delegate.changedStatus?.statusType, status.statusType)
+                ex.fulfill()
+        },
+            onError: { error in
+                XCTFail(error.localizedDescription)
+                ex.fulfill()
+            }
+        )
+        
+        waitForExpectations(timeout: 5.0)
+        
+        verifyDelegateSucceeded(delegate, with: .MFA_REQUIRED)
+        
+        XCTAssertTrue(factor.apiMock.verifyFactorCalled)
+        XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
+    }
+
+    func testCheckFactorResult_ApiFailed() {
+        guard let factor: OktaFactorPush = createFactor(from: .MFA_REQUIRED, type: .push) else {
+            XCTFail()
+            return
+        }
+        
+        factor.setupApiMockFailure()
+        let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
+        
+        let ex = expectation(description: "Operation should fail!")
+        
+        factor.checkFactorResult(
+            onStatusChange: { status in
+                XCTFail("Operation should fail!")
+                ex.fulfill()
+        },
+            onError: { error in
+                XCTAssertEqual(delegate.error?.localizedDescription, error.localizedDescription)
+                ex.fulfill()
+            }
+        )
+        
+        waitForExpectations(timeout: 5.0)
+        
+        verifyDelegateFailed(delegate)
+        
+        XCTAssertTrue(factor.apiMock.verifyFactorCalled)
+        XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
+    }
     
     // MARK: - select
     

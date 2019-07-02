@@ -61,6 +61,10 @@ open class OktaAuthStatus {
         return true
     }
 
+    open func canPoll() -> Bool {
+        return false
+    }
+
     open func returnToPreviousStatus(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                      onError: @escaping (_ error: OktaError) -> Void) {
         guard canReturn() else {
