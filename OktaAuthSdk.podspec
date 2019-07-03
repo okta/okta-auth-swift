@@ -13,6 +13,7 @@ Integrate your native app with Okta.
 
   s.ios.deployment_target = '10.0'
   s.source_files = 'Source/**/*'
+  s.swift_version = '4.2'
   s.exclude_files = [
     'Source/Info.plist'
   ]
