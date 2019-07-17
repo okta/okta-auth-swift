@@ -16,8 +16,12 @@ import Foundation
 import UIKit
 #endif
 
+public func sdkVersion() -> String {
+    return "2.0.1"
+}
+
 internal func buildUserAgent() -> String {
-    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "?"
+    let version = sdkVersion()
     let device = "Device/\(deviceModel())"
     #if os(iOS)
     let os = "iOS/\(UIDevice.current.systemVersion)"
