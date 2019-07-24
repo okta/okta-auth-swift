@@ -53,6 +53,7 @@
 		A12F4FFA2238311A00DB9147 /* OktaAuthSdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */; };
 		A151096D2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A151096B2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift */; };
 		A1671554227BA90700E7801D /* Unknown_State_And_FactorResult in Resources */ = {isa = PBXBuildFile; fileRef = A1671552227BA90700E7801D /* Unknown_State_And_FactorResult */; };
+		A172512222E91B82007E460B /* E2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A172512122E91B82007E460B /* E2ETests.swift */; };
 		A179276D2229BDB90001C889 /* OktaAuthSdk.podspec in Resources */ = {isa = PBXBuildFile; fileRef = A179276C2229BDB90001C889 /* OktaAuthSdk.podspec */; };
 		A183359A2239A86D007C6175 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
 		A1920F78225E64D0007D50D2 /* OktaFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1920F77225E64D0007D50D2 /* OktaFactor.swift */; };
@@ -187,6 +188,7 @@
 		A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthSdk.swift; sourceTree = "<group>"; };
 		A151096B2281FD3F009AF8EB /* OktaAuthStatusPasswordWarningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusPasswordWarningTests.swift; sourceTree = "<group>"; };
 		A1671552227BA90700E7801D /* Unknown_State_And_FactorResult */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Unknown_State_And_FactorResult; sourceTree = "<group>"; };
+		A172512122E91B82007E460B /* E2ETests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = E2ETests.swift; path = Tests/E2E/E2ETests.swift; sourceTree = SOURCE_ROOT; };
 		A179276C2229BDB90001C889 /* OktaAuthSdk.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OktaAuthSdk.podspec; sourceTree = "<group>"; };
 		A1920F77225E64D0007D50D2 /* OktaFactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactor.swift; path = Factors/OktaFactor.swift; sourceTree = "<group>"; };
 		A1920F7B225E67A1007D50D2 /* OktaFactorPush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OktaFactorPush.swift; path = Factors/OktaFactorPush.swift; sourceTree = "<group>"; };
@@ -390,6 +392,15 @@
 			name = RestAPI;
 			sourceTree = "<group>";
 		};
+		A172512022E91B1C007E460B /* E2E */ = {
+			isa = PBXGroup;
+			children = (
+				A172512122E91B82007E460B /* E2ETests.swift */,
+			);
+			name = E2E;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		A1920F76225E6396007D50D2 /* Factors */ = {
 			isa = PBXGroup;
 			children = (
@@ -454,6 +465,7 @@
 		FA500E4621C7FCD800444B1D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A172512022E91B1C007E460B /* E2E */,
 				A1FCB129220A416F0026F522 /* Mocks */,
 				2F7C3BB8226DE40200A62FD4 /* Utils */,
 				2F7C3B6D2268AF1500A62FD4 /* DomainObjects */,
@@ -704,6 +716,7 @@
 				A1920F81225E81EE007D50D2 /* OktaFactorSms.swift in Sources */,
 				A1E746442282050F00C48A28 /* OktaAuthStatusRecoveryChallengeTests.swift in Sources */,
 				A1920FCA22615A97007D50D2 /* OktaAuthStatusSuccess.swift in Sources */,
+				A172512222E91B82007E460B /* E2ETests.swift in Sources */,
 				A1920F7D225E67A1007D50D2 /* OktaFactorPush.swift in Sources */,
 				2F8155A12271AD91009FA6C5 /* OktaAuthStatusFactorChallengeTests.swift in Sources */,
 				A1920FBE22615A97007D50D2 /* OktaAuthStatusFactorRequired.swift in Sources */,
