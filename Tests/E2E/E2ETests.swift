@@ -29,8 +29,8 @@ class E2ETests: XCTestCase {
             return
         }
 
-        let usernames = username.split(separator: ";")
-        let passwords = password.split(separator: ";")
+        let usernames = username.split(separator: ":")
+        let passwords = password.split(separator: ":")
         primaryAuthUser = (String(usernames.first!), String(passwords.first!))
         factorRequiredUser = (String(usernames.last!), String(passwords.last!))
     }
