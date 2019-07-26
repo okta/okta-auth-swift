@@ -18,9 +18,12 @@ class E2ETests: XCTestCase {
     let username = ProcessInfo.processInfo.environment["USERNAME"]!
     let password = ProcessInfo.processInfo.environment["PASSWORD"]!
     let urlString = ProcessInfo.processInfo.environment["DOMAIN_URL"]!
+    let phoneNumber = ProcessInfo.processInfo.environment["PHONE"]!
+    let answer = ProcessInfo.processInfo.environment["ANSWER"]!
 
     var primaryAuthUser: (username: String, password: String)?
     var factorRequiredUser: (username: String, password: String)?
+    var factorEnrollmentUser: (username: String, password: String)?
 
     override func setUp() {
         
@@ -31,8 +34,9 @@ class E2ETests: XCTestCase {
 
         let usernames = username.split(separator: ":")
         let passwords = password.split(separator: ":")
-        primaryAuthUser = (String(usernames.first!), String(passwords.first!))
-        factorRequiredUser = (String(usernames.last!), String(passwords.last!))
+        primaryAuthUser = (String(usernames[0]), String(passwords[0]))
+        factorRequiredUser = (String(usernames[1]), String(passwords[1]))
+        factorEnrollmentUser = (String(usernames[2]), String(passwords[2]))
     }
 
     override func tearDown() {
@@ -122,6 +126,123 @@ class E2ETests: XCTestCase {
         }
     }
 
+    func testPushFactorEnrollmentSuccess() {
+        var factorEnrollStatus: OktaAuthStatusFactorEnroll?
+        var pushFactor: OktaFactorPush?
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+            XCTAssertTrue(status.statusType == .MFAEnroll)
+            factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
+            if let factorEnrollStatus = factorEnrollStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollStatus.stateToken.count > 0)
+                XCTAssertTrue(factorEnrollStatus.canCancel())
+                XCTAssertTrue(factorEnrollStatus.availableFactors.count > 0)
+                for factor in factorEnrollStatus.availableFactors {
+                    XCTAssertTrue(factor.canEnroll())
+                    XCTAssertTrue(factor.factor.vendorName!.count > 0)
+                    if factor.type == .push {
+                        pushFactor = factor as? OktaFactorPush
+                    }
+                }
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+
+        if let pushFactor = pushFactor {
+            runFactorEnrollForPushFactor(pushFactor)
+        } else {
+            XCTFail("Push factor has not been found")
+        }
+
+        cancelTransactionWithStatus(factorEnrollStatus!)
+    }
+
+    func testSmsFactorEnrollmentSuccess() {
+        var factorEnrollStatus: OktaAuthStatusFactorEnroll?
+        var smsFactor: OktaFactorSms?
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+            XCTAssertTrue(status.statusType == .MFAEnroll)
+            factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
+            if let factorEnrollStatus = factorEnrollStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollStatus.stateToken.count > 0)
+                XCTAssertTrue(factorEnrollStatus.canCancel())
+                XCTAssertTrue(factorEnrollStatus.availableFactors.count > 0)
+                for factor in factorEnrollStatus.availableFactors {
+                    XCTAssertTrue(factor.canEnroll())
+                    XCTAssertTrue(factor.factor.vendorName!.count > 0)
+                    if factor.type == .sms {
+                        smsFactor = factor as? OktaFactorSms
+                    }
+                }
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+        
+        if let smsFactor = smsFactor {
+            runFactorEnrollForSmsFactor(smsFactor)
+        } else {
+            XCTFail("Sms factor has not been found")
+        }
+        
+        cancelTransactionWithStatus(factorEnrollStatus!)
+    }
+
+    func testTotpFactorEnrollmentSuccess() {
+        var factorEnrollStatus: OktaAuthStatusFactorEnroll?
+        var totpFactor: OktaFactorTotp?
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+            XCTAssertTrue(status.statusType == .MFAEnroll)
+            factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
+            if let factorEnrollStatus = factorEnrollStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollStatus.stateToken.count > 0)
+                XCTAssertTrue(factorEnrollStatus.canCancel())
+                XCTAssertTrue(factorEnrollStatus.availableFactors.count > 0)
+                for factor in factorEnrollStatus.availableFactors {
+                    XCTAssertTrue(factor.canEnroll())
+                    XCTAssertTrue(factor.factor.vendorName!.count > 0)
+                    if factor.type == .TOTP && factor.factor.vendorName == "OKTA" {
+                        totpFactor = factor as? OktaFactorTotp
+                    }
+                }
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+        
+        if let totpFactor = totpFactor {
+            runFactorEnrollForTotpFactor(totpFactor)
+        } else {
+            XCTFail("Totp factor has not been found")
+        }
+        
+        cancelTransactionWithStatus(factorEnrollStatus!)
+    }
+
     func runFactorRequiredForFactor(_ factor: OktaFactor) {
         var factorChallengeStatus: OktaAuthStatusFactorChallenge?
         let ex = expectation(description: "Operation should succeed!")
@@ -174,7 +295,6 @@ class E2ETests: XCTestCase {
                 ex.fulfill()
         })
             { error in
-
                 if case .serverRespondedWithError(let errorResponse) = error {
                     XCTAssert(errorResponse.errorSummary!.count > 0)
                     XCTAssertEqual(errorResponse.errorCode, "E0000068")
@@ -202,7 +322,6 @@ class E2ETests: XCTestCase {
                 ex.fulfill()
         })
         { error in
-            
             XCTFail(error.description)
             ex.fulfill()
         }
@@ -212,7 +331,7 @@ class E2ETests: XCTestCase {
 
     func runFactorChallengeForQuestionFactor(_ factor: OktaFactorQuestion) {
         let ex = expectation(description: "Operation should succeed!")
-        factor.verify(answerToSecurityQuestion: "ovechkin",
+        factor.verify(answerToSecurityQuestion: answer,
                       onStatusChange:
         { status in
                 let successStatus = status as? OktaAuthStatusSuccess
@@ -226,6 +345,84 @@ class E2ETests: XCTestCase {
         })
         { error in
             
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+    }
+
+    func runFactorEnrollForPushFactor(_ factor: OktaFactorPush) {
+        let ex = expectation(description: "Operation should succeed!")
+        factor.enroll(onStatusChange: { status in
+            let factorEnrollActivateStatus = status as? OktaAuthStatusFactorEnrollActivate
+            if let factorEnrollActivateStatus = factorEnrollActivateStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.type == factor.type)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.canActivate())
+                XCTAssertTrue(factorEnrollActivateStatus.canReturn())
+                XCTAssertTrue(factorEnrollActivateStatus.canCancel())
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+
+        waitForExpectations(timeout: 30.0)
+    }
+
+    func runFactorEnrollForSmsFactor(_ factor: OktaFactorSms) {
+        let ex = expectation(description: "Operation should succeed!")
+        factor.enroll(phoneNumber: phoneNumber, onStatusChange: { status in
+            let factorEnrollActivateStatus = status as? OktaAuthStatusFactorEnrollActivate
+            if let factorEnrollActivateStatus = factorEnrollActivateStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.type == factor.type)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.canActivate())
+                XCTAssertTrue(factorEnrollActivateStatus.canReturn())
+                XCTAssertTrue(factorEnrollActivateStatus.canCancel())
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+
+        waitForExpectations(timeout: 30.0)
+    }
+
+    func runFactorEnrollForTotpFactor(_ factor: OktaFactorTotp) {
+        let ex = expectation(description: "Operation should succeed!")
+        factor.enroll(onStatusChange: { status in
+            let factorEnrollActivateStatus = status as? OktaAuthStatusFactorEnrollActivate
+            if let factorEnrollActivateStatus = factorEnrollActivateStatus {
+                self.verifyBasicInfoForStatus(status: status)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.type == factor.type)
+                XCTAssertTrue(factorEnrollActivateStatus.factor.canActivate())
+                XCTAssertTrue(factorEnrollActivateStatus.canReturn())
+                XCTAssertTrue(factorEnrollActivateStatus.canCancel())
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+
+        waitForExpectations(timeout: 30.0)
+    }
+
+    func cancelTransactionWithStatus(_ status: OktaAuthStatus) {
+        let ex = expectation(description: "Operation should succeed!")
+        status.cancel(onSuccess: {
+            ex.fulfill()
+        }) { error in
             XCTFail(error.description)
             ex.fulfill()
         }
