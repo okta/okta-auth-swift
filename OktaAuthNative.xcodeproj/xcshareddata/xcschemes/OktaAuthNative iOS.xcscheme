@@ -87,6 +87,16 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "PHONE"
+            value = "$(PHONE)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "ANSWER"
+            value = "$(ANSWER)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "PASSWORD"
             value = "$(PASSWORD)"
             isEnabled = "YES">
