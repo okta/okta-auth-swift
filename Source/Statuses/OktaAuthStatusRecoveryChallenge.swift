@@ -19,6 +19,13 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
         statusType = .recoveryChallenge
     }
 
+    open var stateToken: String? {
+        get {
+            return model.stateToken
+        }
+    }
+    
+
     open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
         get {
             return model.recoveryType
