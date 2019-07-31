@@ -165,6 +165,55 @@ class E2ETests: XCTestCase {
         cancelTransactionWithStatus(factorEnrollStatus!)
     }
 
+    func testRecoverPasswordSmsSuccess() {
+        var recoveryChallengeStatus: OktaAuthStatusRecoveryChallenge?
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.recoverPassword(with: URL(string: urlString)!, username: factorRequiredUser!.username, factorType: .sms, onStatusChange: { status in
+            XCTAssertTrue(status.statusType == .recoveryChallenge)
+            recoveryChallengeStatus = status as? OktaAuthStatusRecoveryChallenge
+            if let recoveryChallengeStatus = recoveryChallengeStatus {
+                XCTAssertTrue(recoveryChallengeStatus.stateToken!.count > 0)
+                XCTAssertTrue(recoveryChallengeStatus.canCancel())
+                XCTAssertTrue(recoveryChallengeStatus.factorType == .sms)
+                XCTAssertTrue(recoveryChallengeStatus.canVerify())
+                XCTAssertTrue(recoveryChallengeStatus.canResend())
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+        
+        if let recoveryChallengeStatus = recoveryChallengeStatus {
+            fetchTransactionWith(recoveryChallengeStatus)
+            cancelTransactionWithStatus(recoveryChallengeStatus)
+        }
+    }
+
+    func testRecoverPasswordEmailSuccess() {
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.recoverPassword(with: URL(string: urlString)!, username: factorRequiredUser!.username, factorType: .email, onStatusChange: { status in
+            XCTAssertTrue(status.statusType == .recoveryChallenge)
+            let recoveryChallengeStatus = status as? OktaAuthStatusRecoveryChallenge
+            if let recoveryChallengeStatus = recoveryChallengeStatus {
+                XCTAssertTrue(recoveryChallengeStatus.factorType == .email)
+                XCTAssertTrue(recoveryChallengeStatus.recoveryType == .password)
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30.0)
+    }
+
     func testSmsFactorEnrollmentSuccess() {
         var factorEnrollStatus: OktaAuthStatusFactorEnroll?
         var smsFactor: OktaFactorSms?
@@ -427,6 +476,27 @@ class E2ETests: XCTestCase {
             ex.fulfill()
         }
         
+        waitForExpectations(timeout: 30.0)
+    }
+
+    func fetchTransactionWith(_ originalStatus: OktaAuthStatusRecoveryChallenge) {
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.fetchStatus(with: originalStatus.stateToken!, using: URL(string: urlString)!, onStatusChange: { status in
+            let recoveryChallengeStatus = status as? OktaAuthStatusRecoveryChallenge
+            if let recoveryChallengeStatus = recoveryChallengeStatus {
+                XCTAssertEqual(recoveryChallengeStatus.stateToken, originalStatus.stateToken!)
+                XCTAssertTrue(recoveryChallengeStatus.canVerify())
+                XCTAssertTrue(recoveryChallengeStatus.canResend())
+                XCTAssertTrue(recoveryChallengeStatus.canCancel())
+            } else {
+                XCTFail("Unexpected status")
+            }
+            ex.fulfill()
+        }) { error in
+            XCTFail(error.description)
+            ex.fulfill()
+        }
+
         waitForExpectations(timeout: 30.0)
     }
 
