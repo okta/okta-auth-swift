@@ -39,7 +39,6 @@ The Okta Authentication SDK is a convenience wrapper around [Okta's Authenticati
     * [OktaFactorPush](#oktafactorpush)
     * [OktaFactorTotp](#oktafactortotp)
     * [OktaFactorQuestion](#oktafactorquestion)
-    * [OktaFactorQuestion](#oktafactorquestion)
     * [OktaFactorToken](#oktafactortoken)
     * [OktaFactorOther](#oktafactorother)
 * [SDK extension](#sdk-extension)
