@@ -12,8 +12,10 @@
 
 import Foundation
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(tvOS)
 import UIKit
+#elseif os(watchOS)
+import WatchKit
 #endif
 
 public func sdkVersion() -> String {
@@ -26,7 +28,7 @@ internal func buildUserAgent() -> String {
     #if os(iOS)
     let os = "iOS/\(UIDevice.current.systemVersion)"
     #elseif os(watchOS)
-    let os = "watchOS/\(UIDevice.current.systemVersion)"
+    let os = "watchOS/\(WKInterfaceDevice.current().systemVersion)"
     #elseif os(tvOS)
     let os = "tvOS/\(UIDevice.current.systemVersion)"
     #elseif os(macOS)
