@@ -12,12 +12,12 @@
 
 #import <UIKit/UIKit.h>
 
-//! Project version number for OktaAuth_iOS.
-FOUNDATION_EXPORT double OktaAuth_iOSVersionNumber;
+//! Project version number for OktaAuth.
+FOUNDATION_EXPORT double OktaAuthVersionNumber;
 
-//! Project version string for OktaAuth_iOS.
-FOUNDATION_EXPORT const unsigned char OktaAuth_iOSVersionString[];
+//! Project version string for OktaAuth.
+FOUNDATION_EXPORT const unsigned char OktaAuthVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <OktaAuth_iOS/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <OktaAuth/PublicHeader.h>
 
 
