@@ -15,6 +15,9 @@ Integrate your native app with Okta.
   s.source_files = 'Source/**/*'
   s.swift_version = '4.2'
   s.exclude_files = [
-    'Source/Info.plist'
+    'Sources/OktaAuthNative/Info-iOS.plist',
+    'Sources/OktaAuthNative/Info-macOS.plist',
+    'Sources/OktaAuthNative/Info-tvOS.plist',
+    'Sources/OktaAuthNative/Info-watchOS.plist'
   ]
 end
