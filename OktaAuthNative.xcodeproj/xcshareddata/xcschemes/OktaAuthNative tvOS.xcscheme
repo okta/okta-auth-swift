@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1B2A3E9F2306002D006A78AA"
-               BuildableName = "OktaAuthNative_tvOS.framework"
+               BuildableName = "OktaAuthNative.framework"
                BlueprintName = "OktaAuthNative tvOS"
                ReferencedContainer = "container:OktaAuthNative.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1B2A3E9F2306002D006A78AA"
-            BuildableName = "OktaAuthNative_tvOS.framework"
+            BuildableName = "OktaAuthNative.framework"
             BlueprintName = "OktaAuthNative tvOS"
             ReferencedContainer = "container:OktaAuthNative.xcodeproj">
          </BuildableReference>
@@ -65,7 +65,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1B2A3E9F2306002D006A78AA"
-            BuildableName = "OktaAuthNative_tvOS.framework"
+            BuildableName = "OktaAuthNative.framework"
             BlueprintName = "OktaAuthNative tvOS"
             ReferencedContainer = "container:OktaAuthNative.xcodeproj">
          </BuildableReference>
@@ -110,7 +110,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1B2A3E9F2306002D006A78AA"
-            BuildableName = "OktaAuthNative_tvOS.framework"
+            BuildableName = "OktaAuthNative.framework"
             BlueprintName = "OktaAuthNative tvOS"
             ReferencedContainer = "container:OktaAuthNative.xcodeproj">
          </BuildableReference>
