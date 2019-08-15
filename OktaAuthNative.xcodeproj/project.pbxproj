@@ -570,6 +570,24 @@
 			path = Statuses;
 			sourceTree = "<group>";
 		};
+		1B2A400E230606BE006A78AA /* OktaAuthNative */ = {
+			isa = PBXGroup;
+			children = (
+				A172512022E91B1C007E460B /* E2E */,
+				A1FCB129220A416F0026F522 /* Mocks */,
+				2F7C3BB8226DE40200A62FD4 /* Utils */,
+				2F7C3B6D2268AF1500A62FD4 /* DomainObjects */,
+				2F7C3B6C2268AF1500A62FD4 /* Factors */,
+				2F7C3B6F2268AF1500A62FD4 /* RestAPI */,
+				2F7C3B722268AF1500A62FD4 /* Statuses */,
+				2FF5C85021D1076100EECA75 /* Resources */,
+				1B2A3EC923060164006A78AA /* Info-iOS.plist */,
+				1B2A3ECA23060164006A78AA /* Info-macOS.plist */,
+				1B2A3EC823060164006A78AA /* Info-tvOS.plist */,
+			);
+			path = OktaAuthNative;
+			sourceTree = "<group>";
+		};
 		2F7C3B6C2268AF1500A62FD4 /* Factors */ = {
 			isa = PBXGroup;
 			children = (
@@ -669,7 +687,7 @@
 				A172512122E91B82007E460B /* E2ETests.swift */,
 			);
 			name = E2E;
-			path = "New Group";
+			path = "../New Group";
 			sourceTree = "<group>";
 		};
 		A1FCB129220A416F0026F522 /* Mocks */ = {
@@ -720,17 +738,7 @@
 		FA500E4621C7FCD800444B1D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				A172512022E91B1C007E460B /* E2E */,
-				A1FCB129220A416F0026F522 /* Mocks */,
-				2F7C3BB8226DE40200A62FD4 /* Utils */,
-				2F7C3B6D2268AF1500A62FD4 /* DomainObjects */,
-				2F7C3B6C2268AF1500A62FD4 /* Factors */,
-				2F7C3B6F2268AF1500A62FD4 /* RestAPI */,
-				2F7C3B722268AF1500A62FD4 /* Statuses */,
-				2FF5C85021D1076100EECA75 /* Resources */,
-				1B2A3EC923060164006A78AA /* Info-iOS.plist */,
-				1B2A3ECA23060164006A78AA /* Info-macOS.plist */,
-				1B2A3EC823060164006A78AA /* Info-tvOS.plist */,
+				1B2A400E230606BE006A78AA /* OktaAuthNative */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1582,7 +1590,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-macOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-macOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1648,7 +1656,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-macOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-macOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1874,7 +1882,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-tvOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-tvOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1940,7 +1948,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-tvOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-tvOS.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2338,7 +2346,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-iOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-iOS.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2404,7 +2412,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Tests/Info-iOS.plist";
+				INFOPLIST_FILE = "Tests/OktaAuthNative/Info-iOS.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
