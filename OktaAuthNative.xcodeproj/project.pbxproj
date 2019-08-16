@@ -263,9 +263,6 @@
 		1BA0A77A230709050015246C /* OktaAPIRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E4230709050015246C /* OktaAPIRequestTests.swift */; };
 		1BA0A77B230709050015246C /* OktaAPIRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E4230709050015246C /* OktaAPIRequestTests.swift */; };
 		1BA0A77C230709050015246C /* OktaAPIRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E4230709050015246C /* OktaAPIRequestTests.swift */; };
-		1BA0A783230709050015246C /* AuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E7230709050015246C /* AuthenticationClientTests.swift */; };
-		1BA0A784230709050015246C /* AuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E7230709050015246C /* AuthenticationClientTests.swift */; };
-		1BA0A785230709050015246C /* AuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E7230709050015246C /* AuthenticationClientTests.swift */; };
 		1BA0A786230709050015246C /* OktaAuthStatusFactorEnrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E9230709050015246C /* OktaAuthStatusFactorEnrollTests.swift */; };
 		1BA0A787230709050015246C /* OktaAuthStatusFactorEnrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E9230709050015246C /* OktaAuthStatusFactorEnrollTests.swift */; };
 		1BA0A788230709050015246C /* OktaAuthStatusFactorEnrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA0A6E9230709050015246C /* OktaAuthStatusFactorEnrollTests.swift */; };
@@ -429,7 +426,6 @@
 		1BA0A6E4230709050015246C /* OktaAPIRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAPIRequestTests.swift; sourceTree = "<group>"; };
 		1BA0A6E5230709050015246C /* Info-tvOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-tvOS.plist"; sourceTree = "<group>"; };
 		1BA0A6E6230709050015246C /* Info-macOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-macOS.plist"; sourceTree = "<group>"; };
-		1BA0A6E7230709050015246C /* AuthenticationClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationClientTests.swift; sourceTree = "<group>"; };
 		1BA0A6E9230709050015246C /* OktaAuthStatusFactorEnrollTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusFactorEnrollTests.swift; sourceTree = "<group>"; };
 		1BA0A6EA230709050015246C /* OktaAuthStatusFactorChallengeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusFactorChallengeTests.swift; sourceTree = "<group>"; };
 		1BA0A6EB230709050015246C /* OktaAuthStatusUnauthenticatedTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAuthStatusUnauthenticatedTests.swift; sourceTree = "<group>"; };
@@ -592,7 +588,6 @@
 				1BA0A6E2230709050015246C /* RestAPI */,
 				1BA0A6E8230709050015246C /* Statuses */,
 				1BA0A6F7230709050015246C /* E2E */,
-				1BA0A6E7230709050015246C /* AuthenticationClientTests.swift */,
 				1BA0A6BD230709050015246C /* Info-iOS.plist */,
 				1BA0A6E5230709050015246C /* Info-tvOS.plist */,
 				1BA0A6E6230709050015246C /* Info-macOS.plist */,
@@ -1194,7 +1189,6 @@
 				1BA0A7A5230709050015246C /* OktaAuthStatusFactorRequiredTests.swift in Sources */,
 				1BA0A7AE230709050015246C /* OktaAuthStatusResponseHandlerTests.swift in Sources */,
 				1BA0A703230709050015246C /* OktaAuthStatusResponseHandlerMock.swift in Sources */,
-				1BA0A784230709050015246C /* AuthenticationClientTests.swift in Sources */,
 				1BA0A769230709050015246C /* OktaFactorCallTests.swift in Sources */,
 				1BA0A6FD230709050015246C /* OktaAuthStatus+Mocking.swift in Sources */,
 				1BA0A75D230709050015246C /* OktaFactorTokenTests.swift in Sources */,
@@ -1274,7 +1268,6 @@
 				1BA0A7A6230709050015246C /* OktaAuthStatusFactorRequiredTests.swift in Sources */,
 				1BA0A7AF230709050015246C /* OktaAuthStatusResponseHandlerTests.swift in Sources */,
 				1BA0A704230709050015246C /* OktaAuthStatusResponseHandlerMock.swift in Sources */,
-				1BA0A785230709050015246C /* AuthenticationClientTests.swift in Sources */,
 				1BA0A76A230709050015246C /* OktaFactorCallTests.swift in Sources */,
 				1BA0A6FE230709050015246C /* OktaAuthStatus+Mocking.swift in Sources */,
 				1BA0A75E230709050015246C /* OktaFactorTokenTests.swift in Sources */,
@@ -1399,7 +1392,6 @@
 				1BA0A7A4230709050015246C /* OktaAuthStatusFactorRequiredTests.swift in Sources */,
 				1BA0A7AD230709050015246C /* OktaAuthStatusResponseHandlerTests.swift in Sources */,
 				1BA0A702230709050015246C /* OktaAuthStatusResponseHandlerMock.swift in Sources */,
-				1BA0A783230709050015246C /* AuthenticationClientTests.swift in Sources */,
 				1BA0A768230709050015246C /* OktaFactorCallTests.swift in Sources */,
 				1BA0A6FC230709050015246C /* OktaAuthStatus+Mocking.swift in Sources */,
 				1BA0A75C230709050015246C /* OktaFactorTokenTests.swift in Sources */,
