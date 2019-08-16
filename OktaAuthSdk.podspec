@@ -15,7 +15,7 @@ Integrate your native app with Okta.
   s.watchos.deployment_target = '2.0'
   s.tvos.deployment_target = '9.0'
   s.osx.deployment_target = '10.10'
-  s.source_files = 'Source/**/*'
+  s.source_files = 'Sources/**/*'
   s.swift_version = '4.2'
   s.exclude_files = [
     'Sources/OktaAuthNative/Info-iOS.plist',
