@@ -271,7 +271,7 @@ public struct EmbeddedResponse: Codable {
     public enum Policy: Codable {
         /// A subset of policy settings of the Sign-On Policy or App Sign-On Policy.
         public struct RememberDevice: Codable {
-            public let allowRememberDevice: Bool?
+            public let allowRememberDevice: Bool
             public let rememberDeviceByDefault: Bool?
             public let rememberDeviceLifetimeInMinutes: Int?
         }
@@ -291,11 +291,17 @@ public struct EmbeddedResponse: Codable {
                 public let minUpperCase: Int?
                 public let minNumber: Int?
                 public let minSymbol: Int?
-                public let excludeUsername: Bool
+                public let excludeUsername: Bool?
+            }
+
+            public struct PasswordAge: Codable {
+                public let minAgeMinutes: Int?
+                public let historyCount: Int?
             }
 
             public let expiration: PasswordExpiration?
             public let complexity: PasswordComplexity?
+            public let age: PasswordAge?
         }
     
         case rememberDevice(RememberDevice)

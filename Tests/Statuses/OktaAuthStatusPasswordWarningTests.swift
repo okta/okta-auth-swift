@@ -22,6 +22,20 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
             return
         }
         
+        XCTAssertNotNil(status.model.expirationDate)
+        XCTAssertNotNil(status.model.links?.next)
+        XCTAssertNotNil(status.model.links?.skip)
+        XCTAssertNotNil(status.model.links?.cancel)
+        XCTAssertNotNil(status.model.embedded)
+        XCTAssertNotNil(status.model.embedded?.policy)
+        if case .password(let password) = status.model.embedded?.policy {
+            XCTAssertNotNil(password.complexity)
+            XCTAssertNotNil(password.expiration)
+            XCTAssertNotNil(password.age)
+        } else {
+            XCTFail("Failed to parse policy.")
+        }
+        
         status.setupApiMockResponse(.SUCCESS)
         
         let ex = expectation(description: "Callback is expected!")
