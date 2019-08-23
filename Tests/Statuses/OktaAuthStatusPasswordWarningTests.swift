@@ -28,7 +28,7 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
         XCTAssertNotNil(status.model.links?.cancel)
         XCTAssertNotNil(status.model.embedded)
         XCTAssertNotNil(status.model.embedded?.policy)
-        if case .password(let password) = status.model.embedded?.policy {
+        if case .password(let password)? = status.model.embedded?.policy {
             XCTAssertNotNil(password.complexity)
             XCTAssertNotNil(password.expiration)
             XCTAssertNotNil(password.age)
