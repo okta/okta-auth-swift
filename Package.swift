@@ -27,8 +27,5 @@ let package = Package(
         .target(
             name: "OktaAuthNative",
             dependencies: []),
-        .testTarget(
-            name: "OktaAuthNativeTests",
-            dependencies: ["OktaAuthNative"]),
     ]
 )
