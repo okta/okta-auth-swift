@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorQuestion : OktaFactor {
+open class OktaFactorQuestion: OktaFactor {
 
     public var securityQuestionsLink: LinksResponse.Link? {
         get {
@@ -38,7 +38,7 @@ open class OktaFactorQuestion : OktaFactor {
             onError(.wrongStatus("Can't find 'questions' link in response"))
             return
         }
-        
+
         restApi?.downloadSecurityQuestions(with: factor.links!.questions!, onCompletion: onDownloadComplete, onError: onError)
     }
 
@@ -81,7 +81,7 @@ open class OktaFactorQuestion : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

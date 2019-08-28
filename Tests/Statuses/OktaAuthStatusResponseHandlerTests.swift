@@ -15,43 +15,43 @@ import XCTest
 @testable import OktaAuthNative
 
 class OktaAuthStatusResponseHandlerTests: XCTestCase {
-    
+
     func testHandleServerResponse_Success() {
         verifyHandleServerResponse(.SUCCESS, expectedStatus: .success)
     }
-    
+
     func testHandleServerResponse_PasswordWarning() {
        verifyHandleServerResponse(.PASSWORD_WARNING, expectedStatus: .passwordWarning)
     }
-    
+
     func testHandleServerResponse_PasswordExpired() {
         verifyHandleServerResponse(.PASSWORD_EXPIRED, expectedStatus: .passwordExpired)
     }
-    
+
     func testHandleServerResponse_PasswordReset() {
         verifyHandleServerResponse(.PASSWORD_RESET, expectedStatus: .passwordReset)
     }
-    
+
     func testHandleServerResponse_MFAEnroll() {
         verifyHandleServerResponse(.MFA_ENROLL_NotEnrolled, expectedStatus: .MFAEnroll)
     }
-    
+
     func testHandleServerResponse_MFAEnrollActivate() {
         verifyHandleServerResponse(.MFA_ENROLL_ACTIVATE_SMS, expectedStatus: .MFAEnrollActivate)
     }
-    
+
     func testHandleServerResponse_MFARequired() {
         verifyHandleServerResponse(.MFA_REQUIRED, expectedStatus: .MFARequired)
     }
-    
+
     func testHandleServerResponse_MFAChallenge_SMS() {
         verifyHandleServerResponse(.MFA_CHALLENGE_SMS, expectedStatus: .MFAChallenge)
     }
-    
+
     func testHandleServerResponse_MFAChallenge_WaitingPush() {
         verifyHandleServerResponse(.MFA_CHALLENGE_WAITING_PUSH, expectedStatus: .MFAChallenge)
     }
-    
+
     func testHandleServerResponse_MFAChallenge_WaitingPush_alreadyWaiting() {
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.domain.url")!)
         guard let model = TestResponse.MFA_CHALLENGE_WAITING_PUSH.parse(),
@@ -59,11 +59,11 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
               XCTFail()
               return
         }
-        
+
         challengeStatus.setupApiMockResponse(.MFA_CHALLENGE_WAITING_PUSH)
-        
+
         var ex = expectation(description: "Callback should be called")
-        
+
         let handler = OktaAuthStatusResponseHandler()
         handler.handleServerResponse(
             OktaAPIRequest.Result.success(model),
@@ -93,33 +93,33 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     func testHandleServerResponse_LockedOut() {
         verifyHandleServerResponse(.LOCKED_OUT, expectedStatus: .lockedOut)
     }
-    
+
     func testHandleServerResponse_Recovery() {
         verifyHandleServerResponse(.RECOVERY, expectedStatus: .recovery)
     }
-    
+
     func testHandleServerResponse_RecoveryChallenge() {
         verifyHandleServerResponse(.RECOVERY_CHALLENGE_SMS, expectedStatus: .recoveryChallenge)
     }
-    
+
     func testHandleServerResponse_Error() {
         let initialStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.domain.url")!)
         let expectedError = OktaError.emptyServerResponse
-        
+
         let ex = expectation(description: "Callback should be called")
-        
+
         let handler = OktaAuthStatusResponseHandler()
         handler.handleServerResponse(
             OktaAPIRequest.Result.error(expectedError),
             currentStatus: initialStatus,
-            onStatusChanged: { status in
+            onStatusChanged: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -128,10 +128,10 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     // MARK: - Utils
 
     func verifyHandleServerResponse(
@@ -142,11 +142,11 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         initialStatus.setupApiMockResponse(testResponse)
-        
+
         let ex = expectation(description: "Callback should be called")
-        
+
         let handler = OktaAuthStatusResponseHandler()
         handler.handleServerResponse(
             OktaAPIRequest.Result.success(response),
@@ -160,8 +160,8 @@ class OktaAuthStatusResponseHandlerTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
 }

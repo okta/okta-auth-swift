@@ -16,7 +16,7 @@ import OktaAuthNative
 class ViewController: UIViewController {
 
     var currentStatus: OktaAuthStatus?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.updateStatus(status: nil)
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
 
         activityIndicator.startAnimating()
     }
-    
+
     @IBAction private func cancelTapped() {
         self.cancelTransaction()
     }
@@ -55,7 +55,7 @@ class ViewController: UIViewController {
         currentStatus = status
 
         switch status.statusType {
-            
+
         case .success:
             let successState: OktaAuthStatusSuccess = status as! OktaAuthStatusSuccess
             handleSuccessStatus(sessionToken: successState.sessionToken!)
@@ -67,23 +67,23 @@ class ViewController: UIViewController {
             }) { error in
                 self.handleError(error)
             }
-            
+
         case .passwordExpired:
             let expiredPasswordStatus: OktaAuthStatusPasswordExpired = status as! OktaAuthStatusPasswordExpired
             self.handleChangePassword(passwordExpiredStatus: expiredPasswordStatus)
-            
+
         case .MFAEnroll:
             let mfaEnroll: OktaAuthStatusFactorEnroll = status as! OktaAuthStatusFactorEnroll
             self.handleEnrollment(enrollmentStatus: mfaEnroll)
-            
+
         case .MFAEnrollActivate:
             let mfaEnrollActivate: OktaAuthStatusFactorEnrollActivate = status as! OktaAuthStatusFactorEnrollActivate
             self.handleActivateEnrollment(status: mfaEnrollActivate)
-            
+
         case .MFARequired:
             let mfaRequired: OktaAuthStatusFactorRequired = status as! OktaAuthStatusFactorRequired
             self.handleFactorRequired(factorRequiredStatus: mfaRequired)
-            
+
         case .MFAChallenge:
             let mfaChallenge: OktaAuthStatusFactorChallenge = status as! OktaAuthStatusFactorChallenge
             let factor = mfaChallenge.factor
@@ -106,7 +106,7 @@ class ViewController: UIViewController {
                     present(alert, animated: true, completion: nil)
                     self.cancelTransaction()
             }
-            
+
         case .recovery,
              .recoveryChallenge,
              .passwordReset,
@@ -116,8 +116,8 @@ class ViewController: UIViewController {
               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
               present(alert, animated: true, completion: nil)
               self.cancelTransaction()
-            
-        case .unknown(_):
+
+        case .unknown:
             let alert = UIAlertController(title: "Error", message: "Recieved unknown status", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
@@ -183,7 +183,7 @@ class ViewController: UIViewController {
 
     func handleFactorRequired(factorRequiredStatus: OktaAuthStatusFactorRequired) {
         updateStatus(status: factorRequiredStatus)
-        
+
         let alert = UIAlertController(title: "Select verification factor", message: nil, preferredStyle: .actionSheet)
         factorRequiredStatus.availableFactors.forEach { factor in
             alert.addAction(UIAlertAction(title: factor.type.rawValue, style: .default, handler: { _ in
@@ -267,10 +267,10 @@ class ViewController: UIViewController {
             self.cancelTransaction()
             return
         }
-        
+
         if factor.type == .sms {
             let smsFactor = factor as! OktaFactorSms
-            
+
             let alert = UIAlertController(title: "MFA Activate", message: "Please enter code from SMS on \(smsFactor.phoneNumber ?? "?")", preferredStyle: .alert)
             alert.addTextField { $0.placeholder = "Code" }
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
@@ -287,8 +287,7 @@ class ViewController: UIViewController {
                 self.cancelTransaction()
             }))
             present(alert, animated: true, completion: nil)
-        }
-        else {
+        } else {
             if status.factorResult == nil || status.factorResult == .waiting {
                 status.activateFactor(passCode: nil, onStatusChange: { status in
                     self.handleStatus(status: status)
@@ -302,7 +301,7 @@ class ViewController: UIViewController {
     func handleTotpChallenge(factor: OktaFactorTotp) {
         let alert = UIAlertController(title: "MFA", message: "Please enter TOTP code", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] _ in
             guard let code = alert.textFields?[0].text else { return }
             factor?.verify(passCode: code,
                            onStatusChange: { status in
@@ -317,11 +316,11 @@ class ViewController: UIViewController {
         }))
         present(alert, animated: true, completion: nil)
     }
-    
+
     func handleSmsChallenge(factor: OktaFactorSms) {
         let alert = UIAlertController(title: "MFA", message: "Please enter code from SMS on \(factor.phoneNumber ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Code" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] _ in
             guard let code = alert.textFields?[0].text else { return }
             factor?.verify(passCode: code,
                            onStatusChange: { status in
@@ -336,11 +335,11 @@ class ViewController: UIViewController {
         }))
         present(alert, animated: true, completion: nil)
     }
-    
+
     func handleQuestionChallenge(factor: OktaFactorQuestion) {
         let alert = UIAlertController(title: "MFA", message: "Please answer security question: \(factor.factorQuestionText ?? "?")", preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Answer" }
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] _ in
             guard let answer = alert.textFields?[0].text else { return }
             factor?.verify(answerToSecurityQuestion: answer,
                            onStatusChange: { status in
@@ -360,7 +359,7 @@ class ViewController: UIViewController {
         factor.verify(onStatusChange: { (status) in
             if status.factorResult == .waiting {
                 self.updateStatus(status: status)
-                DispatchQueue.main.asyncAfter(deadline:.now() + 5.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                     self.handlePushChallenge(factor: factor)
                 }
             } else {
@@ -375,7 +374,7 @@ class ViewController: UIViewController {
         guard let status = currentStatus else {
             return
         }
-        
+
         if status.canCancel() {
             status.cancel(onSuccess: {
                 self.activityIndicator.stopAnimating()

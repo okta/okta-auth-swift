@@ -14,33 +14,33 @@ import Foundation
 import OktaAuthNative
 
 class OktaAuthStatusResponseHandlerMock: OktaAuthStatusResponseHandler {
-    
+
     var changedStatus: OktaAuthStatus?
     var error: OktaError?
     var statusUpdate: OktaAPISuccessResponse.FactorResult?
-    
+
     var handleResponseCalled: Bool = false
     var response: OktaAPIRequest.Result?
-    
+
     init(changedStatus: OktaAuthStatus? = nil, error: OktaError? = nil, statusUpdate: OktaAPISuccessResponse.FactorResult? = nil) {
         super.init()
         self.changedStatus = changedStatus
         self.error = error
         self.statusUpdate = statusUpdate
     }
-    
+
     override func handleServerResponse(_ response: OktaAPIRequest.Result,
                               currentStatus: OktaAuthStatus,
                               onStatusChanged: @escaping (OktaAuthStatus) -> Void,
                               onError: @escaping (OktaError) -> Void) {
         self.handleResponseCalled = true
         self.response = response
-        
+
         if let changedStatus = changedStatus {
             onStatusChanged(changedStatus)
             return
         }
-        
+
         if let error = error {
             onError(error)
             return

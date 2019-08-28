@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusPasswordReset : OktaAuthStatus {
+open class OktaAuthStatusPasswordReset: OktaAuthStatus {
 
     public internal(set) var stateToken: String
 
@@ -39,11 +39,11 @@ open class OktaAuthStatusPasswordReset : OktaAuthStatus {
     open var passwordComplexity: EmbeddedResponse.Policy.Password.PasswordComplexity?
 
     open func canReset() -> Bool {
-        
+
         guard model.links?.next?.href != nil else {
             return false
         }
-        
+
         return true
     }
 

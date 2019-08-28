@@ -15,13 +15,13 @@ import XCTest
 @testable import OktaAuthNative
 
 class OktaAuthStatusPasswordWarningTests: XCTestCase {
-    
+
     func testChangePassword() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         XCTAssertNotNil(status.model.expirationDate)
         XCTAssertNotNil(status.model.links?.next)
         XCTAssertNotNil(status.model.links?.skip)
@@ -35,11 +35,11 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
         } else {
             XCTFail("Failed to parse policy.")
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.changePassword(
             oldPassword: "1234",
             newPassword: "4321",
@@ -52,26 +52,26 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.changePasswordCalled)
     }
-    
+
     func testChangePassword_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.changePassword(
             oldPassword: "1234",
             newPassword: "4321",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -83,9 +83,9 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.changePasswordCalled)
     }
 
@@ -94,11 +94,11 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.skipPasswordChange(
             onStatusChange: { status in
                 XCTAssertEqual(AuthStatus.success, status.statusType)
@@ -109,23 +109,23 @@ class OktaAuthStatusPasswordWarningTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.performCalled)
     }
-    
+
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .PASSWORD_WARNING)
         -> OktaAuthStatusPasswordWarning? {
-            
+
             guard let response = response.parse() else {
                 return nil
             }
-            
+
             return try? OktaAuthStatusPasswordWarning(currentState: currentStatus, model: response)
     }
 }

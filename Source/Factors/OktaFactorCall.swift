@@ -12,14 +12,14 @@
 
 import Foundation
 
-open class OktaFactorCall : OktaFactor {
+open class OktaFactorCall: OktaFactor {
 
     public var phoneNumber: String? {
         get {
             return factor.profile?.phoneNumber
         }
     }
-    
+
     public func enroll(phoneNumber: String,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void) {
@@ -43,7 +43,7 @@ open class OktaFactorCall : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

@@ -13,7 +13,7 @@
 import XCTest
 
 class OktaAuthStatusRecoveryTests: XCTestCase {
-    
+
     func testRecoveryChallenge() {
         guard let status = createStatus() else {
             XCTFail()
@@ -26,7 +26,7 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
         XCTAssertNotNil(status.recoveryType)
         XCTAssert(status.canRecover())
         XCTAssert(status.canCancel())
-        
+
         var ex = expectation(description: "Callback is expected!")
         status.setupApiMockResponse(.SUCCESS)
         status.recoverWithAnswer(
@@ -40,10 +40,10 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
         waitForExpectations(timeout: 5.0)
-        
+
         ex = expectation(description: "Callback is expected!")
         status.setupApiMockResponse(.SUCCESS)
         status.recoverWithToken(
@@ -57,7 +57,7 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
         waitForExpectations(timeout: 5.0)
     }
@@ -67,14 +67,14 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         var ex = expectation(description: "Callback is expected!")
-        
+
         status.recoverWithAnswer(
             "Answer",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
         },
@@ -86,18 +86,18 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
                 ex.fulfill()
         }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
-        
+
         status.setupApiMockFailure()
 
         ex = expectation(description: "Callback is expected!")
 
         status.recoverWithToken(
             "Token",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
         },
@@ -109,23 +109,23 @@ class OktaAuthStatusRecoveryTests: XCTestCase {
                 ex.fulfill()
         }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .RECOVERY)
         -> OktaAuthStatusRecovery? {
-            
+
             guard let response = response.parse() else {
                 return nil
             }
-            
+
             return try? OktaAuthStatusRecovery(currentState: currentStatus, model: response)
     }
 }

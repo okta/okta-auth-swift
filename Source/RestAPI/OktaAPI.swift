@@ -56,7 +56,7 @@ open class OktaAPI {
         bodyParams["context"] = context
         bodyParams["token"] = token
         req.bodyParams = bodyParams
-        
+
         if let deviceFingerprint = deviceFingerprint {
             req.additionalHeaders = ["X-Device-Fingerprint": deviceFingerprint]
         }
@@ -95,7 +95,7 @@ open class OktaAPI {
         req.run()
         return req
     }
-    
+
     @discardableResult open func unlockAccount(username: String,
                                                factor: FactorType,
                                                completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
@@ -161,7 +161,7 @@ open class OktaAPI {
         req.run()
         return req
     }
-    
+
     @discardableResult open func perform(link: LinksResponse.Link,
                                          stateToken: String,
                                          completion: ((OktaAPIRequest.Result) -> Void)? = nil) -> OktaAPIRequest {
@@ -172,7 +172,7 @@ open class OktaAPI {
         req.run()
         return req
     }
-    
+
     @discardableResult open func verifyFactor(factorId: String,
                                               stateToken: String,
                                               answer: String? = nil,

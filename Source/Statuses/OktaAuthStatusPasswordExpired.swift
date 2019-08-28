@@ -12,8 +12,8 @@
 
 import Foundation
 
-open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
-    
+open class OktaAuthStatusPasswordExpired: OktaAuthStatus {
+
     public internal(set) var stateToken: String
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
@@ -26,11 +26,11 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
     }
 
     open func canChange() -> Bool {
-        
+
         guard (model.links?.next?.href) != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -48,7 +48,7 @@ open class OktaAuthStatusPasswordExpired : OktaAuthStatus {
                                stateToken: stateToken,
                                oldPassword: oldPassword,
                                newPassword: newPassword) { result in
-    
+
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)

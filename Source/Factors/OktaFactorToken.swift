@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorToken : OktaFactor {
+open class OktaFactorToken: OktaFactor {
 
     public var credentialId: String? {
         get {
@@ -34,7 +34,7 @@ open class OktaFactorToken : OktaFactor {
                      answer: nil,
                      credentialId: credentialId,
                      passCode: passCode,
-                     phoneNumber:  nil,
+                     phoneNumber: nil,
                      onStatusChange: onStatusChange,
                      onError: onError)
     }
@@ -46,7 +46,7 @@ open class OktaFactorToken : OktaFactor {
                     onStatusChange: onStatusChange,
                     onError: onError)
     }
-    
+
     public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
@@ -58,7 +58,7 @@ open class OktaFactorToken : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

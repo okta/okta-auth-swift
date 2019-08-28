@@ -12,10 +12,10 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
-    
+open class OktaAuthStatusFactorEnrollActivate: OktaAuthStatus {
+
     public internal(set) var stateToken: String
-    
+
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         guard let stateToken = model.stateToken else {
             throw OktaError.invalidResponse
@@ -29,9 +29,9 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
         self.stateToken = stateToken
         self.internalFactor = factor
         self.activateLink = activateLink
-        
+
         try super.init(currentState: currentState, model: model)
-        
+
         statusType = .MFAEnrollActivate
     }
 
@@ -44,7 +44,7 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
         createdFactor.restApi = self.restApi
         return createdFactor
     }()
-    
+
     public let activateLink: LinksResponse.Link
 
     open func canResend() -> Bool {
@@ -74,7 +74,7 @@ open class OktaAuthStatusFactorEnrollActivate : OktaAuthStatus {
             return
         }
 
-        let link :LinksResponse.Link
+        let link: LinksResponse.Link
         let resendLink = self.model.links!.resend!
         switch resendLink {
         case .resend(let rawLink):

@@ -64,7 +64,7 @@ public extension OktaError {
             return "Invalid parameters"
         }
     }
-    
+
     var localizedDescription: String {
         return NSLocalizedString(self.description, comment: "")
     }

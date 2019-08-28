@@ -15,10 +15,10 @@ import XCTest
 class OktaAuthStatusUnauthenticatedTests: XCTestCase {
 
     // MARK: - authenticate
-    
+
     func testAuthenticate() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockResponse(.SUCCESS)
 
         let ex = expectation(description: "Callback is expected!")
@@ -33,15 +33,15 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.primaryAuthenticationCalled)
     }
-    
+
     func testAuthenticate_ApiFailure() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockFailure()
 
         let ex = expectation(description: "Callback is expected!")
@@ -59,17 +59,17 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.primaryAuthenticationCalled)
     }
-    
+
     // MARK: - unlockAccount
-    
+
     func testUnlockAccount() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockResponse(.SUCCESS)
 
         let ex = expectation(description: "Callback is expected!")
@@ -84,17 +84,17 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.unlockCalled)
     }
-    
+
     func testUnlockAccount_ApiFailure() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
         status.unlockAccount(
             username: "test",
@@ -110,17 +110,17 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.unlockCalled)
     }
-    
+
     // MARK: - recoverPassword
-    
+
     func testRecoverPassword() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockResponse(.SUCCESS)
 
         let ex = expectation(description: "Callback is expected!")
@@ -135,15 +135,15 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
     }
-    
+
     func testRecoverPassword_ApiFailure() {
         let status = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!)
-        
+
         status.setupApiMockFailure()
 
         let ex = expectation(description: "Callback is expected!")
@@ -161,9 +161,9 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.recoverCalled)
     }
 

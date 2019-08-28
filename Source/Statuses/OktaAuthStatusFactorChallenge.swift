@@ -12,8 +12,8 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
-    
+open class OktaAuthStatusFactorChallenge: OktaAuthStatus {
+
     public internal(set) var stateToken: String
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
@@ -25,9 +25,9 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         }
         self.stateToken = stateToken
         internalFactor = factor
-        
+
         try super.init(currentState: currentState, model: model)
-        
+
         statusType = .MFAChallenge
     }
 
@@ -49,7 +49,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
         guard model.links?.resend != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -74,7 +74,7 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
             return
         }
 
-        let link :LinksResponse.Link
+        let link: LinksResponse.Link
         let resendLink = self.model.links!.resend!
         switch resendLink {
         case .resend(let rawLink):
@@ -108,4 +108,3 @@ extension OktaAuthStatusFactorChallenge: OktaFactorResultProtocol {
         self.handleServerResponse(response, onStatusChanged: onStatusChange, onError: onError)
     }
 }
-

@@ -16,7 +16,7 @@ open class OktaAuthStatus {
 
     public var restApi: OktaAPI
 
-    public var statusType : AuthStatus = .unknown("Unknown status")
+    public var statusType: AuthStatus = .unknown("Unknown status")
 
     public var model: OktaAPISuccessResponse
 
@@ -57,7 +57,7 @@ open class OktaAuthStatus {
         guard model.links?.prev != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -76,7 +76,7 @@ open class OktaAuthStatus {
             onError(.invalidResponse)
             return
         }
-        
+
         restApi.perform(link: model.links!.prev!,
                         stateToken: stateToken,
                         completion: { result in
@@ -85,7 +85,7 @@ open class OktaAuthStatus {
                                                       onError: onError)
         })
     }
-    
+
     open func canCancel() -> Bool {
         guard model.links?.cancel?.href != nil else {
             return false
@@ -114,7 +114,7 @@ open class OktaAuthStatus {
             switch result {
             case .error(let error):
                 onError?(error)
-            case .success(_):
+            case .success:
                 self.cancelled = true
                 onSuccess?()
             }
@@ -129,7 +129,7 @@ open class OktaAuthStatus {
     func fetchStatus(with stateToken: String,
                      onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                      onError: @escaping (_ error: OktaError) -> Void) {
-        
+
         restApi.getTransactionState(stateToken: stateToken, completion: { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,

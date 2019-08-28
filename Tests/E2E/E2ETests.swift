@@ -14,7 +14,7 @@ import XCTest
 @testable import OktaAuthNative
 
 class E2ETests: XCTestCase {
-    
+
     let username = ProcessInfo.processInfo.environment["USERNAME"]!
     let password = ProcessInfo.processInfo.environment["PASSWORD"]!
     let urlString = ProcessInfo.processInfo.environment["DOMAIN_URL"]!
@@ -26,7 +26,7 @@ class E2ETests: XCTestCase {
     var factorEnrollmentUser: (username: String, password: String)?
 
     override func setUp() {
-        
+
         if let _ = primaryAuthUser,
            let _ = factorRequiredUser {
             return
@@ -61,7 +61,7 @@ class E2ETests: XCTestCase {
 
     func testPrimaryAuthFlowFailure() {
         let ex = expectation(description: "Operation should fail!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: "Wrong password", onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: "Wrong password", onStatusChange: { _ in
             XCTFail("Unexpected status")
             ex.fulfill()
         }) { error in
@@ -71,7 +71,7 @@ class E2ETests: XCTestCase {
             }
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
     }
 
@@ -98,7 +98,7 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
 
         var pushFactor: OktaFactorPush?
@@ -153,7 +153,7 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
 
         if let pushFactor = pushFactor {
@@ -185,9 +185,9 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
-        
+
         if let recoveryChallengeStatus = recoveryChallengeStatus {
             fetchTransactionWith(recoveryChallengeStatus)
             cancelTransactionWithStatus(recoveryChallengeStatus)
@@ -210,7 +210,7 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
     }
 
@@ -241,15 +241,15 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
-        
+
         if let smsFactor = smsFactor {
             runFactorEnrollForSmsFactor(smsFactor)
         } else {
             XCTFail("Sms factor has not been found")
         }
-        
+
         cancelTransactionWithStatus(factorEnrollStatus!)
     }
 
@@ -280,15 +280,15 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
-        
+
         if let totpFactor = totpFactor {
             runFactorEnrollForTotpFactor(totpFactor)
         } else {
             XCTFail("Totp factor has not been found")
         }
-        
+
         cancelTransactionWithStatus(factorEnrollStatus!)
     }
 
@@ -338,12 +338,10 @@ class E2ETests: XCTestCase {
         let ex = expectation(description: "Operation should fail!")
         factor.verify(passCode: "1234",
                       answerToSecurityQuestion: nil,
-                      onStatusChange:
-            { status in
+                      onStatusChange: { _ in
                 XCTFail("Unexpected status")
                 ex.fulfill()
-        })
-            { error in
+        }) { error in
                 if case .serverRespondedWithError(let errorResponse) = error {
                     XCTAssert(errorResponse.errorSummary!.count > 0)
                     XCTAssertEqual(errorResponse.errorCode, "E0000068")
@@ -356,8 +354,7 @@ class E2ETests: XCTestCase {
 
     func runFactorChallengeForPushFactor(_ factor: OktaFactorPush) {
         let ex = expectation(description: "Operation should succeed!")
-        factor.verify(onStatusChange:
-            { status in
+        factor.verify(onStatusChange: { status in
                 let factorChallengeStatus = status as? OktaAuthStatusFactorChallenge
                 if let factorChallengeStatus = factorChallengeStatus {
                     self.verifyBasicInfoForStatus(status: status)
@@ -369,20 +366,18 @@ class E2ETests: XCTestCase {
                     XCTFail("Unexpected status")
                 }
                 ex.fulfill()
-        })
-        { error in
+        }) { error in
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
     }
 
     func runFactorChallengeForQuestionFactor(_ factor: OktaFactorQuestion) {
         let ex = expectation(description: "Operation should succeed!")
         factor.verify(answerToSecurityQuestion: answer,
-                      onStatusChange:
-        { status in
+                      onStatusChange: { status in
                 let successStatus = status as? OktaAuthStatusSuccess
                 if let successStatus = successStatus {
                     self.verifyBasicInfoForStatus(status: status)
@@ -391,13 +386,12 @@ class E2ETests: XCTestCase {
                     XCTFail("Unexpected status")
                 }
                 ex.fulfill()
-        })
-        { error in
-            
+        }) { error in
+
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
     }
 
@@ -475,7 +469,7 @@ class E2ETests: XCTestCase {
             XCTFail(error.description)
             ex.fulfill()
         }
-        
+
         waitForExpectations(timeout: 30.0)
     }
 

@@ -17,13 +17,13 @@ extension OktaAuthStatus {
     var apiMock: OktaAPIMock! {
         return self.restApi as? OktaAPIMock
     }
-    
+
     @discardableResult func setupApiMockFailure(from resourceName: String = "AuthenticationFailedError") -> OktaAPIMock! {
         let mock = OktaAPIMock(successCase: false, resourceName: resourceName)!
         self.restApi = mock
         return mock
     }
-    
+
     @discardableResult func setupApiMockResponse(_ response: TestResponse ) -> OktaAPIMock! {
         let mock = OktaAPIMock(successCase: true, resourceName: response.rawValue)!
         self.restApi = mock

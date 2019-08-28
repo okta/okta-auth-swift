@@ -12,8 +12,8 @@
 
 import Foundation
 
-open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
-    
+open class OktaAuthStatusPasswordWarning: OktaAuthStatus {
+
     public internal(set) var stateToken: String
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
@@ -24,22 +24,22 @@ open class OktaAuthStatusPasswordWarning : OktaAuthStatus {
         try super.init(currentState: currentState, model: model)
         statusType = .passwordWarning
     }
-    
+
     open func canChange() -> Bool {
-        
+
         guard (model.links?.next?.href) != nil else {
             return false
         }
-        
+
         return true
     }
 
     open func canSkip() -> Bool {
-        
+
         guard (model.links?.skip?.href) != nil else {
             return false
         }
-        
+
         return true
     }
 

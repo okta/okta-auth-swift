@@ -15,17 +15,17 @@ import XCTest
 @testable import OktaAuthNative
 
 class OktaAuthStatusPasswordExpiredTests: XCTestCase {
-    
+
     func testChangePassword() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.changePassword(
             oldPassword: "1234",
             newPassword: "4321",
@@ -38,26 +38,26 @@ class OktaAuthStatusPasswordExpiredTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.changePasswordCalled)
     }
-    
+
     func testChangePassword_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.changePassword(
             oldPassword: "1234",
             newPassword: "4321",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -69,14 +69,14 @@ class OktaAuthStatusPasswordExpiredTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.changePasswordCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .PASSWORD_EXPIRED)
@@ -85,7 +85,7 @@ class OktaAuthStatusPasswordExpiredTests: XCTestCase {
         guard let response = response.parse() else {
             return nil
         }
-        
+
         return try? OktaAuthStatusPasswordExpired(currentState: currentStatus, model: response)
     }
 }

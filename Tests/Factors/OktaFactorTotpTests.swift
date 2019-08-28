@@ -20,7 +20,7 @@ class OktaFactorTotpTests: OktaFactorTestCase {
             XCTFail()
             return
         }
-        
+
         XCTAssertNotNil(factor.activation)
         XCTAssertNotNil(factor.activationLinks)
         XCTAssertNotNil(factor.activationLinks?.qrcode)
@@ -29,26 +29,26 @@ class OktaFactorTotpTests: OktaFactorTestCase {
             factor.qrCodeLink?.href.absoluteString
         )
     }
-    
+
     // MARK: - enroll
-    
+
     func testEnroll() {
         guard let factor: OktaFactorTotp = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .TOTP) else {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockResponse(.MFA_REQUIRED)
         let delegate = factor.setupMockDelegate(with: try! OktaAuthStatusFactorRequired(
             currentState: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!),
             model: TestResponse.MFA_REQUIRED.parse()!
         ))
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         factor.enroll(
             onStatusChange: { status in
-                XCTAssertEqual( AuthStatus.MFARequired , status.statusType)
+                XCTAssertEqual( AuthStatus.MFARequired, status.statusType)
                 ex.fulfill()
             },
             onError: { error in
@@ -56,27 +56,27 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateSucceeded(delegate, with: .MFA_REQUIRED)
-        
+
         XCTAssertTrue(factor.apiMock.enrollCalled)
     }
-    
+
     func testEnroll_ApiFailure() {
          guard let factor: OktaFactorTotp = createFactor(from: .MFA_ENROLL_NotEnrolled, type: .TOTP) else {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockFailure()
         let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         factor.enroll(
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Operation should fail!")
                 ex.fulfill()
             },
@@ -85,27 +85,27 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateFailed(delegate)
-        
+
         XCTAssertTrue(factor.apiMock.enrollCalled)
     }
-    
+
     // MARK: - verify
-    
+
     func testVerify() {
         guard let factor: OktaFactorTotp = createFactor(from: TestResponse.MFA_REQUIRED, type: .TOTP) else {
             XCTFail()
             return
         }
-    
+
         factor.setupApiMockResponse(.MFA_REQUIRED)
         let delegate = factor.setupMockDelegate(with: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!))
-    
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         factor.verify(
             passCode: "1234",
             onStatusChange: { status in
@@ -117,11 +117,11 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-    
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateSucceeded(delegate, with: .MFA_REQUIRED)
-        
+
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)
         XCTAssertEqual("1234", factor.apiMock.factorVerificationPassCode)
         XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
@@ -132,15 +132,15 @@ class OktaFactorTotpTests: OktaFactorTestCase {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockFailure()
         let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         factor.verify(
             passCode: "1234",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Operation should fail!")
                 ex.fulfill()
             },
@@ -149,38 +149,38 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateFailed(delegate)
-        
+
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)
         XCTAssertEqual("1234", factor.apiMock.factorVerificationPassCode)
         XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
-        
+
         guard let delegateResponse = delegate.response,
               case .error(_) = delegateResponse else {
             XCTFail("Delegate should be called with error!")
             return
         }
     }
-    
+
     // MARK: - select
-    
+
     func testSelect() {
         guard let factor: OktaFactorTotp = createFactor(from: .MFA_REQUIRED, type: .TOTP) else {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockResponse(.MFA_REQUIRED)
         let delegate = factor.setupMockDelegate(with: try! OktaAuthStatusFactorChallenge(
             currentState: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!),
             model: TestResponse.MFA_CHALLENGE_TOTP.parse()!
         ))
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         factor.select(
             passCode: "1234",
             onStatusChange: { status in
@@ -192,30 +192,30 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateSucceeded(delegate, with: .MFA_CHALLENGE_TOTP)
 
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)
         XCTAssertEqual("1234", factor.apiMock.factorVerificationPassCode)
         XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
     }
-    
+
     func testSelect_ApiFailed() {
         guard let factor: OktaFactorTotp = createFactor(from: .MFA_REQUIRED, type: .TOTP) else {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockFailure()
         let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         factor.select(
             passCode: "1234",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Operation should fail!")
                 ex.fulfill()
             },
@@ -224,9 +224,9 @@ class OktaFactorTotpTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateFailed(delegate)
 
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)

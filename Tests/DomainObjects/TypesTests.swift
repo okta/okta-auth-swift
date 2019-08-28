@@ -20,15 +20,15 @@ class TypesTests: XCTestCase {
         let factors: [FactorType] = [
             .question, .sms, .call, .TOTP, .push, .token, .tokenHardware, .web, .u2f, .email, .unknown("test")
         ]
-        
+
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
-        
+
         for factor in factors {
             do {
                 let encodedData = try encoder.encode([factor])
                 let decodedFactor = (try decoder.decode([FactorType].self, from: encodedData)).first
-                
+
                 XCTAssertEqual(factor, decodedFactor)
             } catch {
                 XCTFail(error.localizedDescription)
@@ -41,15 +41,15 @@ class TypesTests: XCTestCase {
         let providers: [FactorProvider] = [
             .okta, .google, .rsa, .symantec, .yubico, .duo, .fido, .unknown("test")
         ]
-        
+
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
-        
+
         for provider in providers {
             do {
                 let encodedData = try encoder.encode([provider])
                 let decodedProvider = (try decoder.decode([FactorProvider].self, from: encodedData)).first
-            
+
                 XCTAssertEqual(provider, decodedProvider)
             } catch {
                 XCTFail(error.localizedDescription)
@@ -57,7 +57,7 @@ class TypesTests: XCTestCase {
             }
         }
     }
-    
+
     func testOktaRecoveryFactors() {
         XCTAssertEqual(OktaRecoveryFactors.email.toFactorType(), FactorType.email)
         XCTAssertEqual(OktaRecoveryFactors.call.toFactorType(), FactorType.call)

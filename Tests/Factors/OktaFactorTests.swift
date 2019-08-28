@@ -24,7 +24,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("Failed to read test data!")
             return
         }
-        
+
         guard let factor = OktaFactor.createFactorWith(factorResponse,
                                                        stateToken: stateToken,
                                                        verifyLink: nil,
@@ -32,7 +32,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("OktaFactorSms should be created!")
             return
         }
-        
+
         XCTAssertEqual("REQUIRED", factor.enrollment)
         XCTAssertEqual("NOT_SETUP", factor.status)
         XCTAssertEqual(FactorProvider.okta, factor.provider)
@@ -44,7 +44,7 @@ class OktaFactorTests: XCTestCase {
         XCTAssertFalse(factor.canActivate())
         XCTAssertTrue(factor.canEnroll())
     }
-    
+
     func testCreation_question() {
         guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
@@ -53,7 +53,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("Failed to read test data!")
             return
         }
-        
+
         guard let factor = OktaFactor.createFactorWith(factorResponse,
                                                        stateToken: stateToken,
                                                        verifyLink: nil,
@@ -61,7 +61,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("OktaFactorSms should be created!")
             return
         }
-        
+
         XCTAssertEqual("REQUIRED", factor.enrollment)
         XCTAssertEqual("NOT_SETUP", factor.status)
         XCTAssertEqual(FactorProvider.okta, factor.provider)
@@ -73,7 +73,7 @@ class OktaFactorTests: XCTestCase {
         XCTAssertFalse(factor.canActivate())
         XCTAssertTrue(factor.canEnroll())
     }
-    
+
     func testCreation_Push() {
         guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
@@ -82,7 +82,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("Failed to read test data!")
             return
         }
-        
+
         guard let factor = OktaFactor.createFactorWith(factorResponse,
                                                        stateToken: stateToken,
                                                        verifyLink: nil,
@@ -90,7 +90,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("OktaFactorSms should be created!")
             return
         }
-        
+
         XCTAssertEqual("REQUIRED", factor.enrollment)
         XCTAssertEqual("NOT_SETUP", factor.status)
         XCTAssertEqual(FactorProvider.okta, factor.provider)
@@ -102,7 +102,7 @@ class OktaFactorTests: XCTestCase {
         XCTAssertFalse(factor.canActivate())
         XCTAssertTrue(factor.canEnroll())
     }
-    
+
     func testCreation_Totp() {
         guard let testResponse = TestResponse.MFA_ENROLL_NotEnrolled.parse(),
               let stateToken = testResponse.stateToken,
@@ -111,7 +111,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("Failed to read test data!")
             return
         }
-        
+
         guard let factor = OktaFactor.createFactorWith(factorResponse,
                                                        stateToken: stateToken,
                                                        verifyLink: nil,
@@ -119,7 +119,7 @@ class OktaFactorTests: XCTestCase {
             XCTFail("OktaFactorSms should be created!")
             return
         }
-        
+
         XCTAssertEqual("REQUIRED", factor.enrollment)
         XCTAssertEqual("NOT_SETUP", factor.status)
         XCTAssertEqual(FactorProvider.okta, factor.provider)

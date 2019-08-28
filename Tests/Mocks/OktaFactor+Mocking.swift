@@ -16,37 +16,37 @@ import OktaAuthNative
 extension OktaFactor {
 
     // MARK: - OktaFactorResultProtocolMock
-    
+
     @discardableResult func setupMockDelegate() -> OktaFactorResultProtocolMock {
         let delegate = OktaFactorResultProtocolMock()
         responseDelegate = delegate
         return delegate
     }
-    
+
     @discardableResult func setupMockDelegate(with error: OktaError) -> OktaFactorResultProtocolMock {
         let delegate = setupMockDelegate()
         delegate.error = error
         return delegate
     }
-    
+
     @discardableResult func setupMockDelegate(with changedStatus: OktaAuthStatus) -> OktaFactorResultProtocolMock {
         let delegate = setupMockDelegate()
         delegate.changedStatus = changedStatus
         return delegate
     }
-    
+
     // MARK: - OktaAPIMock
-    
+
     var apiMock: OktaAPIMock! {
         return self.restApi as? OktaAPIMock
     }
-    
+
     @discardableResult func setupApiMockFailure(from resourceName: String = "AuthenticationFailedError") -> OktaAPIMock! {
         let mock = OktaAPIMock(successCase: false, resourceName: resourceName)!
         self.restApi = mock
         return mock
     }
-    
+
     @discardableResult func setupApiMockResponse(_ response: TestResponse ) -> OktaAPIMock! {
         let mock = OktaAPIMock(successCase: true, resourceName: response.rawValue)!
         self.restApi = mock

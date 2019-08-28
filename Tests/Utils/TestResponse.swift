@@ -35,21 +35,21 @@ enum TestResponse: String {
     case RECOVERY_CHALLENGE_SMS = "RECOVERY_CHALLENGE_SMS"
     case RECOVERY_CHALLENGE_EMAIL = "RECOVERY_CHALLENGE_EMAIL"
     case Unknown_State_And_FactorResult = "Unknown_State_And_FactorResult"
-    
+
     func data() -> Data? {
         guard let file = Bundle(for: OktaAPIMock.self).url(forResource: self.rawValue, withExtension: nil),
               let data = try? Data(contentsOf: file) else {
             return nil
         }
-        
+
         return data
     }
-    
+
     func parse() -> OktaAPISuccessResponse? {
         guard let data = data() else {
             return nil
         }
-        
+
         let decoder = JSONDecoder()
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

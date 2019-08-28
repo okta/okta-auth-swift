@@ -19,12 +19,12 @@ public class OktaAuthSdk {
                                    password: String?,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
-        
+
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.authenticate(username: username,
                                            password: password ?? "",
-                                           onStatusChange:onStatusChange,
-                                           onError:onError)
+                                           onStatusChange: onStatusChange,
+                                           onError: onError)
     }
 
     public class func unlockAccount(with url: URL,
@@ -32,11 +32,11 @@ public class OktaAuthSdk {
                                     factorType: OktaRecoveryFactors,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void) {
-        
+
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.unlockAccount(username: username,
                                             factorType: factorType,
-                                            onStatusChange:onStatusChange,
+                                            onStatusChange: onStatusChange,
                                             onError: onError)
     }
 
@@ -45,7 +45,7 @@ public class OktaAuthSdk {
                                       factorType: OktaRecoveryFactors,
                                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                       onError: @escaping (_ error: OktaError) -> Void) {
-        
+
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.recoverPassword(username: username,
                                               factorType: factorType,

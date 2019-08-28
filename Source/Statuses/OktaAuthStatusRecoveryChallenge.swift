@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
+open class OktaAuthStatusRecoveryChallenge: OktaAuthStatus {
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         try super.init(currentState: currentState, model: model)
@@ -24,7 +24,6 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
             return model.stateToken
         }
     }
-    
 
     open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
         get {
@@ -42,7 +41,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
         guard model.links?.next != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -50,7 +49,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
         guard model.links?.resend != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -90,7 +89,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
             onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
-        
+
         restApi.verifyFactor(with: model.links!.next!,
                              stateToken: stateToken,
                              answer: nil,
@@ -115,7 +114,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
             return
         }
 
-        let link :LinksResponse.Link
+        let link: LinksResponse.Link
         let resendLink = self.model.links!.resend!
         switch resendLink {
         case .resend(let rawLink):
@@ -123,7 +122,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
         case .resendArray(let rawArray):
             link = rawArray.first!
         }
-        
+
         restApi.perform(link: link,
                         stateToken: stateToken,
                         completion: { result in

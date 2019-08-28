@@ -12,10 +12,10 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
-    
+open class OktaAuthStatusFactorEnroll: OktaAuthStatus {
+
     public internal(set) var stateToken: String
-    
+
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         guard let stateToken = model.stateToken else {
             throw OktaError.invalidResponse
@@ -40,7 +40,7 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             createdFactor.responseDelegate = self
             oktaFactors.append(createdFactor)
         }
-        
+
         return oktaFactors
     }()
 
@@ -52,7 +52,7 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
         guard model.links?.skip?.href != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -62,7 +62,7 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
             onError(.wrongStatus("Can't find 'skip' link in response"))
             return
         }
-        
+
         restApi.perform(link: model.links!.skip!, stateToken: stateToken) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,

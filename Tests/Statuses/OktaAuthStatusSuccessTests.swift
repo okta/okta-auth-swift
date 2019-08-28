@@ -13,39 +13,39 @@
 import XCTest
 
 class OktaAuthStatusSuccessTests: XCTestCase {
-    
+
     func testSuccessSignIn() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         XCTAssertNotNil(status.sessionToken)
         XCTAssertNil(status.recoveryType)
     }
-    
+
     func testSuccessUnlock() {
         guard let status = createStatus(from: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
                                         withResponse: .SUCCESS_UNLOCK) else {
             XCTFail()
             return
         }
-        
+
         XCTAssertNil(status.sessionToken)
         XCTAssertNotNil(status.recoveryType)
     }
-    
+
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .SUCCESS)
         -> OktaAuthStatusSuccess? {
-            
+
             guard let response = response.parse() else {
                 return nil
             }
-            
+
             return try? OktaAuthStatusSuccess(currentState: currentStatus, model: response)
     }
 }

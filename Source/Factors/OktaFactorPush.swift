@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorPush : OktaFactor {
+open class OktaFactorPush: OktaFactor {
 
     public var activation: EmbeddedResponse.Factor.Embedded.Activation? {
         get {
@@ -42,11 +42,11 @@ open class OktaFactorPush : OktaFactor {
         guard let sendLinkArray = activationLinks?.send else {
             return false
         }
-        
+
         guard let _ = sendLinkArray.first(where: { $0.name == "sms" }) else {
             return false
         }
-        
+
         return true
     }
 
@@ -58,19 +58,19 @@ open class OktaFactorPush : OktaFactor {
         guard let link = sendLinkArray.first(where: { $0.name == "sms" }) else {
             return nil
         }
-        
+
         return link
     }
-    
+
     public func canSendPushCodeViaEmail() -> Bool {
         guard let sendLinkArray = activationLinks?.send else {
             return false
         }
-        
+
         guard let _ = sendLinkArray.first(where: { $0.name == "email" }) else {
             return false
         }
-        
+
         return true
     }
 
@@ -82,11 +82,11 @@ open class OktaFactorPush : OktaFactor {
         guard let link = sendLinkArray.first(where: { $0.name == "email" }) else {
             return nil
         }
-        
+
         return link
     }
 
-    public func sendActivationLinkViaSms(with phoneNumber:String,
+    public func sendActivationLinkViaSms(with phoneNumber: String,
                                          onSuccess: @escaping () -> Void,
                                          onError: @escaping (_ error: OktaError) -> Void) {
         guard canSendPushCodeViaSms() else {
@@ -102,12 +102,12 @@ open class OktaFactorPush : OktaFactor {
 
                                         case .error(let error):
                                             onError(error)
-                                        case .success(_):
+                                        case .success:
                                             onSuccess()
                                         }
         })
     }
-    
+
     public func sendActivationLinkViaEmail(onSuccess: @escaping () -> Void,
                                            onError: @escaping (_ error: OktaError) -> Void) {
         guard canSendPushCodeViaEmail() else {
@@ -119,11 +119,11 @@ open class OktaFactorPush : OktaFactor {
                                     stateToken: stateToken,
                                     phoneNumber: nil,
                                     completion: { result in
-                                        
+
                                         switch result {
                                         case .error(let error):
                                             onError(error)
-                                        case .success(_):
+                                        case .success:
                                             onSuccess()
                                         }
         })
@@ -159,14 +159,14 @@ open class OktaFactorPush : OktaFactor {
             onError(OktaError.wrongStatus("Can't find 'poll' link in response"))
             return
         }
-        
+
         let pollLink: LinksResponse.Link?
         if activationLink != nil {
             pollLink = activationLink
         } else {
             pollLink = verifyLink
         }
-        
+
         self.verifyFactor(with: pollLink!,
                           answer: nil,
                           passCode: nil,
@@ -176,7 +176,7 @@ open class OktaFactorPush : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

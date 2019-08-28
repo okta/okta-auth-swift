@@ -15,13 +15,13 @@ import XCTest
 @testable import OktaAuthNative
 
 class OktaAuthStatusFactorRequiredTests: XCTestCase {
-    
+
     func testAvailableFactors() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         let factors = status.availableFactors
         let expectedFactors: [FactorType] = [
             .call,
@@ -31,7 +31,7 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
             .push,
             .TOTP
         ]
-        
+
         for (index, factor) in factors.enumerated() {
             XCTAssertEqual(expectedFactors[index], factor.type)
             XCTAssertEqual(status.stateToken, factor.stateToken)
@@ -39,22 +39,22 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
             XCTAssertTrue(status.restApi === factor.restApi)
         }
     }
-    
+
     // MARK: - select
-    
+
     func testSelect() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_CHALLENGE_SMS)
-        
+
         guard let factor = status.availableFactors.first else {
             XCTFail()
             return
         }
-        
+
         let ex = expectation(description: "Callback is expected!")
 
         status.selectFactor(
@@ -68,28 +68,28 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
                 XCTFail(error.localizedDescription)
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     func testSelect_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         guard let factor = status.availableFactors.first else {
             XCTFail()
             return
         }
-        
+
         let ex = expectation(description: "Callback is expected!")
 
         status.selectFactor(
             factor,
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -101,22 +101,22 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     // MARK: - cancel
-    
+
     func testCancel() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_REQUIRED)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canCancel())
         status.cancel(onSuccess: {
             ex.fulfill()
@@ -124,22 +124,22 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
             XCTFail(error.localizedDescription)
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
-    
+
     func testCancel_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canCancel())
         status.cancel(onSuccess: {
             XCTFail("Unexpected callback!")
@@ -151,14 +151,14 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
             )
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .MFA_REQUIRED)
@@ -167,7 +167,7 @@ class OktaAuthStatusFactorRequiredTests: XCTestCase {
         guard let response = response.parse() else {
             return nil
         }
-        
+
         return try? OktaAuthStatusFactorRequired(currentState: currentStatus, model: response)
     }
 }

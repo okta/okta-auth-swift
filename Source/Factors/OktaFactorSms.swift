@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorSms : OktaFactor {
+open class OktaFactorSms: OktaFactor {
 
     public var phoneNumber: String? {
         get {
@@ -43,7 +43,7 @@ open class OktaFactorSms : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

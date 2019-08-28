@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusRecovery : OktaAuthStatus {
+open class OktaAuthStatusRecovery: OktaAuthStatus {
 
     public internal(set) var stateToken: String
 
@@ -24,7 +24,7 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
         try super.init(currentState: currentState, model: model)
         statusType = .recovery
     }
-    
+
     open var recoveryQuestion: String? {
         get {
             return model.embedded?.user?.recoveryQuestion?.question
@@ -47,7 +47,7 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
         guard model.links?.next != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -58,7 +58,7 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
             onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
-        
+
         restApi.recoverWith(answer: answer,
                             stateToken: stateToken,
                             recoveryToken: nil, link: model.links!.next!) { result in
@@ -75,7 +75,7 @@ open class OktaAuthStatusRecovery : OktaAuthStatus {
             onError(.wrongStatus("Can't find 'next' link in response"))
             return
         }
-        
+
         restApi.recoverWith(answer: nil,
                             stateToken: stateToken,
                             recoveryToken: recoveryToken, link: model.links!.next!) { result in

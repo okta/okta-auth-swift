@@ -28,7 +28,7 @@ public class OktaAPIRequest {
         self.urlSession = urlSession
         self.completion = completion
         decoder = JSONDecoder()
-        
+
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         decoder.dateDecodingStrategy = .formatted(formatter)
@@ -103,7 +103,7 @@ public class OktaAPIRequest {
         }
         task?.resume()
     }
-    
+
     public func cancel() {
         guard let task = task else {
             return
@@ -158,7 +158,7 @@ public class OktaAPIRequest {
             switch result {
             case .error(let error):
                 customSuccessHandler(self, nil, decoder, error)
-            case .success(_):
+            case .success:
                 customSuccessHandler(self, nil, decoder, .internalError("Internal error in OktaAPIRequest class"))
             }
         } else {

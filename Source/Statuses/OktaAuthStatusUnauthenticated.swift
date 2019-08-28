@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
+open class OktaAuthStatusUnauthenticated: OktaAuthStatus {
 
     public override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
         super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
@@ -26,8 +26,7 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
         restApi.primaryAuthentication(username: username,
                                       password: password,
-                                      deviceFingerprint: nil)
-        { result in
+                                      deviceFingerprint: nil) { result in
             self.handleServerResponse(result,
                                       onStatusChanged: onStatusChange,
                                       onError: onError)
@@ -44,7 +43,7 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
                                       onError: onError)
         }
     }
-    
+
     open func recoverPassword(username: String,
                               factorType: OktaRecoveryFactors,
                               onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,

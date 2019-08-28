@@ -20,10 +20,9 @@ open class OktaAuthStatusResponseHandler {
     open func handleServerResponse(_ response: OktaAPIRequest.Result,
                                    currentStatus: OktaAuthStatus,
                                    onStatusChanged: @escaping (_ newState: OktaAuthStatus) -> Void,
-                                   onError: @escaping (_ error: OktaError) -> Void)
-    {
-        var authResponse : OktaAPISuccessResponse
-        
+                                   onError: @escaping (_ error: OktaError) -> Void) {
+        var authResponse: OktaAPISuccessResponse
+
         switch response {
         case .error(let error):
             onError(error)
@@ -41,7 +40,7 @@ open class OktaAuthStatusResponseHandler {
             onError(OktaError.unexpectedResponse)
         }
     }
-    
+
     open func createAuthStatus(basedOn response: OktaAPISuccessResponse,
                                and currentStatus: OktaAuthStatus) throws -> OktaAuthStatus {
         guard let statusType = response.status else {
@@ -50,43 +49,43 @@ open class OktaAuthStatusResponseHandler {
 
         // create concrete status instance
         switch statusType {
-            
+
         case .success:
             return try OktaAuthStatusSuccess(currentState: currentStatus, model: response)
-            
+
         case .passwordWarning:
             return try OktaAuthStatusPasswordWarning(currentState: currentStatus, model: response)
-            
+
         case .passwordExpired:
             return try OktaAuthStatusPasswordExpired(currentState: currentStatus, model: response)
-            
+
         case .passwordReset:
             return try OktaAuthStatusPasswordReset(currentState: currentStatus, model: response)
-            
+
         case .MFAEnroll:
             return try OktaAuthStatusFactorEnroll(currentState: currentStatus, model: response)
-            
+
         case .MFAEnrollActivate:
             return try OktaAuthStatusFactorEnrollActivate(currentState: currentStatus, model: response)
-            
+
         case .MFARequired:
             return try OktaAuthStatusFactorRequired(currentState: currentStatus, model: response)
-            
+
         case .MFAChallenge:
             return try OktaAuthStatusFactorChallenge(currentState: currentStatus, model: response)
-            
+
         case .lockedOut:
             return try OktaAuthStatusLockedOut(currentState: currentStatus, model: response)
-            
+
         case .recovery:
             return try OktaAuthStatusRecovery(currentState: currentStatus, model: response)
-            
+
         case .recoveryChallenge:
             return try OktaAuthStatusRecoveryChallenge(currentState: currentStatus, model: response)
-            
+
         case .unauthenticated:
             throw OktaError.wrongStatus("Wrong state")
-            
+
         default:
             throw OktaError.unknownStatus(response)
         }

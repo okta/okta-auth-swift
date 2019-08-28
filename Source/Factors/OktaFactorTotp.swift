@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorTotp : OktaFactor {
+open class OktaFactorTotp: OktaFactor {
 
     public var activation: EmbeddedResponse.Factor.Embedded.Activation? {
         get {
@@ -58,7 +58,7 @@ open class OktaFactorTotp : OktaFactor {
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
-    
+
     public func verify(passCode: String,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
@@ -70,7 +70,7 @@ open class OktaFactorTotp : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

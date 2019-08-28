@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaAuthStatusLockedOut : OktaAuthStatus {
+open class OktaAuthStatusLockedOut: OktaAuthStatus {
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         try super.init(currentState: currentState, model: model)
@@ -23,7 +23,7 @@ open class OktaAuthStatusLockedOut : OktaAuthStatus {
         guard model.links?.next?.href != nil else {
             return false
         }
-        
+
         return true
     }
 

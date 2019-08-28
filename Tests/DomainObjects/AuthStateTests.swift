@@ -32,15 +32,15 @@ class AuthStateTests: XCTestCase {
             .success,
             .unknown("test")
         ]
-        
+
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
-        
+
         for status in statuses {
             do {
                 let encodedData = try encoder.encode([status])
                 let decodedStatus = (try decoder.decode([AuthStatus].self, from: encodedData)).first
-                
+
                 XCTAssertEqual(status, decodedStatus)
             } catch {
                 XCTFail(error.localizedDescription)

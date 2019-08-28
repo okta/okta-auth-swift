@@ -21,11 +21,11 @@ class OktaAuthStatePasswordResetTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.resetPassword(
             newPassword: "1234",
             onStatusChange: { status in
@@ -37,25 +37,25 @@ class OktaAuthStatePasswordResetTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.resetPasswordCalled)
     }
-    
+
     func testResetPassword_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.resetPassword(
             newPassword: "1234",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -67,14 +67,14 @@ class OktaAuthStatePasswordResetTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.resetPasswordCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .PASSWORD_RESET)
@@ -83,7 +83,7 @@ class OktaAuthStatePasswordResetTests: XCTestCase {
         guard let response = response.parse() else {
             return nil
         }
-        
+
         return try? OktaAuthStatusPasswordReset(currentState: currentStatus, model: response)
     }
 }

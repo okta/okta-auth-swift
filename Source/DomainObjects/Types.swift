@@ -114,14 +114,14 @@ public extension FactorType {
     }
 }
 
-extension FactorType : Equatable {}
+extension FactorType: Equatable {}
 
-extension FactorType : Codable {
+extension FactorType: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
@@ -186,14 +186,14 @@ public extension FactorProvider {
     }
 }
 
-extension FactorProvider : Equatable {}
+extension FactorProvider: Equatable {}
 
-extension FactorProvider : Codable {
+extension FactorProvider: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)

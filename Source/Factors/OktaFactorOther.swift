@@ -12,7 +12,7 @@
 
 import Foundation
 
-open class OktaFactorOther : OktaFactor {
+open class OktaFactorOther: OktaFactor {
 
     public func sendRequest(with link: LinksResponse.Link,
                             keyValuePayload: Dictionary<String, Any>,
@@ -30,7 +30,7 @@ open class OktaFactorOther : OktaFactor {
 
     // MARK: - Internal
     override init(factor: EmbeddedResponse.Factor,
-                  stateToken:String,
+                  stateToken: String,
                   verifyLink: LinksResponse.Link?,
                   activationLink: LinksResponse.Link?) {
         super.init(factor: factor, stateToken: stateToken, verifyLink: verifyLink, activationLink: activationLink)

@@ -17,18 +17,18 @@ import XCTest
 class OktaAuthStatusTests: XCTestCase {
 
     // MARK: - returnToPreviousStatus
-    
+
     func testReturnToPreviousStatus() {
         guard let response = TestResponse.MFA_ENROLL_ACTIVATE_SMS.parse(),
               let status = try? OktaAuthStatusFactorEnrollActivate(currentState: createUnathenticatedStatus(), model: response) else {
               XCTFail()
               return
         }
-        
+
         status.setupApiMockResponse(.MFA_REQUIRED)
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         XCTAssertTrue(status.canReturn())
         status.returnToPreviousStatus(
             onStatusChange: { status in
@@ -40,21 +40,21 @@ class OktaAuthStatusTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.performCalled)
     }
-    
+
     func testReturnToPreviousStatus_CannotReturn() {
         let status = createUnathenticatedStatus()
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         XCTAssertFalse(status.canReturn())
         status.returnToPreviousStatus(
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -66,26 +66,26 @@ class OktaAuthStatusTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertFalse(status.apiMock.performCalled)
     }
-    
+
     func testReturnToPreviousStatus_ApiError() {
         guard let response = TestResponse.MFA_ENROLL_ACTIVATE_SMS.parse(),
               let status = try? OktaAuthStatusFactorEnrollActivate(currentState: createUnathenticatedStatus(), model: response) else {
               XCTFail()
               return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         XCTAssertTrue(status.canReturn())
         status.returnToPreviousStatus(
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -97,25 +97,25 @@ class OktaAuthStatusTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.performCalled)
     }
-    
+
     // MARK: - cancel
-    
+
     func testCancel() {
         guard let response = TestResponse.MFA_ENROLL_ACTIVATE_SMS.parse(),
               let status = try? OktaAuthStatusFactorEnrollActivate(currentState: createUnathenticatedStatus(), model: response) else {
               XCTFail()
               return
         }
-        
+
         status.setupApiMockResponse(.MFA_REQUIRED)
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         XCTAssertTrue(status.canCancel())
         status.cancel(onSuccess: {
             ex.fulfill()
@@ -123,17 +123,17 @@ class OktaAuthStatusTests: XCTestCase {
             XCTFail(error.localizedDescription)
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
-    
+
     func testCancel_Unauthenticated() {
         let status = createUnathenticatedStatus()
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Operation should fail!")
 
         XCTAssertFalse(status.canCancel())
@@ -143,23 +143,23 @@ class OktaAuthStatusTests: XCTestCase {
             XCTFail(error.localizedDescription)
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertFalse(status.apiMock.cancelTransactionCalled)
     }
-    
+
     func testCancel_cannotCancel() {
         guard let response = TestResponse.SUCCESS.parse(),
               let status = try? OktaAuthStatusSuccess(currentState: createUnathenticatedStatus(), model: response) else {
               XCTFail()
               return
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Operation should fail!")
-        
+
         XCTAssertFalse(status.canCancel())
         status.cancel(onSuccess: {
             XCTFail("Status should not be canceled!")
@@ -171,21 +171,21 @@ class OktaAuthStatusTests: XCTestCase {
             )
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertFalse(status.apiMock.cancelTransactionCalled)
     }
-    
+
     func testCancel_ApiError() {
         guard let response = TestResponse.MFA_ENROLL_ACTIVATE_SMS.parse(),
               let status = try? OktaAuthStatusFactorEnrollActivate(currentState: createUnathenticatedStatus(), model: response) else {
               XCTFail()
               return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Operation should fail!")
 
         XCTAssertTrue(status.canCancel())
@@ -199,14 +199,14 @@ class OktaAuthStatusTests: XCTestCase {
             )
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
-    
+
     // MARK: - fetchStatus
-    
+
     func testFetchStatus() {
         let handlerMock = OktaAuthStatusResponseHandlerMock(
             changedStatus: try! OktaAuthStatusSuccess(
@@ -215,11 +215,11 @@ class OktaAuthStatusTests: XCTestCase {
             )
         )
         let status = createUnathenticatedStatus(handlerMock)
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         status.fetchStatus(with: "0000",
             onStatusChange: { status in
                 XCTAssertEqual(AuthStatus.success, status.statusType)
@@ -230,23 +230,23 @@ class OktaAuthStatusTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.getTransactionStateCalled)
         XCTAssertTrue(handlerMock.handleResponseCalled)
     }
-    
+
     func testFetchStatus_ApiError() {
         let handlerMock = OktaAuthStatusResponseHandlerMock(error: OktaError.internalError("Test"))
         let status = createUnathenticatedStatus(handlerMock)
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Operation should failed!")
-        
+
         status.fetchStatus(with: "0000",
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change")
                 ex.fulfill()
             },
@@ -258,20 +258,20 @@ class OktaAuthStatusTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.getTransactionStateCalled)
         XCTAssertTrue(handlerMock.handleResponseCalled)
     }
-    
+
     // MARK: - Utils
-    
+
     func createUnathenticatedStatus(_ handler: OktaAuthStatusResponseHandlerMock? = nil) -> OktaAuthStatusUnauthenticated {
         guard let handler = handler else {
             return OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.domain.com")!)
         }
-        
+
         return OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.domain.com")!, responseHandler: handler)
     }
 }

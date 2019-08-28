@@ -48,7 +48,7 @@ public struct OktaAPISuccessResponse: Codable {
     public private(set) var factorType: FactorType?
     public private(set) var embedded: EmbeddedResponse?
     public private(set) var links: LinksResponse?
-    
+
     enum CodingKeys: String, CodingKey {
         case status
         case stateToken
@@ -67,10 +67,10 @@ public struct OktaAPISuccessResponse: Codable {
 }
 
 public enum ResendLink: Codable {
-    
+
     case resendArray([LinksResponse.Link])
     case resend(LinksResponse.Link)
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let resendArray = try? container.decode([LinksResponse.Link].self) {
@@ -84,7 +84,7 @@ public enum ResendLink: Codable {
             )
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
@@ -112,7 +112,7 @@ public struct LinksResponse: Codable {
     public struct Link: Codable {
         public let name: String?
         public let href: URL
-        public let hints: [String:[String]]
+        public let hints: [String: [String]]
     }
     public struct QRCode: Codable {
         public let href: URL
@@ -144,7 +144,7 @@ public struct EmbeddedResponse: Codable {
     public let authentication: AuthenticationObject?
     public let factor: Factor?
     public let factors: [Factor]?
-    
+
     public struct Factor: Codable {
         public let id: String?
         public let factorType: FactorType
@@ -155,7 +155,7 @@ public struct EmbeddedResponse: Codable {
         public let links: LinksResponse?
         public let enrollment: String?
         public let status: String?
-        
+
         public struct Profile: Codable {
             public let phoneNumber: String?
             public let question: String?
@@ -198,7 +198,7 @@ public struct EmbeddedResponse: Codable {
 
     /// A subset of user properties published in an authentication or recovery transaction after the user successfully completes primary authentication.
     public struct User: Codable {
-        
+
         /// Subset of profile properties for a user.
         public struct Profile: Codable {
             public let login: String?
@@ -207,17 +207,17 @@ public struct EmbeddedResponse: Codable {
             public let locale: String?
             public let timeZone: String?
         }
-        
+
         /// User’s recovery question used for verification of a recovery transaction.
         public struct RecoveryQuestion: Codable {
             public let question: String?
         }
-        
+
         public let id: String?
         public let passwordChanged: Date?
         public let profile: Profile?
         public let recoveryQuestion: RecoveryQuestion?
-        
+
         enum CodingKeys: String, CodingKey {
             case id
             case passwordChanged
@@ -225,14 +225,14 @@ public struct EmbeddedResponse: Codable {
             case recoveryQuestion = "recovery_question"
         }
     }
-    
+
     // Represents the target resource that user tried accessing. Typically this is the app that user is trying to sign-in.
     public struct Target: Codable {
         public let type: String?
         public let name: String?
         public let label: String?
         public let links: LinksResponse?
-        
+
         enum CodingKeys: String, CodingKey {
             case type
             case name
@@ -240,7 +240,7 @@ public struct EmbeddedResponse: Codable {
             case links = "_links"
         }
     }
-    
+
     // Represents the authentication details that the target resource is using.
     public struct AuthenticationObject: Codable {
 
@@ -251,23 +251,23 @@ public struct EmbeddedResponse: Codable {
             case ws_fed
             case unknown(String)
         }
-        
+
         /// The issuer that generates the assertion after the authentication finishes.
         public struct Issuer: Codable {
             public let id: String?
             public let name: String?
             public let uri: String?
         }
-        
+
         public let authProtocol: AuthProtocol?
         public let issuer: Issuer?
-        
+
         enum CodingKeys: String, CodingKey {
             case authProtocol = "protocol"
             case issuer
         }
     }
-    
+
     public enum Policy: Codable {
         /// A subset of policy settings of the Sign-On Policy or App Sign-On Policy.
         public struct RememberDevice: Codable {
@@ -275,7 +275,7 @@ public struct EmbeddedResponse: Codable {
             public let rememberDeviceByDefault: Bool?
             public let rememberDeviceLifetimeInMinutes: Int?
         }
-        
+
         /// A subset of policy settings for the user’s assigned password policy.
         public struct Password: Codable {
 
@@ -283,7 +283,7 @@ public struct EmbeddedResponse: Codable {
             public struct PasswordExpiration: Codable {
                 public let passwordExpireDays: Int?
             }
-            
+
             /// Specifies the password complexity requirements of the assigned password policy.
             public struct PasswordComplexity: Codable {
                 public let minLength: Int?
@@ -303,10 +303,10 @@ public struct EmbeddedResponse: Codable {
             public let complexity: PasswordComplexity?
             public let age: PasswordAge?
         }
-    
+
         case rememberDevice(RememberDevice)
         case password(Password)
-        
+
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let rememberDevice = try? container.decode(RememberDevice.self) {
@@ -320,7 +320,7 @@ public struct EmbeddedResponse: Codable {
                 )
             }
         }
-        
+
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             switch self {
@@ -389,14 +389,14 @@ public extension OktaAPISuccessResponse.FactorResult {
     }
 }
 
-extension OktaAPISuccessResponse.FactorResult : Equatable {}
+extension OktaAPISuccessResponse.FactorResult: Equatable {}
 
-extension OktaAPISuccessResponse.FactorResult : Codable {
+extension OktaAPISuccessResponse.FactorResult: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
@@ -430,14 +430,14 @@ public extension OktaAPISuccessResponse.RecoveryType {
     }
 }
 
-extension OktaAPISuccessResponse.RecoveryType : Equatable {}
+extension OktaAPISuccessResponse.RecoveryType: Equatable {}
 
-extension OktaAPISuccessResponse.RecoveryType : Codable {
+extension OktaAPISuccessResponse.RecoveryType: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
@@ -475,18 +475,17 @@ public extension EmbeddedResponse.AuthenticationObject.AuthProtocol {
     }
 }
 
-extension EmbeddedResponse.AuthenticationObject.AuthProtocol : Equatable {}
+extension EmbeddedResponse.AuthenticationObject.AuthProtocol: Equatable {}
 
-extension EmbeddedResponse.AuthenticationObject.AuthProtocol : Codable {
+extension EmbeddedResponse.AuthenticationObject.AuthProtocol: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
         self = EmbeddedResponse.AuthenticationObject.AuthProtocol(raw: stringValue)
     }
 }
-

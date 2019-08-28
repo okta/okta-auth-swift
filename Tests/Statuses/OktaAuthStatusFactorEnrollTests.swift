@@ -21,7 +21,7 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         let factors = status.availableFactors
         let expectedFactors: [FactorType] = [
             .unknown("unknown"),
@@ -32,7 +32,7 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             .push,
             .TOTP
         ]
-        
+
         for (index, factor) in factors.enumerated() {
             XCTAssertEqual(expectedFactors[index], factor.type)
             XCTAssertEqual(status.stateToken, factor.stateToken)
@@ -40,19 +40,19 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             XCTAssertTrue(status.restApi === factor.restApi)
         }
     }
-    
+
     // MARK: - skipEnrollment
-    
+
     func testSkipEnrollment() {
         guard let status = createStatus(withResponse: .MFA_ENROLL_PartiallyEnrolled) else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_REQUIRED)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canSkipEnrollment())
         status.skipEnrollment(
             onStatusChange: { status in
@@ -64,23 +64,23 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     func testSkipEnrollment_CannotSkip() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_ENROLL_NotEnrolled)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertFalse(status.canSkipEnrollment())
         status.skipEnrollment(
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change")
                 ex.fulfill()
             },
@@ -92,23 +92,23 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     func testSkipEnrollment_ApiFailed() {
         guard let status = createStatus(withResponse: .MFA_ENROLL_PartiallyEnrolled) else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canSkipEnrollment())
         status.skipEnrollment(
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change")
                 ex.fulfill()
             },
@@ -120,29 +120,29 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
     }
-    
+
     // MARK: - enrollFactor
-    
+
     func testEnrollFactor() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_REQUIRED)
 
         guard let factor = status.availableFactors.first else {
             XCTFail()
             return
         }
-        
+
         XCTAssertTrue(status.apiMock === factor.restApi)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.enrollFactor(
             factor: factor,
             questionId: "0000",
@@ -159,31 +159,31 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.enrollCalled)
         XCTAssertEqual("0000", status.apiMock.enrollQuestionId)
         XCTAssertEqual("test", status.apiMock.enrollAnswer)
     }
-    
+
     func testEnrollFactor_APiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         guard let factor = status.availableFactors.first else {
             XCTFail()
             return
         }
-        
+
         XCTAssertTrue(status.apiMock === factor.restApi)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.enrollFactor(
             factor: factor,
             questionId: "0000",
@@ -191,7 +191,7 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             credentialId: nil,
             passCode: nil,
             phoneNumber: nil,
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status change!")
                 ex.fulfill()
             },
@@ -203,26 +203,26 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.enrollCalled)
         XCTAssertEqual("0000", status.apiMock.enrollQuestionId)
         XCTAssertEqual("test", status.apiMock.enrollAnswer)
     }
-    
+
     // MARK: - cancel
-    
+
     func testCancel() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.MFA_ENROLL_NotEnrolled)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canCancel())
         status.cancel(onSuccess: {
             ex.fulfill()
@@ -230,22 +230,22 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             XCTFail(error.localizedDescription)
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
-    
+
     func testCancel_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         XCTAssertTrue(status.canCancel())
         status.cancel(onSuccess: {
             XCTFail("Unexpected callback!")
@@ -257,14 +257,14 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
             )
             ex.fulfill()
         })
-        
+
         waitForExpectations(timeout: 5.0)
 
         XCTAssertTrue(status.apiMock.cancelTransactionCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .MFA_ENROLL_NotEnrolled)
@@ -273,7 +273,7 @@ class OktaAuthStatusFactorEnrollTests: XCTestCase {
         guard let response = response.parse() else {
             return nil
         }
-        
+
         return try? OktaAuthStatusFactorEnroll(currentState: currentStatus, model: response)
     }
 }

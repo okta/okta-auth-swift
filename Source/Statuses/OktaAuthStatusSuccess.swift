@@ -12,8 +12,8 @@
 
 import Foundation
 
-open class OktaAuthStatusSuccess : OktaAuthStatus {
-    
+open class OktaAuthStatusSuccess: OktaAuthStatus {
+
     open var recoveryType: OktaAPISuccessResponse.RecoveryType? {
         get {
             return model.recoveryType

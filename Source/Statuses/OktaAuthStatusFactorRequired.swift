@@ -12,8 +12,8 @@
 
 import Foundation
 
-open class OktaAuthStatusFactorRequired : OktaAuthStatus {
-    
+open class OktaAuthStatusFactorRequired: OktaAuthStatus {
+
     public internal(set) var stateToken: String
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
@@ -40,7 +40,7 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus {
             createdFactor.responseDelegate = self
             oktaFactors.append(createdFactor)
         }
-        
+
         return oktaFactors
     }()
 

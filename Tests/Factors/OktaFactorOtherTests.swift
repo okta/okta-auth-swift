@@ -21,20 +21,20 @@ class OktaFactorOtherTests: OktaFactorTestCase {
         }
 
         XCTAssertEqual(factor.provider, .unknown("Unknown"))
-        
+
         factor.setupApiMockResponse(.SUCCESS)
         let delegate = factor.setupMockDelegate(with: try! OktaAuthStatusSuccess(
             currentState: OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://mock.url")!),
             model: TestResponse.SUCCESS.parse()!
             ))
-        
+
         let ex = expectation(description: "Operation should succeed!")
-        
+
         factor.sendRequest(
             with: factor.factor.links!.enroll!,
             keyValuePayload: [:],
             onStatusChange: { status in
-                XCTAssertEqual( AuthStatus.success , status.statusType)
+                XCTAssertEqual( AuthStatus.success, status.statusType)
                 ex.fulfill()
             },
             onError: { error in
@@ -42,11 +42,11 @@ class OktaFactorOtherTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateSucceeded(delegate, with: .SUCCESS)
-        
+
         XCTAssertTrue(factor.apiMock.sendApiRequestCalled)
     }
 
@@ -55,16 +55,16 @@ class OktaFactorOtherTests: OktaFactorTestCase {
             XCTFail()
             return
         }
-        
+
         factor.setupApiMockFailure()
         let delegate = factor.setupMockDelegate(with: OktaError.internalError("Test"))
-        
+
         let ex = expectation(description: "Operation should fail!")
 
         factor.sendRequest(
             with: factor.factor.links!.enroll!,
             keyValuePayload: [:],
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Operation should fail!")
                 ex.fulfill()
             },
@@ -73,11 +73,11 @@ class OktaFactorOtherTests: OktaFactorTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         verifyDelegateFailed(delegate)
-        
+
         XCTAssertTrue(factor.apiMock.sendApiRequestCalled)
     }
 }

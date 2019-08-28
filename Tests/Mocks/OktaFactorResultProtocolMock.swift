@@ -16,7 +16,7 @@ import OktaAuthNative
 class OktaFactorResultProtocolMock: OktaFactorResultProtocol {
 
     var response: OktaAPIRequest.Result?
-    
+
     var changedStatus: OktaAuthStatus?
     var error: OktaError?
     var statusUpdate: OktaAPISuccessResponse.FactorResult?
@@ -24,10 +24,9 @@ class OktaFactorResultProtocolMock: OktaFactorResultProtocol {
     func handleFactorServerResponse(
         response: OktaAPIRequest.Result,
         onStatusChange: @escaping (OktaAuthStatus) -> Void,
-        onError: @escaping (OktaError) -> Void)
-    {
+        onError: @escaping (OktaError) -> Void) {
         self.response = response
-        
+
         if let changedStatus = changedStatus {
             onStatusChange(changedStatus)
         } else if let error = error {

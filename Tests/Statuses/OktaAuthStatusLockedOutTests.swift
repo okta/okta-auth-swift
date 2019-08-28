@@ -21,11 +21,11 @@ class OktaAuthStatusLockedOutTests: XCTestCase {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockResponse(.SUCCESS)
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.unlock(
             username: "test",
             factorType: .sms,
@@ -38,26 +38,26 @@ class OktaAuthStatusLockedOutTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.unlockCalled)
     }
-    
+
     func testUnlock_ApiFailed() {
         guard let status = createStatus() else {
             XCTFail()
             return
         }
-        
+
         status.setupApiMockFailure()
-        
+
         let ex = expectation(description: "Callback is expected!")
-        
+
         status.unlock(
             username: "test",
             factorType: .sms,
-            onStatusChange: { status in
+            onStatusChange: { _ in
                 XCTFail("Unexpected status changed!")
                 ex.fulfill()
             },
@@ -69,14 +69,14 @@ class OktaAuthStatusLockedOutTests: XCTestCase {
                 ex.fulfill()
             }
         )
-        
+
         waitForExpectations(timeout: 5.0)
-        
+
         XCTAssertTrue(status.apiMock.unlockCalled)
     }
 
     // MARK: - Utils
-    
+
     func createStatus(
         from currentStatus: OktaAuthStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "http://test.com")!),
         withResponse response: TestResponse = .LOCKED_OUT)
@@ -85,7 +85,7 @@ class OktaAuthStatusLockedOutTests: XCTestCase {
         guard let response = response.parse() else {
             return nil
         }
-        
+
         return try? OktaAuthStatusLockedOut(currentState: currentStatus, model: response)
     }
 }

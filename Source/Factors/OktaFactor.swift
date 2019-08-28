@@ -55,7 +55,7 @@ open class OktaFactor {
                                   stateToken: stateToken,
                                   verifyLink: verifyLink,
                                   activationLink: activationLink)
-            
+
         default:
             return OktaFactorOther(factor: factor,
                                    stateToken: stateToken,
@@ -120,7 +120,7 @@ open class OktaFactor {
         guard verifyLink?.href != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -128,7 +128,7 @@ open class OktaFactor {
         guard links?.verify != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -136,7 +136,7 @@ open class OktaFactor {
         guard activationLink?.href != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -144,7 +144,7 @@ open class OktaFactor {
         guard factor.links?.enroll?.href != nil else {
             return false
         }
-        
+
         return true
     }
 
@@ -201,7 +201,7 @@ open class OktaFactor {
                               passCode: passCode,
                               completion: { result in
                                 self.handleServerResponse(response: result,
-                                                          onStatusChange:  onStatusChange,
+                                                          onStatusChange: onStatusChange,
                                                           onError: onError)
         })
     }
@@ -241,7 +241,7 @@ open class OktaFactor {
                                   passCode: passCode,
                                   rememberDevice: nil,
                                   autoPush: nil,
-                                  completion:  { result in
+                                  completion: { result in
                                     self.handleServerResponse(response: result,
                                                               onStatusChange: onStatusChange,
                                                               onError: onError)
