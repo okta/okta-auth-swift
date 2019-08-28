@@ -2,23 +2,23 @@ language: objective-c
 osx_image: xcode10.1
 jobs:
   include:
-    - stage: Test
+    - stage: Build SwiftPM
       name: SwiftPM
       script:
-      - swift test --parallel
-    - stage: Test
+      - swift build
+    - stage: Test iOS
       name: iOS
       script:
       - xcodebuild -project OktaAuthNative.xcodeproj -scheme "OktaAuthNative iOS" -destination "platform=iOS Simulator,OS=latest,name=iPhone 8" clean test
-    - stage: Test
+    - stage: Test tvOS
       name: tvOS
       script:
       - xcodebuild -project OktaAuthNative.xcodeproj -scheme "OktaAuthNative tvOS" -destination "platform=tvOS Simulator,OS=latest,name=Apple TV 4K" clean test
-    - stage: Test
+    - stage: Test macOS
       name: macOS
       script:
       - xcodebuild -project OktaAuthNative.xcodeproj -scheme "OktaAuthNative macOS" -destination "arch=x86_64" clean test
-    - stage: Test
+    - stage: Test watchOS
       name: watchOS
       script:
       - xcodebuild -project OktaAuthNative.xcodeproj -scheme "OktaAuthNative watchOS" -destination "platform=watchOS Simulator,OS=latest,name=Apple Watch Series 4 - 44mm" clean build
