@@ -158,6 +158,7 @@ public struct EmbeddedResponse: Codable {
         
         public struct Profile: Codable {
             public let phoneNumber: String?
+            public let email: String?
             public let question: String?
             public let questionText: String?
             public let credentialId: String?
