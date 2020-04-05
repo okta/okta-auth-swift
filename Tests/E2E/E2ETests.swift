@@ -13,7 +13,7 @@
 import XCTest
 @testable import OktaAuthNative
 
-class E2ETests: XCTestCase
+class E2ETests: XCTestCase {
     
     let username = ProcessInfo.processInfo.environment["USERNAME"]!
     let password = ProcessInfo.processInfo.environment["PASSWORD"]!
