@@ -33,10 +33,9 @@ class E2ETests: XCTestCase {
         }
 
         let usernames = username.split(separator: ":")
-        let passwords = password.split(separator: ":")
-        primaryAuthUser = (String(usernames[0]), String(passwords[0]))
-        factorRequiredUser = (String(usernames[1]), String(passwords[1]))
-        factorEnrollmentUser = (String(usernames[2]), String(passwords[2]))
+        primaryAuthUser = (String(usernames[0]), password)
+        factorRequiredUser = (String(usernames[1]), password)
+        factorEnrollmentUser = (String(usernames[2]), password)
     }
 
     override func tearDown() {
@@ -103,6 +102,7 @@ class E2ETests: XCTestCase {
 
         var pushFactor: OktaFactorPush?
         var questionFactor: OktaFactorQuestion?
+        var totpFactor: OktaFactorTotp?
         if let factorRequiredStatus = factorRequiredStatus {
             for factor in factorRequiredStatus.availableFactors {
                 if factor.type == .push {
@@ -113,16 +113,28 @@ class E2ETests: XCTestCase {
                     questionFactor = factor as? OktaFactorQuestion
                     continue
                 }
-                runFactorRequiredForFactor(factor)
+                if factor.type == .TOTP {
+                    totpFactor = factor as? OktaFactorTotp
+                    continue
+                }
             }
         }
 
+        guard let _ = pushFactor, let _ = questionFactor, let _ = totpFactor else {
+            XCTFail("Can't find Okta Verify and Question factors")
+            return
+        }
+
+        if let totpFactor = totpFactor {
+            runFactorRequiredForOktaVerifyFactor(totpFactor)
+        }
+
         if let pushFactor = pushFactor {
-            runFactorRequiredForFactor(pushFactor)
+            runFactorRequiredForOktaVerifyFactor(pushFactor)
         }
 
         if let questionFactor = questionFactor {
-            runFactorRequiredForFactor(questionFactor)
+            runFactorChallengeForQuestionFactor(questionFactor)
         }
     }
 
@@ -292,9 +304,10 @@ class E2ETests: XCTestCase {
         cancelTransactionWithStatus(factorEnrollStatus!)
     }
 
-    func runFactorRequiredForFactor(_ factor: OktaFactor) {
+    func runFactorRequiredForOktaVerifyFactor(_ factor: OktaFactor) {
         var factorChallengeStatus: OktaAuthStatusFactorChallenge?
         let ex = expectation(description: "Operation should succeed!")
+
         factor.select(onStatusChange: { status in
             XCTAssertTrue(status.statusType == .MFAChallenge)
             factorChallengeStatus = status as? OktaAuthStatusFactorChallenge
@@ -322,14 +335,10 @@ class E2ETests: XCTestCase {
                 } else {
                     XCTFail("Internal SDK error")
                 }
-            } else if factorChallengeStatus.factor.type == .question {
-                if let questionFactor = factorChallengeStatus.factor as? OktaFactorQuestion {
-                    runFactorChallengeForQuestionFactor(questionFactor)
-                } else {
-                    XCTFail("Internal SDK error")
-                }
-            } else {
+            } else if factorChallengeStatus.factor.type == .TOTP {
                 runFactorChallengeWithWrongOTPValuesForFactor(factorChallengeStatus.factor)
+            } else {
+                XCTFail("Unexpected factor")
             }
         }
     }
@@ -380,7 +389,7 @@ class E2ETests: XCTestCase {
 
     func runFactorChallengeForQuestionFactor(_ factor: OktaFactorQuestion) {
         let ex = expectation(description: "Operation should succeed!")
-        factor.verify(answerToSecurityQuestion: answer,
+        factor.select(answerToSecurityQuestion: answer,
                       onStatusChange:
         { status in
                 let successStatus = status as? OktaAuthStatusSuccess
