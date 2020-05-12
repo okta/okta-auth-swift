@@ -20,6 +20,8 @@
 "factorType": "call",
 "provider": "OKTA",
 "profile": {
+"name": "OKTA_VERIFY",
+"email": "some@email.com",
 "phoneNumber": "+1 XXX-XXX-1337"
 },
 "_links": {

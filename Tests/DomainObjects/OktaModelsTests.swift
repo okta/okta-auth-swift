@@ -138,7 +138,9 @@ class OktaModelsTests: XCTestCase {
         XCTAssertNotNil(callFactor)
         XCTAssertEqual("clf193zUBEROPBNZKPPE", callFactor?.id)
         XCTAssertEqual(FactorProvider.okta, callFactor?.provider)
+        XCTAssertEqual("OKTA_VERIFY", callFactor?.profile?.name)
         XCTAssertEqual("+1 XXX-XXX-1337", callFactor?.profile?.phoneNumber)
+        XCTAssertEqual("some@email.com", callFactor?.profile?.email)
         XCTAssertEqual("https://test.domain.com/api/v1/authn/factors/clf193zUBEROPBNZKPPE/verify", callFactor?.links?.verify?.href.absoluteString)
         
         let pushFactor = factors?.first(where: { $0.factorType == .push })
@@ -147,6 +149,9 @@ class OktaModelsTests: XCTestCase {
         XCTAssertEqual(FactorProvider.okta, pushFactor?.provider)
         XCTAssertEqual("OKTA", pushFactor?.vendorName)
         XCTAssertEqual("test_user", pushFactor?.profile?.credentialId)
+        XCTAssertEqual("SmartPhone_IPhone", pushFactor?.profile?.deviceType)
+        XCTAssertEqual("IOS", pushFactor?.profile?.platform)
+        XCTAssertEqual("12.2", pushFactor?.profile?.version)
         XCTAssertEqual("https://test.domain.com/api/v1/authn/factors/opfkdh40kws5XarDb0h7/verify", pushFactor?.links?.verify?.href.absoluteString)
         
         let totpFactor = factors?.first(where: { $0.factorType == .TOTP })
