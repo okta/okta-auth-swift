@@ -20,6 +20,8 @@ class OktaFactorCallTests: OktaFactorTestCase {
         XCTAssertNil(factor?.phoneNumber)
         
         factor = createFactor(from: .MFA_REQUIRED, type: .call)
+        XCTAssertEqual("OKTA_VERIFY", factor?.profile?.name)
+        XCTAssertEqual("some@email.com", factor?.profile?.email)
         XCTAssertEqual("+1 XXX-XXX-1337", factor?.phoneNumber)
     }
     
