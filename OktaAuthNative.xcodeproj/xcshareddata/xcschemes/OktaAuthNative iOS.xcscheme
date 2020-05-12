@@ -56,20 +56,6 @@
                BlueprintName = "OktaAuthNative iOS Tests"
                ReferencedContainer = "container:OktaAuthNative.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "E2ETests/testFactorChallengeSuccess()">
-               </Test>
-               <Test
-                  Identifier = "E2ETests/testPushFactorEnrollmentSuccess()">
-               </Test>
-               <Test
-                  Identifier = "E2ETests/testSmsFactorEnrollmentSuccess()">
-               </Test>
-               <Test
-                  Identifier = "E2ETests/testTotpFactorEnrollmentSuccess()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
