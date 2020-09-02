@@ -17,10 +17,11 @@ public class OktaAuthSdk {
     public class func authenticate(with url: URL,
                                    username: String,
                                    password: String?,
+                                   httpClient: OktaAuthHTTPClient? = nil,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
         
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url, httpClient: httpClient)
         unauthenticatedStatus.authenticate(username: username,
                                            password: password ?? "",
                                            onStatusChange:onStatusChange,
@@ -30,10 +31,11 @@ public class OktaAuthSdk {
     public class func unlockAccount(with url: URL,
                                     username: String,
                                     factorType: OktaRecoveryFactors,
+                                    httpClient: OktaAuthHTTPClient? = nil,
                                     onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                     onError: @escaping (_ error: OktaError) -> Void) {
         
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url, httpClient: httpClient)
         unauthenticatedStatus.unlockAccount(username: username,
                                             factorType: factorType,
                                             onStatusChange:onStatusChange,
@@ -43,10 +45,11 @@ public class OktaAuthSdk {
     public class func recoverPassword(with url: URL,
                                       username: String,
                                       factorType: OktaRecoveryFactors,
+                                      httpClient: OktaAuthHTTPClient? = nil,
                                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                       onError: @escaping (_ error: OktaError) -> Void) {
         
-        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
+        let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url, httpClient: httpClient)
         unauthenticatedStatus.recoverPassword(username: username,
                                               factorType: factorType,
                                               onStatusChange: onStatusChange,
@@ -55,9 +58,10 @@ public class OktaAuthSdk {
 
     public class func fetchStatus(with stateToken: String,
                                   using url: URL,
+                                  httpClient: OktaAuthHTTPClient? = nil,
                                   onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                   onError: @escaping (_ error: OktaError) -> Void) {
-        let authState = OktaAuthStatus(oktaDomain: url)
+        let authState = OktaAuthStatus(oktaDomain: url, httpClient: httpClient)
         authState.fetchStatus(with: stateToken, onStatusChange: onStatusChange, onError: onError)
     }
 }

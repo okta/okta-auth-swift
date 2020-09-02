@@ -16,8 +16,9 @@ import Foundation
 
 open class OktaAPI {
 
-    public init(oktaDomain: URL, urlSession: URLSession? = nil) {
+    public init(oktaDomain: URL, urlSession: URLSession? = nil, httpClient: OktaAuthHTTPClient? = nil) {
         self.oktaDomain = oktaDomain
+        self.customHTTPClient = httpClient
         if let urlSession = urlSession {
             self.urlSession = urlSession
         } else {
@@ -29,6 +30,7 @@ open class OktaAPI {
 
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
+    public private(set) var customHTTPClient: OktaAuthHTTPClient?
 
     @discardableResult open func primaryAuthentication(username: String?,
                                                        password: String?,
@@ -341,6 +343,7 @@ open class OktaAPI {
                                   completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         let req = OktaAPIRequest(baseURL: url ?? oktaDomain,
                                  urlSession: urlSession,
+                                 httpClient: customHTTPClient,
                                  completion: { [weak self] req, result in
             completion?(result)
             self?.commonCompletion?(req, result)

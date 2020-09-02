@@ -23,8 +23,9 @@ open class OktaAuthStatus {
     public var responseHandler: OktaAuthStatusResponseHandler
 
     public init(oktaDomain: URL,
+                httpClient: OktaAuthHTTPClient?,
                 responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
-        self.restApi = OktaAPI(oktaDomain: oktaDomain)
+        self.restApi = OktaAPI(oktaDomain: oktaDomain, httpClient: httpClient)
         self.model = OktaAPISuccessResponse()
         self.responseHandler = responseHandler
     }
