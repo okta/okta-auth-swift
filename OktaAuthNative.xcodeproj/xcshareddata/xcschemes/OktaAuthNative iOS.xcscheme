@@ -47,16 +47,6 @@
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
-               BuildableName = "OktaAuthNative iOS Tests.xctest"
-               BlueprintName = "OktaAuthNative iOS Tests"
-               ReferencedContainer = "container:OktaAuthNative.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
