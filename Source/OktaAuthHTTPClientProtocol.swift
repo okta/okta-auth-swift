@@ -12,6 +12,6 @@
 
 import Foundation
 
-public protocol OktaAuthHTTPClient {
+public protocol OktaAuthHTTPClientProtocol {
     func sendRequest(_ request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void)
 }
