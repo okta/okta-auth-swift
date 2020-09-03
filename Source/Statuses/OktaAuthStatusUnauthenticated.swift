@@ -14,8 +14,8 @@ import Foundation
 
 open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
-    public override init(oktaDomain: URL, httpClient: OktaAuthHTTPClient?, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
-        super.init(oktaDomain: oktaDomain, httpClient: httpClient, responseHandler: responseHandler)
+    public override init(oktaDomain: URL, responseHandler: OktaAuthStatusResponseHandler = OktaAuthStatusResponseHandler()) {
+        super.init(oktaDomain: oktaDomain, responseHandler: responseHandler)
         statusType = .unauthenticated
     }
 

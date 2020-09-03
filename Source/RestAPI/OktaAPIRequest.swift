@@ -23,7 +23,7 @@ public class OktaAPIRequest {
 
     public init(baseURL: URL,
                 urlSession: URLSession,
-                httpClient: OktaAuthHTTPClient? = nil,
+                httpClient: OktaAuthHTTPClientProtocol? = nil,
                 completion: @escaping (OktaAPIRequest, Result) -> Void) {
         self.baseURL = baseURL
         self.urlSession = urlSession
@@ -112,7 +112,7 @@ public class OktaAPIRequest {
 
     private var urlSession: URLSession
     private var decoder: JSONDecoder
-    private var httpClient: OktaAuthHTTPClient?
+    private var httpClient: OktaAuthHTTPClientProtocol?
     private var completion: (OktaAPIRequest, Result) -> Void
 
     // MARK: Request sending
@@ -134,7 +134,7 @@ public class OktaAPIRequest {
         task?.resume()
     }
 
-    internal func performRequest(_ request: URLRequest, withHTTPClient httpClient: OktaAuthHTTPClient) {
+    internal func performRequest(_ request: URLRequest, withHTTPClient httpClient: OktaAuthHTTPClientProtocol) {
         // `self` captured here to keep `OktaAPIRequest` retained until request is finished
         httpClient.sendRequest(request) { data, response, error in
             DispatchQueue.main.async {
