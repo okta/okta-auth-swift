@@ -140,7 +140,7 @@ public class OktaAPIRequest {
             DispatchQueue.main.async {
                 self.handleResponse(
                     data: data,
-                    response: response,
+                    response: response as? HTTPURLResponse,
                     error: error
                 )
             }
