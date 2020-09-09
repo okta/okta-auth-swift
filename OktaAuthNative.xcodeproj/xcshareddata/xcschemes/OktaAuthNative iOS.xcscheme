@@ -28,15 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       codeCoverageEnabled = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FA4ED99A21C1499200A065A1"
-            BuildableName = "OktaAuthNative.framework"
-            BlueprintName = "OktaAuthNative iOS"
-            ReferencedContainer = "container:OktaAuthNative.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -47,6 +38,16 @@
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
+               BuildableName = "OktaAuthNative iOS Tests.xctest"
+               BlueprintName = "OktaAuthNative iOS Tests"
+               ReferencedContainer = "container:OktaAuthNative.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

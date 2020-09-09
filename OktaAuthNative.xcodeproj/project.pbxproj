@@ -127,6 +127,7 @@
 		A1F9E599229DD7A400924F7A /* MFA_ENROLL_ACTIVATE_TOTP in Resources */ = {isa = PBXBuildFile; fileRef = A1F9E597229DD7A400924F7A /* MFA_ENROLL_ACTIVATE_TOTP */; };
 		A1F9E59A229DD7A400924F7A /* SUCCESS_UNLOCK in Resources */ = {isa = PBXBuildFile; fileRef = A1F9E598229DD7A400924F7A /* SUCCESS_UNLOCK */; };
 		A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */; };
+		CBC143F5250975B90041EECF /* OktaAuthHTTPClientMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC143F4250975B90041EECF /* OktaAuthHTTPClientMock.swift */; };
 		E2E1F34A2501AFA00001DDD5 /* OktaAuthHTTPClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E1F3492501AFA00001DDD5 /* OktaAuthHTTPClientProtocol.swift */; };
 		E2E1F34B2501B0320001DDD5 /* OktaAuthHTTPClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E1F3492501AFA00001DDD5 /* OktaAuthHTTPClientProtocol.swift */; };
 		FA4ED9AA21C2895B00A065A1 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
@@ -232,6 +233,7 @@
 		A1F9E597229DD7A400924F7A /* MFA_ENROLL_ACTIVATE_TOTP */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MFA_ENROLL_ACTIVATE_TOTP; sourceTree = "<group>"; };
 		A1F9E598229DD7A400924F7A /* SUCCESS_UNLOCK */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SUCCESS_UNLOCK; sourceTree = "<group>"; };
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
+		CBC143F4250975B90041EECF /* OktaAuthHTTPClientMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthHTTPClientMock.swift; sourceTree = "<group>"; };
 		E2E1F3492501AFA00001DDD5 /* OktaAuthHTTPClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAuthHTTPClientProtocol.swift; sourceTree = "<group>"; };
 		FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OktaAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4ED99F21C1499200A065A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 				2F81558E22708B23009FA6C5 /* OktaAuthStatusResponseHandlerMock.swift */,
 				2F7C3BD1226F53F700A62FD4 /* OktaFactor+Mocking.swift */,
 				2F81558C22708395009FA6C5 /* OktaAuthStatus+Mocking.swift */,
+				CBC143F4250975B90041EECF /* OktaAuthHTTPClientMock.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -692,6 +695,7 @@
 				2F7C3B7A2268AF2800A62FD4 /* OktaAPIRequestTests.swift in Sources */,
 				A1920FE922615B3B007D50D2 /* OktaFactorCall.swift in Sources */,
 				A1920FD622615AE5007D50D2 /* Utils.swift in Sources */,
+				CBC143F5250975B90041EECF /* OktaAuthHTTPClientMock.swift in Sources */,
 				A1920F8D225E83E8007D50D2 /* OktaFactorQuestion.swift in Sources */,
 				A1920F89225E8224007D50D2 /* OktaFactorTotp.swift in Sources */,
 				2F7C3BCB226F40C800A62FD4 /* OktaFactorTotpTests.swift in Sources */,
