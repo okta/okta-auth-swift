@@ -140,46 +140,11 @@ class OktaAPIRequestTests : XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func testInjectHttpClientSuccessResponse() {
-        
-        let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
-        let data = "{\"status\":\"SUCCESS\"}".data(using: .utf8)!
-        
-        let mock = OktaAuthHTTPClientMock(data: data, httpResponse: httpResponse, error: nil)
-        let status = AuthStatus.success
-        let exp = XCTestExpectation(description: "Success result")
-        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared, httpClient: mock) { (req, res) in
-            if case .success(let response) = res, response.status == status {
-                exp.fulfill()
-            } else {
-                XCTFail()
-            }
+    func testInjectHttpClient() {
+        let mock = OktaAuthHTTPClientMock(data: nil, httpResponse: nil, error: nil)
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared, httpClient: mock) { (request, result) in
         }
-        
-        req.handleResponse(data: data, response: httpResponse, error: nil)
-        wait(for: [exp], timeout: 1.0)
-        
-    }
-    
-    func testInjectHttpClientErrorResponse() {
-        let errorCode = "42"
-        let httpResponse = HTTPURLResponse(url: url, statusCode: 400, httpVersion: nil, headerFields: nil)!
-        let data = "{\"errorCode\":\"\(errorCode)\"}".data(using: .utf8)!
-        
-        let mock = OktaAuthHTTPClientMock(data: data, httpResponse: httpResponse, error: nil)
-        let exp = XCTestExpectation(description: "Error result")
-        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared, httpClient: mock) { (req, res) in
-            if case .error(let error) = res,
-                case .serverRespondedWithError(let response) = error,
-                response.errorCode == errorCode {
-                exp.fulfill()
-            } else {
-                XCTFail()
-            }
-        }
-        
-        req.handleResponse(data: data, response: httpResponse, error: nil)
-        wait(for: [exp], timeout: 1.0)
-        
+        req.run()
+        XCTAssertTrue(mock.didSendRequest)
     }
 }
