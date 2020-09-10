@@ -140,9 +140,28 @@ class OktaAPIRequestTests : XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func testInjectHttpClient() {
-        let mock = OktaAuthHTTPClientMock(data: nil, httpResponse: nil, error: nil)
-        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared, httpClient: mock) { (request, result) in
+    func testRun_WithInjectedDelegate() {
+        let status = AuthStatus.success
+        let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        let data = "{\"status\":\"SUCCESS\"}".data(using: .utf8)!
+        let exp = XCTestExpectation(description: "Success result")
+        let mock = OktaAuthHTTPClientMock(data: data, httpResponse: httpResponse, error: nil)
+        
+        let req = OktaAPIRequest(baseURL: url, urlSession: URLSession.shared, httpClient: mock) { (req, res) in
+            if case .success(let response) = res, response.status == status {
+                exp.fulfill()
+            } else {
+                XCTFail()
+            }
+        }
+        req.run()
+        XCTAssertTrue(mock.didSendRequest)
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func testRun_withoutInjectedDelegate() {
+        let mock = OktaURLSessionMock()
+        let req = OktaAPIRequest(baseURL: url, urlSession: mock) { (request, result) in
         }
         req.run()
         XCTAssertTrue(mock.didSendRequest)

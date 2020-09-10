@@ -996,11 +996,11 @@ let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string
 ```
 ### Networking extension
 
-You can inject custom HTTP client to send requests and forward response from your Application side to Okta AuthN SDK
-Implement `OktaAuthHTTPClientProtocol` and inject the instance which conforms to the protocol in OktaAPI through property injection.Okta AuthN SDK uses URLSession to make network calls by default.
+You can inject HTTP request listener in order to send requests with your own HTTP library.
+Implement `OktaHTTPRequestListenerProtocol` and inject the instance which conforms to the protocol in OktaAPI through property injection. You can use provided URLRequest as-is or copy data from it to your own HTTP request before sending
 
 ```swift
-public protocol OktaAuthHTTPClientProtocol {
+public protocol OktaHTTPRequestListenerProtocol {
     func sendRequest(_ request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void)
 }
 ```

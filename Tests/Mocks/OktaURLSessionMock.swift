@@ -12,21 +12,11 @@
 
 import Foundation
 
-class OktaAuthHTTPClientMock: OktaHTTPRequestListenerProtocol {
-
-    let data: Data?
-    let httpResponse: HTTPURLResponse?
-    var error: Error?
+class OktaURLSessionMock: URLSession {
     var didSendRequest = false
     
-    init(data: Data?, httpResponse: HTTPURLResponse?, error: Error?) {
-        self.data = data
-        self.httpResponse = httpResponse
-        self.error = error
-    }
-
-    func sendRequest(_ request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
         didSendRequest = true
-        completionHandler(data, httpResponse, error)
+        return URLSessionDataTask()
     }
 }
