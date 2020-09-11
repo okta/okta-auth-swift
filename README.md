@@ -994,6 +994,16 @@ class MyResponseHandler: OktaAuthStatusResponseHandler {
 let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: URL(string: "https://{yourOktaDomain}")!,
                                                           responseHandler: MyResponseHandler())
 ```
+### Networking extension
+
+You can inject HTTP request listener in order to send requests with your own HTTP library.
+Implement `OktaHTTPRequestListenerProtocol` and inject the instance which conforms to the protocol in OktaAPI through property injection. You can use provided URLRequest as-is or copy data from it to your own HTTP request before sending
+
+```swift
+public protocol OktaHTTPRequestListenerProtocol {
+    func sendRequest(_ request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void)
+}
+```
 
 ## Contributing
 

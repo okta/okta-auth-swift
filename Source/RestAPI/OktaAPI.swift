@@ -26,6 +26,7 @@ open class OktaAPI {
     }
 
     public var commonCompletion: ((OktaAPIRequest, OktaAPIRequest.Result) -> Void)?
+    public var httpRequestListener: OktaHTTPRequestListenerProtocol?
 
     public private(set) var oktaDomain: URL
     public private(set) var urlSession: URLSession
@@ -341,6 +342,7 @@ open class OktaAPI {
                                   completion: ((OktaAPIRequest.Result) -> Void)?) -> OktaAPIRequest {
         let req = OktaAPIRequest(baseURL: url ?? oktaDomain,
                                  urlSession: urlSession,
+                                 httpClient: httpRequestListener,
                                  completion: { [weak self] req, result in
             completion?(result)
             self?.commonCompletion?(req, result)

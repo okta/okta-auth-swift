@@ -23,9 +23,11 @@ public class OktaAPIRequest {
 
     public init(baseURL: URL,
                 urlSession: URLSession,
+                httpClient: OktaHTTPRequestListenerProtocol? = nil,
                 completion: @escaping (OktaAPIRequest, Result) -> Void) {
         self.baseURL = baseURL
         self.urlSession = urlSession
+        self.httpClient = httpClient
         self.completion = completion
         decoder = JSONDecoder()
         
@@ -79,7 +81,7 @@ public class OktaAPIRequest {
     }
 
     public func run() {
-        guard task == nil, isCancelled == false else {
+        guard isCancelled == false else {
             return
         }
         guard let urlRequest = buildRequest() else {
@@ -87,24 +89,18 @@ public class OktaAPIRequest {
             return
         }
 
-        // `self` captured here to keep `OktaAPIRequest` retained until request is finished
-        task = urlSession.dataTask(with: urlRequest) { data, response, error in
-            DispatchQueue.main.async {
-                guard self.isCancelled == false else {
-                    return
-                }
-                guard error == nil else {
-                    self.handleResponseError(error: error!)
-                    return
-                }
-                let response = response as! HTTPURLResponse
-                self.handleResponse(data: data, response: response)
-            }
+        if let httpClient = httpClient {
+            performRequest(urlRequest, withHTTPClient: httpClient)
+        } else {
+            performRequest(urlRequest, withURLSession: urlSession)
         }
-        task?.resume()
     }
     
     public func cancel() {
+        guard httpClient == nil else {
+            isCancelled = true
+            return
+        }
         guard let task = task else {
             return
         }
@@ -116,10 +112,52 @@ public class OktaAPIRequest {
 
     private var urlSession: URLSession
     private var decoder: JSONDecoder
+    private var httpClient: OktaHTTPRequestListenerProtocol?
     private var completion: (OktaAPIRequest, Result) -> Void
 
-    internal func handleResponse(data: Data?, response: HTTPURLResponse) {
-        guard let data = data else {
+    // MARK: Request sending
+
+    internal func performRequest(_ request: URLRequest, withURLSession session: URLSession) {
+        guard task == nil else {
+            return
+        }
+        // `self` captured here to keep `OktaAPIRequest` retained until request is finished
+        task = session.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                self.handleResponse(
+                    data: data,
+                    response: response as? HTTPURLResponse,
+                    error: error
+                )
+            }
+        }
+        task?.resume()
+    }
+
+    internal func performRequest(_ request: URLRequest, withHTTPClient httpClient: OktaHTTPRequestListenerProtocol) {
+        // `self` captured here to keep `OktaAPIRequest` retained until request is finished
+        httpClient.sendRequest(request) { data, response, error in
+            DispatchQueue.main.async {
+                self.handleResponse(
+                    data: data,
+                    response: response as? HTTPURLResponse,
+                    error: error
+                )
+            }
+        }
+    }
+
+    // MARK: Response handling
+
+    internal func handleResponse(data: Data?, response: HTTPURLResponse?, error: Error?) {
+        guard isCancelled == false else {
+            return
+        }
+        guard error == nil else {
+            self.handleResponseError(error: error!)
+            return
+        }
+        guard let data = data, let response = response else {
             callCompletion(.error(.emptyServerResponse))
             return
         }
