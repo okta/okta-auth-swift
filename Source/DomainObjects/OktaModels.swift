@@ -186,7 +186,7 @@ public struct EmbeddedResponse: Codable {
                 }
             }
             public struct Challenge: Codable {
-                public let correctAnswer: Int
+                public let correctAnswer: Int?
             }
             public let activation: Activation?
             public let challenge: Challenge?

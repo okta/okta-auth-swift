@@ -490,4 +490,14 @@ class OktaFactorPushTests: OktaFactorTestCase {
         XCTAssertTrue(factor.apiMock.verifyFactorCalled)
         XCTAssertEqual(factor.verifyLink?.href, factor.apiMock.factorVerificationLink?.href)
     }
+
+    func testCorrectAnswerParsing() {
+        guard let mfaChallengeFactor: OktaFactorPush = createFactor(from: .MFA_CHALLENGE_WAITING_PUSH, type: .push) as? OktaFactorPush else {
+            XCTFail("Failed to create push factor")
+            return
+        }
+
+        XCTAssertNotNil(mfaChallengeFactor.challenge?.correctAnswer)
+        XCTAssertEqual(mfaChallengeFactor.challenge?.correctAnswer, 92)
+    }
 }

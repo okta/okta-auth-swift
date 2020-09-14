@@ -36,6 +36,11 @@
             "name":"Anastasia Y.",
             "platform":"IOS",
             "version":"12.2"
+         },
+         "_embedded":{
+           "challenge":{
+             "correctAnswer":92
+           }
          }
       },
       "policy":{
