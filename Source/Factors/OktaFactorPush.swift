@@ -13,6 +13,18 @@
 import Foundation
 
 open class OktaFactorPush : OktaFactor {
+    
+    public var challenge: EmbeddedResponse.Factor.Embedded.Challenge? {
+        get {
+            return factor.embedded?.challenge
+        }
+    }
+    
+    public var correctAnswer: Int? {
+        get {
+            return factor.embedded?.challenge?.correctAnswer
+        }
+    }
 
     public var activation: EmbeddedResponse.Factor.Embedded.Activation? {
         get {

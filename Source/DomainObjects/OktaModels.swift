@@ -185,7 +185,11 @@ public struct EmbeddedResponse: Codable {
                     case links = "_links"
                 }
             }
+            public struct Challenge: Codable {
+                public let correctAnswer: Int?
+            }
             public let activation: Activation?
+            public let challenge: Challenge?
         }
 
         enum CodingKeys: String, CodingKey {
