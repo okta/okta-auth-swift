@@ -11,6 +11,7 @@
 */
 
 import Foundation
+@testable import OktaAuthNative
 
 class OktaAuthHTTPClientMock: OktaHTTPRequestListenerProtocol {
 

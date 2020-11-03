@@ -11,6 +11,7 @@
  */
 
 import XCTest
+@testable import OktaAuthNative
 
 class OktaAuthStatusSuccessTests: XCTestCase {
     
