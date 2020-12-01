@@ -14,22 +14,28 @@ import Foundation
 import OktaAuthNative
 
 class OktaAPIMock: OktaAPI {
+    static let resourcesDirectory = URL(fileURLWithPath: #file).appendingPathComponent("../../Resources").standardized
+    static func dataFor(resource name: String) -> Data? {
+        #if SWIFT_PACKAGE
+        let url = OktaAPIMock.resourcesDirectory.appendingPathComponent(name)
+        #else
+        let url = Bundle.init(for: OktaAPIMock.self).url(forResource: name, withExtension: nil)!
+        #endif
+        do {
+            return try Data(contentsOf: url)
+        } catch {
+            return nil
+        }
+    }
     
     public init?(successCase: Bool, json: String?, resourceName: String?) {
         
         var jsonData: Data?
         if let resourceName = resourceName {
-        
-            let url = Bundle.init(for: OktaAPIMock.self).url(forResource: resourceName, withExtension: nil)
-            do {
-                jsonData = try Data(contentsOf: url!)
-            } catch {
-                return nil
-            }
+            jsonData = OktaAPIMock.dataFor(resource: resourceName)
         }
         
         if let json = json {
-
             jsonData = json.data(using: .utf8)
         }
         
@@ -402,20 +408,13 @@ class OktaAPIMock: OktaAPI {
 
     func  getPayloadData(json: String?, resourceName: String?) -> Data? {
         var jsonData: Data?
-        if let resourceName = resourceName,
-           let url = Bundle.init(for: OktaAPIMock.self).url(forResource: resourceName, withExtension: nil) {
-
-            do {
-                jsonData = try Data(contentsOf: url)
-            } catch {
-                return nil
-            }
+        if let resourceName = resourceName {
+            jsonData = OktaAPIMock.dataFor(resource: resourceName)
         } else {
             return nil
         }
         
         if let json = json {
-            
             jsonData = json.data(using: .utf8)
         }
         

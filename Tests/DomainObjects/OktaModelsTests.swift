@@ -339,10 +339,6 @@ class OktaModelsTests: XCTestCase {
     // MARK: - Utils
     
     private func readResponse(named name: String) -> Data? {
-        guard let url = Bundle.init(for: self.classForCoder).url(forResource: name, withExtension: nil) else {
-            return nil
-        }
-        
-        return try? Data(contentsOf: url)
+        return OktaAPIMock.dataFor(resource: name)
     }
 }
