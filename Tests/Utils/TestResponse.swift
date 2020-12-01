@@ -37,12 +37,7 @@ enum TestResponse: String {
     case Unknown_State_And_FactorResult = "Unknown_State_And_FactorResult"
     
     func data() -> Data? {
-        guard let file = Bundle(for: OktaAPIMock.self).url(forResource: self.rawValue, withExtension: nil),
-              let data = try? Data(contentsOf: file) else {
-            return nil
-        }
-        
-        return data
+        return OktaAPIMock.dataFor(resource: self.rawValue)
     }
     
     func parse() -> OktaAPISuccessResponse? {

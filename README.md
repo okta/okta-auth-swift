@@ -86,6 +86,15 @@ If you do not already have a **Developer Edition Account**, you can create one a
 
 ## Getting started
 
+### Swift Package Manager
+
+Add the following to the `dependencies` attribute defined in your `Package.swift` file. You can select the version using the `majorVersion` and `minor` parameters. For example:
+```
+    dependencies: [
+        .Package(url: "https://github.com/okta/okta-auth-swift.git", majorVersion: <majorVersion>, minor: <minor>)
+    ]
+```
+
 ### CocoaPods
 This SDK is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 

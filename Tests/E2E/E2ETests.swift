@@ -15,18 +15,26 @@ import XCTest
 
 class E2ETests: XCTestCase {
     
-    let username = ProcessInfo.processInfo.environment["USERNAME"]!
-    let password = ProcessInfo.processInfo.environment["PASSWORD"]!
-    let urlString = ProcessInfo.processInfo.environment["DOMAIN_URL"]!
-    let phoneNumber = ProcessInfo.processInfo.environment["PHONE"]!
-    let answer = ProcessInfo.processInfo.environment["ANSWER"]!
+    let username = ProcessInfo.processInfo.environment["USERNAME"] ?? ""
+    let password = ProcessInfo.processInfo.environment["PASSWORD"] ?? ""
+    let urlString = ProcessInfo.processInfo.environment["DOMAIN_URL"] ?? ""
+    let phoneNumber = ProcessInfo.processInfo.environment["PHONE"] ?? ""
+    let answer = ProcessInfo.processInfo.environment["ANSWER"] ?? ""
 
     var primaryAuthUser: (username: String, password: String)?
     var factorRequiredUser: (username: String, password: String)?
     var factorEnrollmentUser: (username: String, password: String)?
 
-    override func setUp() {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
         
+        try XCTSkipIf(username.count == 0 ||
+                        password.count == 0 ||
+                        urlString.count == 0 ||
+                        phoneNumber.count == 0 ||
+                        answer.count == 0,
+                      file: "Environment settings not configured")
+
         if let _ = primaryAuthUser,
            let _ = factorRequiredUser {
             return
