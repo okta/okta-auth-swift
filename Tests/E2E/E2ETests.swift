@@ -41,6 +41,8 @@ class E2ETests: XCTestCase {
         }
 
         let usernames = username.split(separator: ":")
+        try XCTSkipIf(usernames.count != 3,
+                      "Environment settings not configured: missing usernames")
         primaryAuthUser = (String(usernames[0]), password)
         factorRequiredUser = (String(usernames[1]), password)
         factorEnrollmentUser = (String(usernames[2]), password)
