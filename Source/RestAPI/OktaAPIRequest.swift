@@ -32,6 +32,7 @@ public class OktaAPIRequest {
         decoder = JSONDecoder()
         
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         decoder.dateDecodingStrategy = .formatted(formatter)
     }
