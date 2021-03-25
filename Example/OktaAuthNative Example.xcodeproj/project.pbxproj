@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92BEAB922608A2FE0082BC3E /* OktaAuthNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92BEAB912608A2FE0082BC3E /* OktaAuthNative.framework */; };
+		92BEAB932608A2FE0082BC3E /* OktaAuthNative.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 92BEAB912608A2FE0082BC3E /* OktaAuthNative.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FAC5AEE821C7F9A600C3DC91 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */; };
 		FAC5AEEA21C7F9A600C3DC91 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */; };
 		FAC5AEED21C7F9A600C3DC91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC5AEEB21C7F9A600C3DC91 /* Main.storyboard */; };
@@ -21,6 +23,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				92BEAB932608A2FE0082BC3E /* OktaAuthNative.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -28,6 +31,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		92BEAB912608A2FE0082BC3E /* OktaAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OktaAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC5AEE421C7F9A600C3DC91 /* OktaAuthNative Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OktaAuthNative Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC5AEE721C7F9A600C3DC91 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC5AEE921C7F9A600C3DC91 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -42,17 +46,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92BEAB922608A2FE0082BC3E /* OktaAuthNative.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92BEAB902608A2FE0082BC3E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				92BEAB912608A2FE0082BC3E /* OktaAuthNative.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FAC5AEDB21C7F9A600C3DC91 = {
 			isa = PBXGroup;
 			children = (
 				FAC5AEE621C7F9A600C3DC91 /* Source */,
 				FAC5AEE521C7F9A600C3DC91 /* Products */,
+				92BEAB902608A2FE0082BC3E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

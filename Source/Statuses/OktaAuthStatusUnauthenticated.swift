@@ -21,11 +21,13 @@ open class OktaAuthStatusUnauthenticated : OktaAuthStatus {
 
     open func authenticate(username: String,
                            password: String,
+                           deviceToken: String? = nil,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
 
         restApi.primaryAuthentication(username: username,
                                       password: password,
+                                      deviceToken: deviceToken,
                                       deviceFingerprint: nil)
         { result in
             self.handleServerResponse(result,

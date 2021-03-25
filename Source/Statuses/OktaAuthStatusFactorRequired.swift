@@ -45,10 +45,11 @@ open class OktaAuthStatusFactorRequired : OktaAuthStatus {
     }()
 
     open func selectFactor(_ factor: OktaFactor,
+                           rememberDevice: Bool? = nil,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         selectedFactor = factor
-        factor.select(onStatusChange: onStatusChange, onError: onError)
+        factor.select(rememberDevice: rememberDevice, onStatusChange: onStatusChange, onError: onError)
     }
 
     override open func cancel(onSuccess: (() -> Void)? = nil,

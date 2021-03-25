@@ -316,6 +316,7 @@ class OktaFactorPushTests: OktaFactorTestCase {
         let ex = expectation(description: "Operation should succeed!")
         
         factor.verify(
+            rememberDevice: true,
             onStatusChange: { status in
                 XCTAssertEqual(delegate.changedStatus?.statusType, status.statusType)
                 ex.fulfill()
@@ -346,6 +347,7 @@ class OktaFactorPushTests: OktaFactorTestCase {
         let ex = expectation(description: "Operation should fail!")
         
         factor.verify(
+            rememberDevice: true,
             onStatusChange: { status in
                 XCTFail("Operation should fail!")
                 ex.fulfill()

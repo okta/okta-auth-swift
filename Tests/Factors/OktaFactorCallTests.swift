@@ -170,6 +170,7 @@ class OktaFactorCallTests: OktaFactorTestCase {
         
         factor.verify(
             passCode: "1234",
+            rememberDevice: true,
             onStatusChange: { status in
                 XCTAssertEqual(delegate.changedStatus?.statusType, status.statusType)
                 ex.fulfill()
@@ -202,6 +203,7 @@ class OktaFactorCallTests: OktaFactorTestCase {
         
         factor.verify(
             passCode: "1234",
+            rememberDevice: true,
             onStatusChange: { status in
                 XCTFail("Operation should fail!")
                 ex.fulfill()

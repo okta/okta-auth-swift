@@ -17,12 +17,14 @@ public class OktaAuthSdk {
     public class func authenticate(with url: URL,
                                    username: String,
                                    password: String?,
+                                   deviceToken: String? = nil,
                                    onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                    onError: @escaping (_ error: OktaError) -> Void) {
         
         let unauthenticatedStatus = OktaAuthStatusUnauthenticated(oktaDomain: url)
         unauthenticatedStatus.authenticate(username: username,
                                            password: password ?? "",
+                                           deviceToken: deviceToken,
                                            onStatusChange:onStatusChange,
                                            onError:onError)
     }

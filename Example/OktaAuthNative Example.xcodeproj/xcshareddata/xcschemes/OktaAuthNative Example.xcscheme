@@ -27,28 +27,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "NO">
-      <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
-               BuildableName = "OktaAuth iOS Tests.xctest"
-               BlueprintName = "OktaAuth iOS Tests"
-               ReferencedContainer = "container:../OktaAuth.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2FF5C86321D3BA1900EECA75"
-               BuildableName = "OktaAuth iOS Integration Tests.xctest"
-               BlueprintName = "OktaAuth iOS Integration Tests"
-               ReferencedContainer = "container:../OktaAuth.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -75,8 +53,28 @@
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FA500E4421C7FCD800444B1D"
+               BuildableName = "OktaAuth iOS Tests.xctest"
+               BlueprintName = "OktaAuth iOS Tests"
+               ReferencedContainer = "container:../OktaAuth.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2FF5C86321D3BA1900EECA75"
+               BuildableName = "OktaAuth iOS Integration Tests.xctest"
+               BlueprintName = "OktaAuth iOS Integration Tests"
+               ReferencedContainer = "container:../OktaAuth.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -98,8 +96,6 @@
             ReferencedContainer = "container:OktaAuthNative Example.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

@@ -26,6 +26,7 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
         status.authenticate(
             username: "test",
             password: "test",
+            deviceToken: "Device-Token-123",
             onStatusChange: { status in
                 XCTAssertEqual(AuthStatus.success, status.statusType)
                 ex.fulfill()

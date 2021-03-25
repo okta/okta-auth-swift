@@ -56,6 +56,7 @@ open class OktaFactorQuestion : OktaFactor {
     }
 
     public func select(answerToSecurityQuestion: String,
+                       rememberDevice: Bool? = nil,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void) {
         guard canSelect() else {
@@ -66,15 +67,18 @@ open class OktaFactorQuestion : OktaFactor {
         self.verifyFactor(with: links!.verify!,
                           answer: answerToSecurityQuestion,
                           passCode: nil,
+                          rememberDevice: rememberDevice,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
 
     public func verify(answerToSecurityQuestion: String,
+                       rememberDevice: Bool? = nil,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void) {
         super.verify(passCode: nil,
                      answerToSecurityQuestion: answerToSecurityQuestion,
+                     rememberDevice: rememberDevice,
                      onStatusChange: onStatusChange,
                      onError: onError)
     }
