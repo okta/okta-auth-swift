@@ -130,7 +130,6 @@ class ViewController: UIViewController {
 
     func updateStatus(status: OktaAuthStatus?, factorResult: OktaAPISuccessResponse.FactorResult? = nil) {
         guard let status = status else {
-//            rememberSwitch.isOn = false
             stateLabel.text = "Unauthenticated"
             return
         }
@@ -148,9 +147,6 @@ class ViewController: UIViewController {
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
-
-//        self.loginButton.isEnabled = false
-//        self.cancelButton.isEnabled = false
     }
 
     func handleError(_ error: OktaError) {
