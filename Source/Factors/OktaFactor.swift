@@ -150,6 +150,7 @@ open class OktaFactor {
 
     public func verify(passCode: String?,
                        answerToSecurityQuestion: String?,
+                       rememberDevice: Bool? = nil,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         guard canVerify() else {
@@ -160,6 +161,7 @@ open class OktaFactor {
         self.verifyFactor(with: verifyLink!,
                           answer: answerToSecurityQuestion,
                           passCode: passCode,
+                          rememberDevice: rememberDevice,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
@@ -175,6 +177,7 @@ open class OktaFactor {
         self.verifyFactor(with: activationLink!,
                           answer: nil,
                           passCode: passCode,
+                          rememberDevice: nil,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
@@ -206,16 +209,18 @@ open class OktaFactor {
         })
     }
 
-    public func select(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func select(rememberDevice: Bool? = nil,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
-        guard canSelect() else {
+        guard canSelect(), let verifyLink = links?.verify else {
             onError(OktaError.wrongStatus("Can't find 'verify' link in response"))
             return
         }
 
-        self.verifyFactor(with: links!.verify!,
+        self.verifyFactor(with: verifyLink,
                           answer: nil,
                           passCode: nil,
+                          rememberDevice: rememberDevice,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
@@ -233,13 +238,14 @@ open class OktaFactor {
     func verifyFactor(with link: LinksResponse.Link,
                       answer: String?,
                       passCode: String?,
+                      rememberDevice: Bool? = nil,
                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                       onError: @escaping (_ error: OktaError) -> Void) {
             restApi?.verifyFactor(with: link,
                                   stateToken: stateToken,
                                   answer: answer,
                                   passCode: passCode,
-                                  rememberDevice: nil,
+                                  rememberDevice: rememberDevice,
                                   autoPush: nil,
                                   completion:  { result in
                                     self.handleServerResponse(response: result,

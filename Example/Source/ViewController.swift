@@ -22,13 +22,15 @@ class ViewController: UIViewController {
         self.updateStatus(status: nil)
     }
 
-    @IBOutlet private var stateLabel: UILabel!
-    @IBOutlet private var usernameField: UITextField!
-    @IBOutlet private var passwordField: UITextField!
-    @IBOutlet private var loginButton: UIButton!
-    @IBOutlet private var cancelButton: UIButton!
-    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
-
+    @IBOutlet private weak var stateLabel: UILabel!
+    @IBOutlet private weak var usernameField: UITextField!
+    @IBOutlet private weak var passwordField: UITextField!
+    @IBOutlet private weak var loginButton: UIButton!
+    @IBOutlet private weak var cancelButton: UIButton!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var rememberContainer: UIStackView!
+    @IBOutlet private weak var rememberSwitch: UISwitch!
+    
     @IBAction private func loginTapped() {
         guard let username = usernameField.text,
             let password = passwordField.text else { return }
@@ -36,6 +38,7 @@ class ViewController: UIViewController {
         OktaAuthSdk.authenticate(with: URL(string: "https://{yourOktaDomain}")!,
                                  username: username,
                                  password: password,
+                                 deviceToken: makeDeviceToken(),
                                  onStatusChange: { authStatus in
                                     self.handleStatus(status: authStatus)
         },
@@ -144,9 +147,6 @@ class ViewController: UIViewController {
         let alert = UIAlertController(title: "Hooray!", message: "We are logged in", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
-
-        self.loginButton.isEnabled = false
-        self.cancelButton.isEnabled = false
     }
 
     func handleError(_ error: OktaError) {
@@ -188,6 +188,7 @@ class ViewController: UIViewController {
         factorRequiredStatus.availableFactors.forEach { factor in
             alert.addAction(UIAlertAction(title: factor.type.rawValue, style: .default, handler: { _ in
                 factorRequiredStatus.selectFactor(factor,
+                                                  rememberDevice: self.rememberSwitch.isOn,
                                                   onStatusChange: { status in
                     self.handleStatus(status: status)
                 },
@@ -275,6 +276,7 @@ class ViewController: UIViewController {
             alert.addTextField { $0.placeholder = "Code" }
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
                 guard let code = alert.textFields?[0].text else { return }
+                
                 status.activateFactor(passCode: code,
                                       onStatusChange: { status in
                                         self.handleStatus(status: status)
@@ -290,7 +292,8 @@ class ViewController: UIViewController {
         }
         else {
             if status.factorResult == nil || status.factorResult == .waiting {
-                status.activateFactor(passCode: nil, onStatusChange: { status in
+                status.activateFactor(passCode: nil,
+                                      onStatusChange: { status in
                     self.handleStatus(status: status)
                 }, onError: { error in
                     self.handleError(error)
@@ -304,7 +307,9 @@ class ViewController: UIViewController {
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let code = alert.textFields?[0].text else { return }
+            
             factor?.verify(passCode: code,
+                           rememberDevice: self.rememberSwitch.isOn,
                            onStatusChange: { status in
                             self.handleStatus(status: status)
             },
@@ -323,7 +328,9 @@ class ViewController: UIViewController {
         alert.addTextField { $0.placeholder = "Code" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let code = alert.textFields?[0].text else { return }
+            
             factor?.verify(passCode: code,
+                           rememberDevice: self.rememberSwitch.isOn,
                            onStatusChange: { status in
                             self.handleStatus(status: status)
             },
@@ -342,7 +349,9 @@ class ViewController: UIViewController {
         alert.addTextField { $0.placeholder = "Answer" }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak factor] action in
             guard let answer = alert.textFields?[0].text else { return }
+            
             factor?.verify(answerToSecurityQuestion: answer,
+                           rememberDevice: self.rememberSwitch.isOn,
                            onStatusChange: { status in
                             self.handleStatus(status: status)
             },
@@ -357,7 +366,8 @@ class ViewController: UIViewController {
     }
 
     func handlePushChallenge(factor: OktaFactorPush) {
-        factor.verify(onStatusChange: { (status) in
+        factor.verify(rememberDevice: self.rememberSwitch.isOn,
+                      onStatusChange: { (status) in
             if status.factorResult == .waiting {
                 self.updateStatus(status: status)
                 DispatchQueue.main.asyncAfter(deadline:.now() + 5.0) {
@@ -386,5 +396,15 @@ class ViewController: UIViewController {
                 self.handleError(error)
             })
         }
+    }
+    
+    private func makeDeviceToken() -> String? {
+        guard let identifierForVendor = UIDevice.current.identifierForVendor else {
+            return nil
+        }
+        
+        let maximumDeviceTokenLength = 32
+        
+        return String(identifierForVendor.uuidString.prefix(maximumDeviceTokenLength))
     }
 }

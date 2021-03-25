@@ -168,6 +168,7 @@ class OktaFactorSmsTests: OktaFactorTestCase {
         
         factor.verify(
             passCode: "1234",
+            rememberDevice: false,
             onStatusChange: { status in
                 XCTAssertEqual(delegate.changedStatus?.statusType, status.statusType)
                 ex.fulfill()
@@ -200,6 +201,7 @@ class OktaFactorSmsTests: OktaFactorTestCase {
         
         factor.verify(
             passCode: "1234",
+            rememberDevice: false,
             onStatusChange: { status in
                 XCTFail("Operation should fail!")
                 ex.fulfill()

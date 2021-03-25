@@ -145,6 +145,7 @@ class OktaFactorQuestionTests: OktaFactorTestCase {
         
         factor.verify(
             answerToSecurityQuestion: "test",
+            rememberDevice: false,
             onStatusChange: { status in
                 XCTAssertEqual(delegate.changedStatus?.statusType, status.statusType)
                 ex.fulfill()
@@ -177,6 +178,7 @@ class OktaFactorQuestionTests: OktaFactorTestCase {
         
         factor.verify(
             answerToSecurityQuestion: "test",
+            rememberDevice: true,
             onStatusChange: { status in
                 XCTFail("Operation should fail!")
                 ex.fulfill()

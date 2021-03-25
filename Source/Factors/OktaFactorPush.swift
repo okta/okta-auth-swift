@@ -157,15 +157,18 @@ open class OktaFactorPush : OktaFactor {
         super.activate(passCode: nil, onStatusChange: onStatusChange, onError: onError)
     }
 
-    public func verify(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func verify(rememberDevice: Bool? = nil,
+                       onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         super.verify(passCode: nil,
                      answerToSecurityQuestion: nil,
+                     rememberDevice: rememberDevice,
                      onStatusChange: onStatusChange,
                      onError: onError)
     }
 
-    public func checkFactorResult(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
+    public func checkFactorResult(rememberDevice: Bool? = nil,
+                                  onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                                   onError: @escaping (_ error: OktaError) -> Void) {
         guard canActivate() || canVerify() else {
             onError(OktaError.wrongStatus("Can't find 'poll' link in response"))
@@ -182,6 +185,7 @@ open class OktaFactorPush : OktaFactor {
         self.verifyFactor(with: pollLink!,
                           answer: nil,
                           passCode: nil,
+                          rememberDevice: rememberDevice,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }

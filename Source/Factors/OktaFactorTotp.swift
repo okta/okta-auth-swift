@@ -50,20 +50,24 @@ open class OktaFactorTotp : OktaFactor {
     }
 
     public func select(passCode: String,
+                       rememberDevice: Bool? = nil,
                        onStatusChange: @escaping (OktaAuthStatus) -> Void,
                        onError: @escaping (OktaError) -> Void) {
         self.verifyFactor(with: links!.verify!,
                           answer: nil,
                           passCode: passCode,
+                          rememberDevice: rememberDevice,
                           onStatusChange: onStatusChange,
                           onError: onError)
     }
     
     public func verify(passCode: String,
+                       rememberDevice: Bool? = nil,
                        onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                        onError: @escaping (_ error: OktaError) -> Void) {
         super.verify(passCode: passCode,
                      answerToSecurityQuestion: nil,
+                     rememberDevice: rememberDevice,
                      onStatusChange: onStatusChange,
                      onError: onError)
     }

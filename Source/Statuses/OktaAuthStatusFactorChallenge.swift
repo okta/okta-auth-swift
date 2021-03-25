@@ -59,10 +59,12 @@ open class OktaAuthStatusFactorChallenge : OktaAuthStatus {
 
     open func verifyFactor(passCode: String?,
                            answerToSecurityQuestion: String?,
+                           rememberDevice: Bool? = nil,
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         self.factor.verify(passCode: passCode,
                            answerToSecurityQuestion: answerToSecurityQuestion,
+                           rememberDevice: rememberDevice,
                            onStatusChange: onStatusChange,
                            onError: onError)
     }

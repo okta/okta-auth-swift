@@ -67,6 +67,29 @@ class E2ETests: XCTestCase {
 
         waitForExpectations(timeout: 30.0)
     }
+    
+    func testPrimaryAuthFlowWithDeviceTokenSuccess() {
+        let ex = expectation(description: "Operation should succeed!")
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!,
+                                 username: primaryAuthUser!.username,
+                                 password: primaryAuthUser!.password,
+                                 deviceToken: "DeviceToken-1234567",
+                                 onStatusChange: { status in
+                                    XCTAssertEqual(status.statusType, .success)
+                                    
+                                    self.verifyBasicInfoForStatus(status: status)
+                                    
+                                    let successStatus = status as! OktaAuthStatusSuccess
+                                    XCTAssertFalse(successStatus.sessionToken!.isEmpty)
+                                    ex.fulfill()
+                                 },
+                                 onError: { error in
+                                    XCTFail(error.description)
+                                    ex.fulfill()
+                                 })
+
+        waitForExpectations(timeout: 30.0)
+    }
 
     func testPrimaryAuthFlowFailure() {
         let ex = expectation(description: "Operation should fail!")
@@ -357,6 +380,7 @@ class E2ETests: XCTestCase {
         let ex = expectation(description: "Operation should fail!")
         factor.verify(passCode: "1234",
                       answerToSecurityQuestion: nil,
+                      rememberDevice: true,
                       onStatusChange:
             { status in
                 XCTFail("Unexpected status")
@@ -375,7 +399,8 @@ class E2ETests: XCTestCase {
 
     func runFactorChallengeForPushFactor(_ factor: OktaFactorPush) {
         let ex = expectation(description: "Operation should succeed!")
-        factor.verify(onStatusChange:
+        factor.verify(rememberDevice: false,
+                      onStatusChange:
             { status in
                 let factorChallengeStatus = status as? OktaAuthStatusFactorChallenge
                 if let factorChallengeStatus = factorChallengeStatus {
@@ -400,6 +425,7 @@ class E2ETests: XCTestCase {
     func runFactorChallengeForQuestionFactor(_ factor: OktaFactorQuestion) {
         let ex = expectation(description: "Operation should succeed!")
         factor.select(answerToSecurityQuestion: answer,
+                      rememberDevice: true,
                       onStatusChange:
         { status in
                 let successStatus = status as? OktaAuthStatusSuccess
