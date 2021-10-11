@@ -14,7 +14,8 @@ jobs:
       name: CocoaPods
       script:
       - pod lib lint --allow-warnings
-    - stage: Dependency Manager Validation
-      name: Carthage
-      script:
-      - carthage build --no-skip-current
+    # Disable carthage as it requires --use-xcframeworks. It's time-consuming operation.
+    # - stage: Dependency Manager Validation
+    #   name: Carthage
+    #   script:
+    #   - carthage build --no-skip-current
