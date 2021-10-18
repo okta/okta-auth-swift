@@ -13,6 +13,7 @@
 import UIKit
 import OktaAuthNative
 
+let oktaDomain = "<#yourOktaDomain#>"
 class ViewController: UIViewController {
 
     var currentStatus: OktaAuthStatus?
@@ -30,17 +31,19 @@ class ViewController: UIViewController {
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
 
     @IBAction private func loginTapped() {
-        guard let username = usernameField.text,
-            let password = passwordField.text else { return }
-
-        OktaAuthSdk.authenticate(with: URL(string: "https://{yourOktaDomain}")!,
+        guard let orgUrl = URL(string: "https://\(oktaDomain)"),
+              let username = usernameField.text,
+              let password = passwordField.text
+        else { return }
+        
+        OktaAuthSdk.authenticate(with: orgUrl,
                                  username: username,
                                  password: password,
                                  onStatusChange: { authStatus in
-                                    self.handleStatus(status: authStatus)
+            self.handleStatus(status: authStatus)
         },
                                  onError: { error in
-                                    self.handleError(error)
+            self.handleError(error)
         })
 
         activityIndicator.startAnimating()
@@ -50,6 +53,23 @@ class ViewController: UIViewController {
         self.cancelTransaction()
     }
 
+    @IBAction func forgotPasswordTapped(_ sender: Any) {
+        guard let orgUrl = URL(string: "https://\(oktaDomain)"),
+              let username = usernameField.text
+        else { return }
+        
+        OktaAuthSdk.recoverPassword(with: orgUrl,
+                                    username: username,
+                                    factorType: .sms,
+                                    onStatusChange: { authStatus in
+            self.handleStatus(status: authStatus)
+        }, onError: { error in
+            self.handleError(error)
+        })
+        
+        activityIndicator.startAnimating()
+    }
+    
     func handleStatus(status: OktaAuthStatus) {
         self.updateStatus(status: status)
         currentStatus = status
@@ -107,10 +127,70 @@ class ViewController: UIViewController {
                     self.cancelTransaction()
             }
             
-        case .recovery,
-             .recoveryChallenge,
-             .passwordReset,
-             .lockedOut,
+        case .recoveryChallenge:
+            let mfaChallenge = status as! OktaAuthStatusRecoveryChallenge
+            
+            let alert = UIAlertController(title: "Enter code",
+                                          message: "Please enter the verification code you received",
+                                          preferredStyle: .alert)
+            alert.addTextField { textField in
+                textField.placeholder = "000 000"
+            }
+            alert.addAction(.init(title: "OK", style: .default, handler: { action in
+                let code = alert.textFields?.first?.text ?? ""
+                mfaChallenge.verifyFactor(passCode: code) { newStatus in
+                    self.handleStatus(status: newStatus)
+                } onError: { error in
+                    self.handleError(error)
+                }
+            }))
+            present(alert, animated: true)
+            
+        case .recovery:
+            let mfaRecovery = status as! OktaAuthStatusRecovery
+            if let question = mfaRecovery.recoveryQuestion {
+                let alert = UIAlertController(title: "Security Question",
+                                              message: question,
+                                              preferredStyle: .alert)
+                alert.addTextField { textField in
+                    textField.placeholder = "Answer"
+                }
+                alert.addAction(.init(title: "OK", style: .default, handler: { action in
+                    let answer = alert.textFields?.first?.text ?? ""
+                    mfaRecovery.recoverWithAnswer(answer) { newStatus in
+                        self.handleStatus(status: newStatus)
+                    } onError: { error in
+                        self.handleError(error)
+                    }
+                }))
+                present(alert, animated: true)
+            } else if let token = mfaRecovery.recoveryToken {
+                mfaRecovery.recoverWithToken(token) { newStatus in
+                    self.handleStatus(status: newStatus)
+                } onError: { error in
+                    self.handleError(error)
+                }
+            }
+            
+        case .passwordReset:
+            let reset = status as! OktaAuthStatusPasswordReset
+            let alert = UIAlertController(title: "Choose a new password",
+                                          message: nil,
+                                          preferredStyle: .alert)
+            alert.addTextField { textField in
+                textField.isSecureTextEntry = true
+            }
+            alert.addAction(.init(title: "OK", style: .default, handler: { action in
+                let password = alert.textFields?.first?.text ?? ""
+                reset.resetPassword(newPassword: password) { newStatus in
+                    self.handleStatus(status: newStatus)
+                } onError: { error in
+                    self.handleError(error)
+                }
+            }))
+            present(alert, animated: true)
+            
+        case .lockedOut,
              .unauthenticated:
               let alert = UIAlertController(title: "Error", message: "No handler for \(status.statusType.rawValue)", preferredStyle: .alert)
               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
