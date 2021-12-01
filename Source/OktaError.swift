@@ -12,11 +12,11 @@
 
 import Foundation
 
-public enum OktaError: Error {
-    case errorBuildingURLRequest
+public enum OktaError: LocalizedError {
+    case errorBuildingURLRequest(String)
     case connectionError(Error)
     case emptyServerResponse
-    case invalidResponse
+    case invalidResponse(String)
     case responseSerializationError(Error, Data)
     case serverRespondedWithError(OktaAPIErrorResponse)
     case unexpectedResponse
@@ -30,14 +30,14 @@ public enum OktaError: Error {
 public extension OktaError {
     var description: String {
         switch self {
-        case .errorBuildingURLRequest:
-            return "Error building URL request"
+        case let .errorBuildingURLRequest(reason):
+            return "Error building URL request.\nReason Failure: \(reason)."
         case .connectionError(let error):
             return "Connection error (\(error.localizedDescription))"
         case .emptyServerResponse:
             return "Empty server response"
-        case .invalidResponse:
-            return "Invalid server response"
+        case let .invalidResponse(error):
+            return "Invalid server response: \(error)"
         case .responseSerializationError(let error, _):
             return "Response serialization error (\(error.localizedDescription))"
         case .serverRespondedWithError(let error):
@@ -58,14 +58,14 @@ public extension OktaError {
             return "Another request is in progress"
         case .unknownStatus:
             return "Received state is unknown"
-        case .internalError:
-            return "Internal error"
-        case .invalidParameters:
-            return "Invalid parameters"
+        case let .internalError(error):
+            return "Internal error: \(error)"
+        case let .invalidParameters(error):
+            return "Invalid parameters: \(error)"
         }
     }
 
     var localizedDescription: String {
-        return NSLocalizedString(self.description, comment: "")
+        NSLocalizedString(description, comment: "")
     }
 }

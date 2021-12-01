@@ -18,7 +18,7 @@ open class OktaAuthStatusPasswordReset : OktaAuthStatus {
 
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
+            throw OktaError.invalidResponse("State token is missed")
         }
         self.stateToken = stateToken
         if let policy = model.embedded?.policy {
