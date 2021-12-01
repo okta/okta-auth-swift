@@ -26,8 +26,8 @@ class OktaAPIRequestTests : XCTestCase {
         req = nil
     }
     
-    func testSetsHTTPSScheme() {
-        guard let URLString = req.buildRequest()?.url?.absoluteString else {
+    func testSetsHTTPSScheme() throws {
+        guard let URLString = try XCTUnwrap(req.buildRequest()).url?.absoluteString else {
             XCTFail("No URL string")
             return
         }
@@ -40,7 +40,7 @@ class OktaAPIRequestTests : XCTestCase {
         req.path = "/test/path"
         req.urlParams = ["param": "value"]
         
-        guard let URLString = req.buildRequest()?.url?.absoluteString else {
+        guard let URLString = try? req.buildRequest().url?.absoluteString else {
             XCTFail("No URL string")
             return
         }
@@ -49,7 +49,7 @@ class OktaAPIRequestTests : XCTestCase {
     }
     
     func testHeaders() {
-        guard let URLRequest = req.buildRequest() else {
+        guard let URLRequest = try? req.buildRequest() else {
             XCTFail("No URL request")
             return
         }
@@ -64,7 +64,7 @@ class OktaAPIRequestTests : XCTestCase {
         let value = "HEADER_VALUE"
         req.additionalHeaders = [header: value]
         
-        guard let URLRequest = req.buildRequest() else {
+        guard let URLRequest = try? req.buildRequest() else {
             XCTFail("No URL request")
             return
         }
@@ -75,7 +75,7 @@ class OktaAPIRequestTests : XCTestCase {
     func testBodyParams() {
         req.bodyParams = ["root_param": [ "nested_param": "value" ]]
         
-        guard let URLRequest = req.buildRequest() else {
+        guard let URLRequest = try? req.buildRequest() else {
             XCTFail("No URL request")
             return
         }
@@ -92,7 +92,7 @@ class OktaAPIRequestTests : XCTestCase {
     func testMethod() {
         req.method = .delete
         
-        guard let methodString = req.buildRequest()?.httpMethod else {
+        guard let methodString = try? req.buildRequest().httpMethod else {
             XCTFail("No HTTP method")
             return
         }
