@@ -1,4 +1,4 @@
-name: Okta Auth iOS
+name: Okta Auth Swift
 
 on:
   push:
