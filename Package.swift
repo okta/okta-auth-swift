@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "OktaAuthNative", targets: ["OktaAuthNative"])
     ],
     targets: [
-        .target(name: "OktaAuthNative", dependencies: [], path: "Source", exclude: ["Source/Info.plist"]),
+        .target(name: "OktaAuthNative", dependencies: [], path: "Source", exclude: ["Info.plist"]),
         .testTarget(name: "OktaAuthNative_Tests", dependencies: ["OktaAuthNative"], path: "Tests", exclude: ["AuthenticationClientTests.swift"])
     ]
 )

@@ -1,12 +1,10 @@
-[![iOS_13 ready](https://img.shields.io/badge/iOS_13-ready-brightgreen.svg?style=for-the-badge)](https://github.com/okta/okta-auth-swift/releases/tag/2.0.1)
-
 [<img src="https://aws1.discourse-cdn.com/standard14/uploads/oktadev/original/1X/0c6402653dfb70edc661d4976a43a46f33e5e919.png" align="right" width="256px"/>](https://devforum.okta.com/)
-[![CI Status](https://travis-ci.org/okta/okta-auth-swift.svg?branch=master)](https://travis-ci.org/okta/okta-auth-swift)
+[![CI Status](https://github.com/okta/okta-auth-swift/actions/workflows/okta-auth.yml/badge.svg)](https://github.com/okta/okta-auth-swift/actions/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Version](https://img.shields.io/cocoapods/v/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
 [![License](https://img.shields.io/cocoapods/l/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
 [![Platform](https://img.shields.io/cocoapods/p/OktaAuthSdk.svg?style=flat)](http://cocoapods.org/pods/OktaAuthSdk)
-[![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![Swift](https://img.shields.io/badge/swift-5.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
 
 # Okta Swift Authentication SDK
 
