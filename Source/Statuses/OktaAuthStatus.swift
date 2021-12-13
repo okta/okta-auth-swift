@@ -73,7 +73,7 @@ open class OktaAuthStatus {
         }
 
         guard let stateToken = model.stateToken else {
-            onError(.invalidResponse)
+            onError(.invalidResponse("State token is missed"))
             return
         }
         
@@ -106,7 +106,7 @@ open class OktaAuthStatus {
             return
         }
         guard let stateToken = model.stateToken else {
-            onError?(.invalidResponse)
+            onError?(.invalidResponse("State token is missed"))
             return
         }
 

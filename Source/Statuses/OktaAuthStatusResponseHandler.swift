@@ -45,7 +45,7 @@ open class OktaAuthStatusResponseHandler {
     open func createAuthStatus(basedOn response: OktaAPISuccessResponse,
                                and currentStatus: OktaAuthStatus) throws -> OktaAuthStatus {
         guard let statusType = response.status else {
-            throw OktaError.invalidResponse
+            throw OktaError.invalidResponse("Status is missed")
         }
 
         // create concrete status instance

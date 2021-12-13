@@ -58,7 +58,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         guard let stateToken = model.stateToken else {
-            onError(.invalidResponse)
+            onError(.invalidResponse("State token is missed"))
             return
         }
         guard canVerify() else {
@@ -83,7 +83,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
                            onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         guard let stateToken = model.stateToken else {
-            onError(.invalidResponse)
+            onError(.invalidResponse("State token is missed"))
             return
         }
         guard canVerify() else {
@@ -107,7 +107,7 @@ open class OktaAuthStatusRecoveryChallenge : OktaAuthStatus {
     open func resendFactor(onStatusChange: @escaping (_ newStatus: OktaAuthStatus) -> Void,
                            onError: @escaping (_ error: OktaError) -> Void) {
         guard let stateToken = model.stateToken else {
-            onError(.invalidResponse)
+            onError(.invalidResponse("State token is missed"))
             return
         }
         guard canResend() else {

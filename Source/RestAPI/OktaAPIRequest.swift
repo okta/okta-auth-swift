@@ -52,16 +52,17 @@ public class OktaAPIRequest {
         case get, post, put, delete, options
     }
 
-    public func buildRequest() -> URLRequest? {
+    public func buildRequest() throws -> URLRequest {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
-            return nil
+            throw OktaError.errorBuildingURLRequest("Cannot parse URL components")
         }
+        
         if let path = path {
             components.path = path
         }
         components.queryItems = urlParams?.map { URLQueryItem(name: $0.key, value: $0.value) }
         guard let url = components.url else {
-            return nil
+            throw OktaError.errorBuildingURLRequest("Cannot create URL from components")
         }
 
         var urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 60)
@@ -73,8 +74,9 @@ public class OktaAPIRequest {
 
         if let bodyParams = bodyParams {
             guard let body = try? JSONSerialization.data(withJSONObject: bodyParams, options: []) else {
-                return nil
+                throw OktaError.errorBuildingURLRequest("Cannot parse `bodyParams` to JSON data.")
             }
+            
             urlRequest.httpBody = body
         }
 
@@ -82,18 +84,22 @@ public class OktaAPIRequest {
     }
 
     public func run() {
-        guard isCancelled == false else {
+        if isCancelled {
             return
         }
-        guard let urlRequest = buildRequest() else {
-            completion(self, .error(.errorBuildingURLRequest))
-            return
-        }
+        
+        do {
+            let urlRequest = try buildRequest()
 
-        if let httpClient = httpClient {
-            performRequest(urlRequest, withHTTPClient: httpClient)
-        } else {
-            performRequest(urlRequest, withURLSession: urlSession)
+            if let httpClient = httpClient {
+                performRequest(urlRequest, withHTTPClient: httpClient)
+            } else {
+                performRequest(urlRequest, withURLSession: urlSession)
+            }
+        } catch let oktaError as OktaError {
+            completion(self, .error(oktaError))
+        } catch {
+            completion(self, .error(.errorBuildingURLRequest("Unknown error")))
         }
     }
     

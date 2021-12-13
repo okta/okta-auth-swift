@@ -18,10 +18,10 @@ open class OktaAuthStatusFactorEnroll : OktaAuthStatus {
     
     public override init(currentState: OktaAuthStatus, model: OktaAPISuccessResponse) throws {
         guard let stateToken = model.stateToken else {
-            throw OktaError.invalidResponse
+            throw OktaError.invalidResponse("State token is missed")
         }
         guard let factors = model.embedded?.factors else {
-            throw OktaError.invalidResponse
+            throw OktaError.invalidResponse("Embedded factors are missed")
         }
         self.stateToken = stateToken
         self.factors = factors

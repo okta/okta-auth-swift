@@ -40,7 +40,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
             },
             onError: { error in
                 XCTAssertEqual(
-                    "Invalid server response",
+                    "Invalid server response: State token is missed",
                     error.localizedDescription
                 )
                 ex.fulfill()
@@ -59,7 +59,7 @@ class OktaAuthStatusRecoveryChallengeTests: XCTestCase {
             },
             onError: { error in
                 XCTAssertEqual(
-                    "Invalid server response",
+                    "Invalid server response: State token is missed",
                     error.localizedDescription
                 )
                 ex.fulfill()
