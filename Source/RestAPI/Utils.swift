@@ -17,7 +17,7 @@ import UIKit
 #endif
 
 public func sdkVersion() -> String {
-    return "2.4.2"
+    return "2.4.3"
 }
 
 internal func buildUserAgent() -> String {
