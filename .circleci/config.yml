@@ -46,11 +46,7 @@ workflows:
 
   security-scan:
     jobs:
-      - setup:
-          filters:
-            branches:
-              only:
-                - master
+      - setup
       - general-platform-helpers/job-snyk-prepare:
           name: prepare-snyk
           requires:
