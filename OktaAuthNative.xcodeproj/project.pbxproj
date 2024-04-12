@@ -129,6 +129,7 @@
 		A1FCB12F220A458F0026F522 /* OktaAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */; };
 		CB64D340250AE1AB00609CC6 /* OktaURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB64D33F250AE1AB00609CC6 /* OktaURLSessionMock.swift */; };
 		CBC143F5250975B90041EECF /* OktaAuthHTTPClientMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC143F4250975B90041EECF /* OktaAuthHTTPClientMock.swift */; };
+		E0BAF7992BC9A78D009CB80C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E0BAF7972BC9A78D009CB80C /* PrivacyInfo.xcprivacy */; };
 		E2E1F34A2501AFA00001DDD5 /* OktaHTTPRequestListenerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E1F3492501AFA00001DDD5 /* OktaHTTPRequestListenerProtocol.swift */; };
 		E2E1F34B2501B0320001DDD5 /* OktaHTTPRequestListenerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E1F3492501AFA00001DDD5 /* OktaHTTPRequestListenerProtocol.swift */; };
 		FA4ED9AA21C2895B00A065A1 /* OktaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4ED9A921C2895B00A065A1 /* OktaError.swift */; };
@@ -236,6 +237,7 @@
 		A1FCB12E220A458F0026F522 /* OktaAPIMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAPIMock.swift; sourceTree = "<group>"; };
 		CB64D33F250AE1AB00609CC6 /* OktaURLSessionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaURLSessionMock.swift; sourceTree = "<group>"; };
 		CBC143F4250975B90041EECF /* OktaAuthHTTPClientMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaAuthHTTPClientMock.swift; sourceTree = "<group>"; };
+		E0BAF7972BC9A78D009CB80C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E2E1F3492501AFA00001DDD5 /* OktaHTTPRequestListenerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaHTTPRequestListenerProtocol.swift; sourceTree = "<group>"; };
 		FA4ED99B21C1499200A065A1 /* OktaAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OktaAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4ED99F21C1499200A065A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -435,6 +437,14 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		E0BAF7982BC9A78D009CB80C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E0BAF7972BC9A78D009CB80C /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		FA4ED98F21C1489900A065A1 = {
 			isa = PBXGroup;
 			children = (
@@ -464,6 +474,7 @@
 				A12F4FD62238259600DB9147 /* Statuses */,
 				A12F4FF82238311A00DB9147 /* OktaAuthSdk.swift */,
 				FA4ED9A921C2895B00A065A1 /* OktaError.swift */,
+				E0BAF7982BC9A78D009CB80C /* Resources */,
 				FAC5AEDA21C7F6F000C3DC91 /* Supporting Files */,
 			);
 			path = Source;
@@ -587,6 +598,7 @@
 				A1E7465622834B9800C48A28 /* Questions in Resources */,
 				A179276D2229BDB90001C889 /* OktaAuthSdk.podspec in Resources */,
 				A1E7469F2283819700C48A28 /* MFA_ENROLL_ACTIVATE_CALL in Resources */,
+				E0BAF7992BC9A78D009CB80C /* PrivacyInfo.xcprivacy in Resources */,
 				2F8D79F421D6601600CFDF12 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -824,7 +836,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.3;
+				MARKETING_VERSION = 2.4.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -900,7 +912,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.3;
+				MARKETING_VERSION = 2.4.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.okta.auth-swift";
