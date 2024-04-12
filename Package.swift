@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "OktaAuthNative", targets: ["OktaAuthNative"])
     ],
     targets: [
-        .target(name: "OktaAuthNative", dependencies: [], resources: [.process("Resources")], path: "Source", exclude: ["Info.plist"]),
+        .target(name: "OktaAuthNative", dependencies: [],path: "Source", exclude: ["Info.plist"], resources: [.process("Resources")]),
         .testTarget(name: "OktaAuthNative_Tests", dependencies: ["OktaAuthNative"], path: "Tests", exclude: ["AuthenticationClientTests.swift"])
     ]
 )
