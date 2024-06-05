@@ -52,15 +52,30 @@ open class OktaAPI {
         bodyParams["relayState"] = relayState
         bodyParams["options"] = ["multiOptionalFactorEnroll": multiOptionalFactorEnroll,
                                  "warnBeforePasswordExpired": warnBeforePasswordExpired]
-        var context: [String: String] = [:]
-        context["deviceToken"] = deviceToken
-        bodyParams["context"] = context
         bodyParams["token"] = token
         req.bodyParams = bodyParams
+
+        var additionalHeaders = req.additionalHeaders ?? [:]
+        if let deviceToken = deviceToken {
+            var cookies = ["DT=\(deviceToken)"]
+            if let cookieHeader = req.additionalHeaders?["Cookie"] as? String {
+                cookies.append(contentsOf: cookieHeader
+                    .components(separatedBy: ";")
+                    .map({ $0.trimmingCharacters(in: .whitespaces) }))
+            }
+            
+            additionalHeaders["Cookie"] = cookies.joined(separator: "; ")
+        }
+
         
         if let deviceFingerprint = deviceFingerprint {
-            req.additionalHeaders = ["X-Device-Fingerprint": deviceFingerprint]
+            additionalHeaders["X-Device-Fingerprint"] = deviceFingerprint
         }
+        
+        if !additionalHeaders.isEmpty {
+            req.additionalHeaders = additionalHeaders
+        }
+        
         req.run()
         return req
     }

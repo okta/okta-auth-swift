@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'OktaAuthSdk'
-  s.version          = '2.4.4'
+  s.version          = '2.4.5'
   s.summary          = 'SDK for Okta native authentication.'
   s.description      = <<-DESC
 Integrate your native app with Okta.
