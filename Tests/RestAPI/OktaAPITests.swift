@@ -44,6 +44,27 @@ class OktaAPITests : XCTestCase {
         wait(for: [exp], timeout: 60.0)
     }
     
+    func testPrimaryAuthenticationWithDeviceToken() {
+        let username = "username"
+        let password = "password"
+        let deviceToken = "abcd123"
+        
+        let exp = XCTestExpectation()
+        api.commonCompletion = { req, _ in
+            XCTAssertEqual(req.baseURL, self.url)
+            XCTAssertEqual(req.path, "/api/v1/authn")
+            XCTAssertEqual(req.bodyParams?["username"] as? String, username)
+            XCTAssertEqual(req.bodyParams?["password"] as? String, password)
+            XCTAssertNil(req.bodyParams?["context"])
+            XCTAssertEqual(req.additionalHeaders?["Cookie"], "DT=\(deviceToken)")
+            exp.fulfill()
+        }
+        
+        api.primaryAuthentication(username: username, password: password, deviceToken: deviceToken)
+        
+        wait(for: [exp], timeout: 60.0)
+    }
+
     func testPrimaryAuthenticationWithDeviceFingerprint() {
         let username = "username"
         let password = "password"
