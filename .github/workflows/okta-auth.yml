@@ -8,7 +8,9 @@ on:
 
 jobs:
   UnitTests:
-    runs-on: macos-11
+    runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: iOS
@@ -16,7 +18,9 @@ jobs:
     - name: Swift
       run: swift test -v
   PackageValidation:
-    runs-on: macos-11
+    runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: Cocoapods
