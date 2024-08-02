@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'OktaAuthSdk'
-  s.version          = '2.4.5'
+  s.version          = '2.4.6'
   s.summary          = 'SDK for Okta native authentication.'
   s.description      = <<-DESC
 Integrate your native app with Okta.
@@ -14,7 +14,7 @@ Integrate your native app with Okta.
   s.ios.deployment_target = '10.0'
   s.osx.deployment_target = '10.14'
   s.source_files = 'Source/**/*'
-  s.resources    = 'Source/Resources/**/*'
+  s.resource_bundles = { 'OktaAuthSdk' => 'Source/Resources/**/*' }
   s.swift_version = '5.0'
   s.exclude_files = [
     'Source/Info.plist'

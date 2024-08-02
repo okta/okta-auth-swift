@@ -8,15 +8,19 @@ on:
 
 jobs:
   UnitTests:
-    runs-on: macos-11
+    runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: iOS
-      run: xcodebuild -workspace OktaAuthSdk.xcworkspace -scheme "OktaAuthNative iOS" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean test
+      run: xcodebuild -workspace OktaAuthSdk.xcworkspace -scheme "OktaAuthNative iOS" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15 Pro Max" clean test
     - name: Swift
       run: swift test -v
   PackageValidation:
-    runs-on: macos-11
+    runs-on: macos-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: Cocoapods
