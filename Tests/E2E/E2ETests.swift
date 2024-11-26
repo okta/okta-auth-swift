@@ -54,7 +54,7 @@ class E2ETests: XCTestCase {
 
     func testPrimaryAuthFlowSuccess() {
         let ex = expectation(description: "Operation should succeed!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: primaryAuthUser!.password, onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: primaryAuthUser!.password, deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTAssertTrue(status.statusType == .success)
             self.verifyBasicInfoForStatus(status: status)
             let successStatus = status as! OktaAuthStatusSuccess
@@ -70,7 +70,7 @@ class E2ETests: XCTestCase {
 
     func testPrimaryAuthFlowFailure() {
         let ex = expectation(description: "Operation should fail!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: "Wrong password", onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: primaryAuthUser!.username, password: "Wrong password", deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTFail("Unexpected status")
             ex.fulfill()
         }) { error in
@@ -87,7 +87,7 @@ class E2ETests: XCTestCase {
     func testFactorChallengeSuccess() {
         var factorRequiredStatus: OktaAuthStatusFactorRequired?
         let ex = expectation(description: "Operation should succeed!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorRequiredUser!.username, password: factorRequiredUser!.password, onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorRequiredUser!.username, password: factorRequiredUser!.password, deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTAssertTrue(status.statusType == .MFARequired)
             factorRequiredStatus = status as? OktaAuthStatusFactorRequired
             if let factorRequiredStatus = factorRequiredStatus {
@@ -152,7 +152,7 @@ class E2ETests: XCTestCase {
         var factorEnrollStatus: OktaAuthStatusFactorEnroll?
         var pushFactor: OktaFactorPush?
         let ex = expectation(description: "Operation should succeed!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTAssertTrue(status.statusType == .MFAEnroll)
             factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
             if let factorEnrollStatus = factorEnrollStatus {
@@ -240,7 +240,7 @@ class E2ETests: XCTestCase {
         var factorEnrollStatus: OktaAuthStatusFactorEnroll?
         var smsFactor: OktaFactorSms?
         let ex = expectation(description: "Operation should succeed!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTAssertTrue(status.statusType == .MFAEnroll)
             factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
             if let factorEnrollStatus = factorEnrollStatus {
@@ -279,7 +279,7 @@ class E2ETests: XCTestCase {
         var factorEnrollStatus: OktaAuthStatusFactorEnroll?
         var totpFactor: OktaFactorTotp?
         let ex = expectation(description: "Operation should succeed!")
-        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, onStatusChange: { status in
+        OktaAuthSdk.authenticate(with: URL(string: urlString)!, username: factorEnrollmentUser!.username, password: factorEnrollmentUser!.password, deviceToken: "deviceToken", deviceFingerprint: nil, onStatusChange: { status in
             XCTAssertTrue(status.statusType == .MFAEnroll)
             factorEnrollStatus = status as? OktaAuthStatusFactorEnroll
             if let factorEnrollStatus = factorEnrollStatus {

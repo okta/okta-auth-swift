@@ -26,6 +26,8 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
         status.authenticate(
             username: "test",
             password: "test",
+            deviceToken: "deviceToken",
+            deviceFingerprint: "deviceFingerprint",
             onStatusChange: { status in
                 XCTAssertEqual(AuthStatus.success, status.statusType)
                 ex.fulfill()
@@ -49,6 +51,8 @@ class OktaAuthStatusUnauthenticatedTests: XCTestCase {
         status.authenticate(
             username: "test",
             password: "test",
+            deviceToken: "deviceToken",
+            deviceFingerprint: "deviceFingerprint",
             onStatusChange: { status in
                 XCTFail("Unexpected status change: \(status)")
                 ex.fulfill()
