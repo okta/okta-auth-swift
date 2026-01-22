@@ -37,17 +37,17 @@ jobs:
 workflows:
   security-scan:
     jobs:
-      - setup #:
-         # filters:
-         #   branches:
-         #     only:
-         #       - master
+      - setup:
+          filters:
+            branches:
+              only:
+                - master
       - snyk-scan:
           name: execute-snyk
-          #filters:
-          #  branches:
-          #    only:
-          #      - master
+          filters:
+            branches:
+              only:
+                - master
           context:
             - static-analysis
           requires:
