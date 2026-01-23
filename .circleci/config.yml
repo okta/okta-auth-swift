@@ -1,13 +1,14 @@
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.9.4
+  general-platform-helpers: okta/general-platform-helpers@1.9
+  macos: circleci/macos@2
 
 executors:
   apple-ci-arm-medium:
     macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+      xcode: 26.2.0
+    resource_class: m4pro.medium
 
 jobs:
   setup:
@@ -25,16 +26,12 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
-          name: Install rosetta # Needed for snyk to work on M1 machines.
-          command: softwareupdate --install-rosetta --agree-to-license
-      - run:
           name: run swift package show dependencies
           command: swift package show-dependencies
-      - general-platform-helpers/step-load-dependencies
+      - macos/install-rosetta
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
           skip-unresolved: false
-          run-on-non-main: true
           os: macos
 
 workflows:
