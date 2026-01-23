@@ -10,7 +10,7 @@ jobs:
   UnitTests:
     runs-on: macos-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: iOS
@@ -20,7 +20,7 @@ jobs:
   PackageValidation:
     runs-on: macos-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: Cocoapods
