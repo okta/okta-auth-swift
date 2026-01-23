@@ -10,17 +10,17 @@ jobs:
   UnitTests:
     runs-on: macos-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: iOS
-      run: xcodebuild -workspace OktaAuthSdk.xcworkspace -scheme "OktaAuthNative iOS" -destination "platform=iOS Simulator,OS=latest,name=iPhone 17 Pro Max" clean test
+      run: xcodebuild -workspace OktaAuthSdk.xcworkspace -scheme "OktaAuthNative iOS" -destination "platform=iOS Simulator,OS=18.6,name=iPhone 16 Pro Max" clean test
     - name: Swift
       run: swift test -v
   PackageValidation:
     runs-on: macos-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
     - uses: actions/checkout@v2
     - name: Cocoapods
