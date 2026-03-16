@@ -251,7 +251,11 @@ open class OktaAPI {
         let req = buildBaseRequest(completion: completion)
         req.baseURL = link.href
         req.method = .post
-        req.urlParams = [:]
+        if (factor.factorType == .sms) {
+            req.urlParams = ["updatePhone":"true"]
+        } else {
+            req.urlParams = [:]
+        }
         req.bodyParams = ["stateToken": stateToken]
         req.bodyParams?["factorType"] = factor.factorType.rawValue
         req.bodyParams?["provider"] = factor.provider?.rawValue
